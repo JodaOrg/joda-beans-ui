@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import org.joda.beans.ui.swing.binder.BooleanObjectPropertyBinder;
 import org.joda.beans.ui.swing.binder.BooleanPrimitivePropertyBinder;
+import org.joda.beans.ui.swing.binder.NumericPropertyBinders;
 import org.joda.beans.ui.swing.binder.PropertyBinderFactory;
 import org.joda.beans.ui.swing.binder.StringPropertyBinder;
 import org.joda.convert.StringConvert;
@@ -56,6 +57,14 @@ public class SwingUISettings {
     public SwingUISettings() {
         factories.add(BooleanPrimitivePropertyBinder.FACTORY);
         factories.add(BooleanObjectPropertyBinder.FACTORY);
+        factories.add(NumericPropertyBinders.BYTE_PRIMITIVE);
+        factories.add(NumericPropertyBinders.BYTE_OBJECT);
+        factories.add(NumericPropertyBinders.SHORT_PRIMITIVE);
+        factories.add(NumericPropertyBinders.SHORT_OBJECT);
+        factories.add(NumericPropertyBinders.INT_PRIMITIVE);
+        factories.add(NumericPropertyBinders.INT_OBJECT);
+        factories.add(NumericPropertyBinders.LONG_PRIMITIVE);
+        factories.add(NumericPropertyBinders.LONG_OBJECT);
         factories.add(StringPropertyBinder.FACTORY);
     }
 

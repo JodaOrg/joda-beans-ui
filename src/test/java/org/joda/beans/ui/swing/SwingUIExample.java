@@ -32,7 +32,8 @@ public class SwingUIExample {
             Person person = new Person();
             person.setForename("Stephen");
             person.setSurname("Colebourne");
-            person.setAge(30);
+            person.setAge((short) 30);
+            person.setTripCount(6);
             person.setChild(true);
             person.setAddress(new Address());
             person.getAddress().setStreet("186 Park Street");

@@ -43,7 +43,9 @@ public class Person implements Bean {
     @PropertyDefinition
     private String surname;
     @PropertyDefinition
-    private int age;
+    private short age;
+    @PropertyDefinition
+    private int tripCount;
     @PropertyDefinition
     private boolean child;
     @PropertyDefinition
@@ -139,7 +141,7 @@ public class Person implements Bean {
      * Gets the age.
      * @return the value of the property
      */
-    public int getAge() {
+    public short getAge() {
         return age;
     }
 
@@ -147,7 +149,7 @@ public class Person implements Bean {
      * Sets the age.
      * @param age  the new value of the property
      */
-    public void setAge(int age) {
+    public void setAge(short age) {
         this.age = age;
     }
 
@@ -155,8 +157,33 @@ public class Person implements Bean {
      * Gets the the {@code age} property.
      * @return the property, not null
      */
-    public final Property<Integer> age() {
+    public final Property<Short> age() {
         return metaBean().age().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the tripCount.
+     * @return the value of the property
+     */
+    public int getTripCount() {
+        return tripCount;
+    }
+
+    /**
+     * Sets the tripCount.
+     * @param tripCount  the new value of the property
+     */
+    public void setTripCount(int tripCount) {
+        this.tripCount = tripCount;
+    }
+
+    /**
+     * Gets the the {@code tripCount} property.
+     * @return the property, not null
+     */
+    public final Property<Integer> tripCount() {
+        return metaBean().tripCount().createProperty(this);
     }
 
     //-----------------------------------------------------------------------
@@ -310,6 +337,7 @@ public class Person implements Bean {
             return JodaBeanUtils.equal(getForename(), other.getForename()) &&
                     JodaBeanUtils.equal(getSurname(), other.getSurname()) &&
                     (getAge() == other.getAge()) &&
+                    (getTripCount() == other.getTripCount()) &&
                     (isChild() == other.isChild()) &&
                     JodaBeanUtils.equal(getMarried(), other.getMarried()) &&
                     JodaBeanUtils.equal(getFavouriteColour(), other.getFavouriteColour()) &&
@@ -325,6 +353,7 @@ public class Person implements Bean {
         hash += hash * 31 + JodaBeanUtils.hashCode(getForename());
         hash += hash * 31 + JodaBeanUtils.hashCode(getSurname());
         hash += hash * 31 + JodaBeanUtils.hashCode(getAge());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getTripCount());
         hash += hash * 31 + JodaBeanUtils.hashCode(isChild());
         hash += hash * 31 + JodaBeanUtils.hashCode(getMarried());
         hash += hash * 31 + JodaBeanUtils.hashCode(getFavouriteColour());
@@ -335,7 +364,7 @@ public class Person implements Bean {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(288);
+        StringBuilder buf = new StringBuilder(320);
         buf.append("Person{");
         int len = buf.length();
         toString(buf);
@@ -350,6 +379,7 @@ public class Person implements Bean {
         buf.append("forename").append('=').append(JodaBeanUtils.toString(getForename())).append(',').append(' ');
         buf.append("surname").append('=').append(JodaBeanUtils.toString(getSurname())).append(',').append(' ');
         buf.append("age").append('=').append(JodaBeanUtils.toString(getAge())).append(',').append(' ');
+        buf.append("tripCount").append('=').append(JodaBeanUtils.toString(getTripCount())).append(',').append(' ');
         buf.append("child").append('=').append(JodaBeanUtils.toString(isChild())).append(',').append(' ');
         buf.append("married").append('=').append(JodaBeanUtils.toString(getMarried())).append(',').append(' ');
         buf.append("favouriteColour").append('=').append(JodaBeanUtils.toString(getFavouriteColour())).append(',').append(' ');
@@ -380,8 +410,13 @@ public class Person implements Bean {
         /**
          * The meta-property for the {@code age} property.
          */
-        private final MetaProperty<Integer> age = DirectMetaProperty.ofReadWrite(
-                this, "age", Person.class, Integer.TYPE);
+        private final MetaProperty<Short> age = DirectMetaProperty.ofReadWrite(
+                this, "age", Person.class, Short.TYPE);
+        /**
+         * The meta-property for the {@code tripCount} property.
+         */
+        private final MetaProperty<Integer> tripCount = DirectMetaProperty.ofReadWrite(
+                this, "tripCount", Person.class, Integer.TYPE);
         /**
          * The meta-property for the {@code child} property.
          */
@@ -416,6 +451,7 @@ public class Person implements Bean {
                 "forename",
                 "surname",
                 "age",
+                "tripCount",
                 "child",
                 "married",
                 "favouriteColour",
@@ -437,6 +473,8 @@ public class Person implements Bean {
                     return surname;
                 case 96511:  // age
                     return age;
+                case -424035350:  // tripCount
+                    return tripCount;
                 case 94631196:  // child
                     return child;
                 case 839462772:  // married
@@ -487,8 +525,16 @@ public class Person implements Bean {
          * The meta-property for the {@code age} property.
          * @return the meta-property, not null
          */
-        public final MetaProperty<Integer> age() {
+        public final MetaProperty<Short> age() {
             return age;
+        }
+
+        /**
+         * The meta-property for the {@code tripCount} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<Integer> tripCount() {
+            return tripCount;
         }
 
         /**
@@ -541,6 +587,8 @@ public class Person implements Bean {
                     return ((Person) bean).getSurname();
                 case 96511:  // age
                     return ((Person) bean).getAge();
+                case -424035350:  // tripCount
+                    return ((Person) bean).getTripCount();
                 case 94631196:  // child
                     return ((Person) bean).isChild();
                 case 839462772:  // married
@@ -566,7 +614,10 @@ public class Person implements Bean {
                     ((Person) bean).setSurname((String) newValue);
                     return;
                 case 96511:  // age
-                    ((Person) bean).setAge((Integer) newValue);
+                    ((Person) bean).setAge((Short) newValue);
+                    return;
+                case -424035350:  // tripCount
+                    ((Person) bean).setTripCount((Integer) newValue);
                     return;
                 case 94631196:  // child
                     ((Person) bean).setChild((Boolean) newValue);
