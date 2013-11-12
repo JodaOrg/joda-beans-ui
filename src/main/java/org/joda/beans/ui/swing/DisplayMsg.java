@@ -65,11 +65,17 @@ public final class DisplayMsg {
      */
     public static String lookupFieldPrompt(MetaProperty<?> metaProperty) {
         try {
-            String key = metaProperty.declaringType().getSimpleName() + "." + metaProperty.name();
+            String key = metaProperty.declaringType() + "." + metaProperty.name();
             String prompt = RESOURCE_BUNDLE.getString(key);
             return (prompt.endsWith(":") ? prompt : prompt + ":");
-        } catch (MissingResourceException e) {
-            return generateFieldPrompt(metaProperty) + ":";
+        } catch (MissingResourceException ex) {
+            try {
+                String key = metaProperty.declaringType().getSimpleName() + "." + metaProperty.name();
+                String prompt = RESOURCE_BUNDLE.getString(key);
+                return (prompt.endsWith(":") ? prompt : prompt + ":");
+            } catch (MissingResourceException ex2) {
+                return generateFieldPrompt(metaProperty) + ":";
+            }
         }
     }
 
