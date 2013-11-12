@@ -331,6 +331,11 @@
       <version>0.8.5</version>
     </dependency>
     <dependency>
+      <groupId>org.metawidget.modules.swing</groupId>
+      <artifactId>metawidget-swing</artifactId>
+      <version>3.6</version>
+    </dependency>
+    <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
       <version>6.8.5</version>
