@@ -18,12 +18,13 @@ package org.joda.beans.ui.swing.binder;
 import java.util.Objects;
 
 import javax.swing.JComponent;
-import javax.swing.JTextField;
 
 import org.joda.beans.Bean;
 import org.joda.beans.MetaProperty;
 import org.joda.beans.Property;
-import org.joda.beans.ui.swing.component.JComponentUtils;
+import org.joda.beans.ui.swing.SwingUISettings;
+import org.joda.beans.ui.swing.component.JValidatedTextField;
+import org.joda.beans.ui.swing.component.JValidatedTextFields;
 import org.joda.convert.StringConvert;
 
 /**
@@ -66,11 +67,11 @@ public class NumericPropertyBinders {
     /**
      * Factory for {@code double}.
      */
-    public static final PropertyBinderFactory DOUBLE_PRIMITIVE = new FloatingPropertyBinderFactory(Double.TYPE, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    public static final PropertyBinderFactory DOUBLE_PRIMITIVE = new DoublePropertyBinderFactory(Double.TYPE, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
     /**
      * Factory for {@code Double}.
      */
-    public static final PropertyBinderFactory DOUBLE_OBJECT = new FloatingPropertyBinderFactory(Double.class, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    public static final PropertyBinderFactory DOUBLE_OBJECT = new DoublePropertyBinderFactory(Double.class, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
     //-------------------------------------------------------------------------
     /**
@@ -124,7 +125,7 @@ public class NumericPropertyBinders {
         /**
          * The associated component.
          */
-        private final JTextField component;
+        private final JValidatedTextField component;
         /**
          * The associated property.
          */
@@ -146,7 +147,17 @@ public class NumericPropertyBinders {
             super();
             this.property = Objects.requireNonNull(property, "property");
             this.type = type;
-            this.component = JComponentUtils.createLongTextField(type.isPrimitive() == false, minInclusive, maxInclusive);
+            if (type == Long.class || type == Long.TYPE) {
+                this.component = JValidatedTextFields.createLongTextField(type.isPrimitive() == false, minInclusive, maxInclusive);
+            } else if (type == Integer.class || type == Integer.TYPE) {
+                this.component = JValidatedTextFields.createIntegerTextField(type.isPrimitive() == false, (int) minInclusive, (int) maxInclusive);
+            } else if (type == Short.class || type == Short.TYPE) {
+                this.component = JValidatedTextFields.createShortTextField(type.isPrimitive() == false, (short) minInclusive, (short) maxInclusive);
+            } else if (type == Byte.class || type == Byte.TYPE) {
+                this.component = JValidatedTextFields.createByteTextField(type.isPrimitive() == false, (byte) minInclusive, (byte) maxInclusive);
+            } else {
+                throw new IllegalArgumentException();
+            }
         }
 
         //-------------------------------------------------------------------------
@@ -179,9 +190,9 @@ public class NumericPropertyBinders {
 
     //-------------------------------------------------------------------------
     /**
-     * Factory for a floating type.
+     * Factory for a {@code Double} type.
      */
-    static class FloatingPropertyBinderFactory implements PropertyBinderFactory {
+    static class DoublePropertyBinderFactory implements PropertyBinderFactory {
         
         /**
          * The type.
@@ -203,8 +214,7 @@ public class NumericPropertyBinders {
          * @param minInclusive  the minimum value, inclusive
          * @param maxInclusive  the minimum value, inclusive
          */
-        FloatingPropertyBinderFactory(Class<?> type, double minInclusive, double maxInclusive) {
-            super();
+        DoublePropertyBinderFactory(Class<?> type, double minInclusive, double maxInclusive) {
             this.type = type;
             this.minInclusive = minInclusive;
             this.maxInclusive = maxInclusive;
@@ -214,7 +224,7 @@ public class NumericPropertyBinders {
         @Override
         public PropertyBinder createBinder(Bean bean, MetaProperty<?> metaProperty) {
             if (metaProperty.propertyType() == type) {
-                return new FloatingPropertyBinder(metaProperty.createProperty(bean), type, minInclusive, maxInclusive);
+                return new DoublePropertyBinder(metaProperty.createProperty(bean), type, minInclusive, maxInclusive);
             }
             return null;
         }
@@ -222,14 +232,14 @@ public class NumericPropertyBinders {
 
     //-------------------------------------------------------------------------
     /**
-     * Binder for a floating type.
+     * Binder for a {@code Double} type.
      */
-    static class FloatingPropertyBinder extends SingleComponentPropertyBinder {
+    static class DoublePropertyBinder extends SingleComponentPropertyBinder {
 
         /**
          * The associated component.
          */
-        private final JTextField component;
+        private final JValidatedTextField component;
         /**
          * The associated property.
          */
@@ -247,11 +257,10 @@ public class NumericPropertyBinders {
          * @param minInclusive  the minimum value, inclusive
          * @param maxInclusive  the minimum value, inclusive
          */
-        public FloatingPropertyBinder(Property<?> property, Class<?> type, double minInclusive, double maxInclusive) {
-            super();
+        public DoublePropertyBinder(Property<?> property, Class<?> type, double minInclusive, double maxInclusive) {
             this.property = Objects.requireNonNull(property, "property");
             this.type = type;
-            this.component = JComponentUtils.createDoubleTextField(type.isPrimitive() == false, true, minInclusive, maxInclusive);
+            this.component = JValidatedTextFields.createDoubleTextField(type.isPrimitive(), true, minInclusive, maxInclusive);
         }
 
         //-------------------------------------------------------------------------
@@ -262,7 +271,7 @@ public class NumericPropertyBinders {
 
         @Override
         public void updateUI() {
-            component.setText(property.get().toString());
+            component.setText(SwingUISettings.INSTANCE.getStringConvert().convertToString(property.get()));
         }
 
         @Override
@@ -271,7 +280,7 @@ public class NumericPropertyBinders {
             if (value == null) { // should not happen
                 value = "0";
             }
-            property.set(StringConvert.INSTANCE.convertFromString(type, value));
+            property.set(SwingUISettings.INSTANCE.getStringConvert().convertFromString(type, value));
         }
 
         //-------------------------------------------------------------------------

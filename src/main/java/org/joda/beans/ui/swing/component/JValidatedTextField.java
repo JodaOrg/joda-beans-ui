@@ -15,6 +15,7 @@
  */
 package org.joda.beans.ui.swing.component;
 
+import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.util.Objects;
@@ -31,6 +32,7 @@ import javax.swing.text.PlainDocument;
  * <p>
  * This {@code JTextField} has additional functionality that allows it to
  * validate entry as you type and on exit.
+ * Implementations should override one of the {@code process} or {@code validate} methods.
  * <p>
  * The aim is to provide something simpler than {@code JFormattedTextField}.
  */
@@ -38,23 +40,62 @@ public class JValidatedTextField extends JTextField {
 
     /** Serialization version. */
     private static final long serialVersionUID = 1L;
+    /**
+     * The error background color.
+     */
+    private static final Color ERROR_BACKGROUND = new Color(255, 219, 219);
 
     /**
-     * The validator.
+     * Current error status.
      */
-    private final TextFieldValidator validator;
+    private ErrorStatus errorStatus = ErrorStatus.VALID;
+    /**
+     * The validator to use, may be null.
+     */
+    private final JValidatedTextFieldValidator validator;
 
-    //-------------------------------------------------------------------------
     /**
      * Creates an instance.
+     */
+    public JValidatedTextField() {
+        this(0, null);
+    }
+
+    /**
+     * Creates an instance.
+     * <p>
+     * This uses a {@code PlainDocument} which must not be changed.
+     * 
+     * @param columns  the number of columns to use as the preferred width, zero for natural behavior
+     */
+    public JValidatedTextField(int columns) {
+        this(columns, null);
+    }
+
+    /**
+     * Creates an instance.
+     * <p>
+     * This uses a {@code PlainDocument} which must not be changed.
      * 
      * @param validator  the validator to use, not null
      */
-    public JValidatedTextField(TextFieldValidator validator) {
-        this.validator = Objects.requireNonNull(validator, "validator");
-        setText("");
+    public JValidatedTextField(JValidatedTextFieldValidator validator) {
+        this(0, validator);
+    }
+
+    /**
+     * Creates an instance.
+     * <p>
+     * This uses a {@code PlainDocument} which must not be changed.
+     * 
+     * @param columns  the number of columns to use as the preferred width, zero for natural behavior
+     * @param validator  the validator to use, not null
+     */
+    public JValidatedTextField(int columns, JValidatedTextFieldValidator validator) {
+        super(columns);
+        this.validator = validator;
         PlainDocument doc = (PlainDocument) getDocument();
-        doc.setDocumentFilter(new WholeTextDocumentFilter(validator));
+        doc.setDocumentFilter(new ValidationDocumentFilter(this));
     }
 
     //-------------------------------------------------------------------------
@@ -62,8 +103,8 @@ public class JValidatedTextField extends JTextField {
     @Override
     protected void processFocusEvent(FocusEvent e) {
         if (e.isTemporary() == false && e.getID() == FocusEvent.FOCUS_LOST) {
-            String text = getText();
-            String fixed = validator.fixOnExit(text);
+            String text = Objects.toString(getText(), "");
+            String fixed = handleExit(text);
             if (Objects.equals(text, fixed) == false) {
                 setText(fixed);
             }
@@ -73,37 +114,105 @@ public class JValidatedTextField extends JTextField {
 
     //-------------------------------------------------------------------------
     /**
-     * Interface to check if the whole text is valid.
+     * Gets the error status.
+     * 
+     * @return the error status, not null
      */
-    public interface TextFieldValidator {
+    public ErrorStatus getErrorStatus() {
+        return (errorStatus != null ? errorStatus : ErrorStatus.VALID);
+    }
 
-        /**
-         * Checks if the text is valid.
-         * <p>
-         * This method may be slightly lenient.
-         * For example, it should normally allow a blank string to aid user editing.
-         * <p>
-         * This is run on the EDT and must be fast, thread-safe and idempotent.
-         * 
-         * @param text  the text to check, not null
-         * @return true if valid
-         */
-        boolean isValid(String text);
+    /**
+     * Sets the error status.
+     * 
+     * @param errorStatus  the error status, not null
+     */
+    public void setErrorStatus(ErrorStatus errorStatus) {
+        this.errorStatus = Objects.requireNonNull(errorStatus);
+    }
 
-        /**
-         * Fixes the text on exit.
-         * <p>
-         * This takes text which is known to be invalid and must return
-         * alternate text that to be stored in the component.
-         * The result of this method must be valid as per {@link #isValid}.
-         * <p>
-         * This is run on the EDT and must be fast, thread-safe and idempotent.
-         * 
-         * @param text  the text to fix, not null
-         * @return the fixed text, not null
-         */
-        String fixOnExit(String text);
+    //-------------------------------------------------------------------------
+    /**
+     * Checks if the text is a permitted state of the text field.
+     * <p>
+     * This can be used to block characters or strings, such as blocking letters
+     * in a numeric field.
+     * <p>
+     * This is run on the EDT and must be fast and thread-safe.
+     * Implementations must not access methods on the document.
+     * 
+     * @param text  the whole text of the field to validate, not null
+     * @return true if the text is a valid value during editing
+     */
+    protected boolean validateChange(String text) {
+        return (validator != null ? validator.validateChange(text) : true);
+    }
 
+    /**
+     * Checks if the text is valid and adjusts the text field.
+     * <p>
+     * This validates that the text is complete and produces the intended value.
+     * <p>
+     * This is run on the EDT and must be fast and thread-safe.
+     * Implementations must not access methods on the document.
+     * 
+     * @param text  the whole text of the field to validate, not null
+     * @return the error status, not null
+     */
+    protected ErrorStatus validateExit(String text) {
+        return (validator != null ? validator.validateExit(text) : ErrorStatus.VALID);
+    }
+
+    /**
+     * Handles a change to the text value of the field.
+     * <p>
+     * This is used to color the background if the text is invalid.
+     * Implementations could override this behavior.
+     * <p>
+     * This is run on the EDT and must be fast and thread-safe.
+     * Implementations must not access methods on the document.
+     * 
+     * @param text  the whole text of the field to validate, not null
+     */
+    protected void handleChange(String text) {
+        ErrorStatus status = validateExit(text);
+        setErrorStatus(status);
+        if (status.isError()) {
+            String errorText = status.getErrorText();
+            setToolTipText(errorText);
+        } else {
+            setToolTipText(null);
+        }
+    }
+
+    /**
+     * Handles exit from the field.
+     * <p>
+     * This is used to adjust and correct the input value.
+     * For exmaple, an implementation could change the text to upper case.
+     * <p>
+     * There is no support for blocking exit of the field.
+     * Implementations should either fix the value or accept that it stays invalid.
+     * This method is invoked whether or not the text is invalid.
+     * <p>
+     * This is run on the EDT and must be fast and thread-safe.
+     * Implementations must not access methods on the document.
+     * 
+     * @param text  the whole text of the field to validate, not null
+     * @return true if the text is a valid value for exit
+     */
+    protected String handleExit(String text) {
+        return (validator != null ? validator.onExit(text) : text);
+    }
+
+    //-------------------------------------------------------------------------
+    // override background color to show error
+    @Override
+    public Color getBackground() {
+        if (getErrorStatus().isError()) {
+            return ERROR_BACKGROUND;
+        }
+        return super.getBackground();
     }
 
     //-------------------------------------------------------------------------
@@ -113,31 +222,32 @@ public class JValidatedTextField extends JTextField {
      * This {@code DocumentFilter} can be used with a {@code JTextField} to
      * validate entry as you type.
      */
-    static class WholeTextDocumentFilter extends DocumentFilter {
+    static class ValidationDocumentFilter extends DocumentFilter {
 
         /**
          * The validator.
          */
-        private final TextFieldValidator validator;
+        private final JValidatedTextField textField;
 
         /**
          * Creates an instance.
          * 
-         * @param validator  the validator to use, not null
+         * @param textField  the text field to use, not null
          */
-        WholeTextDocumentFilter(TextFieldValidator validator) {
-            this.validator = Objects.requireNonNull(validator, "validator");
+        ValidationDocumentFilter(JValidatedTextField textField) {
+            this.textField = Objects.requireNonNull(textField, "textField");
         }
 
         //-------------------------------------------------------------------------
         @Override
-        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+        public void insertString(FilterBypass fb, int offset, String inserted, AttributeSet attr) throws BadLocationException {
             Document doc = fb.getDocument();
             StringBuilder sb = new StringBuilder();
             sb.append(doc.getText(0, doc.getLength()));
-            sb.insert(offset, string);
-            if (validator.isValid(sb.toString())) {
-                super.insertString(fb, offset, string, attr);
+            sb.insert(offset, inserted);
+            if (textField.validateChange(sb.toString())) {
+                fb.insertString(offset, inserted, attr);
+                textField.handleChange(getText(fb));
             } else {
                 Toolkit.getDefaultToolkit().beep();
             }
@@ -149,8 +259,9 @@ public class JValidatedTextField extends JTextField {
             StringBuilder sb = new StringBuilder();
             sb.append(doc.getText(0, doc.getLength()));
             sb.replace(offset, offset + length, text);
-            if (validator.isValid(sb.toString())) {
-                super.replace(fb, offset, length, text, attrs);
+            if (textField.validateChange(sb.toString())) {
+                fb.replace(offset, length, text, attrs);
+                textField.handleChange(getText(fb));
             } else {
                 Toolkit.getDefaultToolkit().beep();
             }
@@ -162,10 +273,19 @@ public class JValidatedTextField extends JTextField {
             StringBuilder sb = new StringBuilder();
             sb.append(doc.getText(0, doc.getLength()));
             sb.delete(offset, offset + length);
-            if (validator.isValid(sb.toString())) {
-                super.remove(fb, offset, length);
+            if (textField.validateChange(sb.toString())) {
+                fb.remove(offset, length);
+                textField.handleChange(getText(fb));
             } else {
                 Toolkit.getDefaultToolkit().beep();
+            }
+        }
+
+        private String getText(FilterBypass fb) {
+            try {
+                return fb.getDocument().getText(0, fb.getDocument().getLength());
+            } catch (BadLocationException ex) {
+                return "";
             }
         }
     }
