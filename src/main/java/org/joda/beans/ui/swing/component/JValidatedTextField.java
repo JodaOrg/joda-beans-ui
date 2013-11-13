@@ -52,7 +52,7 @@ public class JValidatedTextField extends JTextField {
     /**
      * The validator to use, may be null.
      */
-    private final JValidatedTextFieldValidator validator;
+    private final JTextFieldValidator validator;
 
     /**
      * Creates an instance.
@@ -79,7 +79,7 @@ public class JValidatedTextField extends JTextField {
      * 
      * @param validator  the validator to use, not null
      */
-    public JValidatedTextField(JValidatedTextFieldValidator validator) {
+    public JValidatedTextField(JTextFieldValidator validator) {
         this(0, validator);
     }
 
@@ -91,7 +91,7 @@ public class JValidatedTextField extends JTextField {
      * @param columns  the number of columns to use as the preferred width, zero for natural behavior
      * @param validator  the validator to use, not null
      */
-    public JValidatedTextField(int columns, JValidatedTextFieldValidator validator) {
+    public JValidatedTextField(int columns, JTextFieldValidator validator) {
         super(columns);
         this.validator = validator;
         PlainDocument doc = (PlainDocument) getDocument();
@@ -133,10 +133,10 @@ public class JValidatedTextField extends JTextField {
 
     //-------------------------------------------------------------------------
     /**
-     * Checks if the text is a permitted state of the text field.
+     * Validates a proposed edit.
      * <p>
-     * This can be used to block characters or strings, such as blocking letters
-     * in a numeric field.
+     * This is intended to be used to block entry of certain characters into the field.
+     * For example, blocking letters in a numeric field.
      * <p>
      * This is run on the EDT and must be fast and thread-safe.
      * Implementations must not access methods on the document.
@@ -144,14 +144,15 @@ public class JValidatedTextField extends JTextField {
      * @param text  the whole text of the field to validate, not null
      * @return true if the text is a valid value during editing
      */
-    protected boolean validateChange(String text) {
+    protected boolean validatedChange(String text) {
         return (validator != null ? validator.validateChange(text) : true);
     }
 
     /**
-     * Checks if the text is valid and adjusts the text field.
+     * Checks the current status of the text.
      * <p>
-     * This validates that the text is complete and produces the intended value.
+     * This validates that the text is a complete value.
+     * The input will never be empty during editing but can be empty on exit.
      * <p>
      * This is run on the EDT and must be fast and thread-safe.
      * Implementations must not access methods on the document.
@@ -159,37 +160,15 @@ public class JValidatedTextField extends JTextField {
      * @param text  the whole text of the field to validate, not null
      * @return the error status, not null
      */
-    protected ErrorStatus validateExit(String text) {
-        return (validator != null ? validator.validateExit(text) : ErrorStatus.VALID);
-    }
-
-    /**
-     * Handles a change to the text value of the field.
-     * <p>
-     * This is used to color the background if the text is invalid.
-     * Implementations could override this behavior.
-     * <p>
-     * This is run on the EDT and must be fast and thread-safe.
-     * Implementations must not access methods on the document.
-     * 
-     * @param text  the whole text of the field to validate, not null
-     */
-    protected void handleChange(String text) {
-        ErrorStatus status = validateExit(text);
-        setErrorStatus(status);
-        if (status.isError()) {
-            String errorText = status.getErrorText();
-            setToolTipText(errorText);
-        } else {
-            setToolTipText(null);
-        }
+    protected ErrorStatus validatedStatus(String text) {
+        return (validator != null ? validator.checkStatus(text) : ErrorStatus.VALID);
     }
 
     /**
      * Handles exit from the field.
      * <p>
      * This is used to adjust and correct the input value.
-     * For exmaple, an implementation could change the text to upper case.
+     * For example, an implementation could change the text to upper case.
      * <p>
      * There is no support for blocking exit of the field.
      * Implementations should either fix the value or accept that it stays invalid.
@@ -201,7 +180,52 @@ public class JValidatedTextField extends JTextField {
      * @param text  the whole text of the field to validate, not null
      * @return true if the text is a valid value for exit
      */
+    protected String validatedExit(String text) {
+        return (validator != null ? validator.onExit(text) : text);
+    }
+
+    /**
+     * Handles a change to the text value of the field.
+     * <p>
+     * This is used to color the background if the text is invalid.
+     * Implementations could override this behavior.
+     * <p>
+     * This is run on the EDT and must be fast and thread-safe.
+     * Implementations must not access methods on the document.
+     * Implementations should override {@link #validatedStatus(String)} not this method.
+     * 
+     * @param text  the whole text of the field to validate, not null
+     */
+    protected void handleChange(String text) {
+        ErrorStatus status = (text.isEmpty() ? ErrorStatus.VALID : validatedStatus(text));
+        setErrorStatus(status);
+        String errorText = (status.isError() ? status.getErrorText() : null);
+        setToolTipText(errorText);
+    }
+
+    /**
+     * Handles exit from the field.
+     * <p>
+     * This is used to adjust and correct the input value.
+     * For example, an implementation could change the text to upper case.
+     * <p>
+     * There is no support for blocking exit of the field.
+     * Implementations should either fix the value or accept that it stays invalid.
+     * This method is invoked whether or not the text is invalid.
+     * <p>
+     * This is run on the EDT and must be fast and thread-safe.
+     * Implementations must not access methods on the document.
+     * Implementations should override {@link #validatedExit(String)} not this method.
+     * 
+     * @param text  the whole text of the field to validate, not null
+     * @return true if the text is a valid value for exit
+     */
     protected String handleExit(String text) {
+        ErrorStatus status = validatedStatus(text);
+        setErrorStatus(status);
+        String errorText = (status.isError() ? status.getErrorText() : null);
+        setToolTipText(errorText);
+        repaint();
         return (validator != null ? validator.onExit(text) : text);
     }
 
@@ -245,7 +269,7 @@ public class JValidatedTextField extends JTextField {
             StringBuilder sb = new StringBuilder();
             sb.append(doc.getText(0, doc.getLength()));
             sb.insert(offset, inserted);
-            if (textField.validateChange(sb.toString())) {
+            if (textField.validatedChange(sb.toString())) {
                 fb.insertString(offset, inserted, attr);
                 textField.handleChange(getText(fb));
             } else {
@@ -259,7 +283,7 @@ public class JValidatedTextField extends JTextField {
             StringBuilder sb = new StringBuilder();
             sb.append(doc.getText(0, doc.getLength()));
             sb.replace(offset, offset + length, text);
-            if (textField.validateChange(sb.toString())) {
+            if (textField.validatedChange(sb.toString())) {
                 fb.replace(offset, length, text, attrs);
                 textField.handleChange(getText(fb));
             } else {
@@ -273,7 +297,7 @@ public class JValidatedTextField extends JTextField {
             StringBuilder sb = new StringBuilder();
             sb.append(doc.getText(0, doc.getLength()));
             sb.delete(offset, offset + length);
-            if (textField.validateChange(sb.toString())) {
+            if (textField.validatedChange(sb.toString())) {
                 fb.remove(offset, length);
                 textField.handleChange(getText(fb));
             } else {

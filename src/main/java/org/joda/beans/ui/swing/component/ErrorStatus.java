@@ -26,6 +26,10 @@ public final class ErrorStatus {
      * Result indicating valid.
      */
     public static final ErrorStatus VALID = new ErrorStatus("");
+    /**
+     * Result indicating mandatory input missing.
+     */
+    public static final ErrorStatus MANDATORY = new ErrorStatus("Error.mandatory");
 
     /**
      * The error key.

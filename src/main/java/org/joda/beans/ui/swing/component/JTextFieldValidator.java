@@ -18,37 +18,20 @@ package org.joda.beans.ui.swing.component;
 /**
  * A validator that extracts the validation logic from {@code JValidatedTextField}}.
  */
-public class JValidatedTextFieldValidator {
-
-    /**
-     * True if mandatory.
-     */
-    private final boolean mandatory;
+public class JTextFieldValidator {
 
     /**
      * Creates an instance.
-     * 
-     * @param mandatory  true if mandatory
      */
-    public JValidatedTextFieldValidator(boolean mandatory) {
-        this.mandatory = mandatory;
+    protected JTextFieldValidator() {
     }
 
     //-------------------------------------------------------------------------
     /**
-     * Checks if the field is mandatory
-     * 
-     * @return true if mandatory
-     */
-    public final boolean isMandatory() {
-        return mandatory;
-    }
-
-    /**
-     * Checks if the text is a permitted state of the text field.
+     * Validates a proposed edit.
      * <p>
-     * This can be used to block characters or strings, such as blocking letters
-     * in a numeric field.
+     * This is intended to be used to block entry of certain characters into the field.
+     * For example, blocking letters in a numeric field.
      * <p>
      * This is run on the EDT and must be fast and thread-safe.
      * Implementations must not access methods on the document.
@@ -61,9 +44,10 @@ public class JValidatedTextFieldValidator {
     }
 
     /**
-     * Checks if the text is valid and adjusts the text field.
+     * Checks the current status of the text.
      * <p>
-     * This validates that the text is complete and produces the intended value.
+     * This validates that the text is a complete value.
+     * The input will never be empty during editing but can be empty on exit.
      * <p>
      * This is run on the EDT and must be fast and thread-safe.
      * Implementations must not access methods on the document.
@@ -71,7 +55,7 @@ public class JValidatedTextFieldValidator {
      * @param text  the whole text of the field to validate, not null
      * @return the error status, not null
      */
-    protected ErrorStatus validateExit(String text) {
+    protected ErrorStatus checkStatus(String text) {
         return ErrorStatus.VALID;
     }
 

@@ -31,6 +31,18 @@ public final class JValidatedTextFields {
 
     //-------------------------------------------------------------------------
     /**
+     * Creates a {@code JTextField} that validates a {@code String} value.
+     * 
+     * @param mandatory  true if mandatory
+     * @param maxLength  the maximum length of the text, one or more
+     * @return the text field, not null
+     */
+    public static JValidatedTextField createStringTextField(final boolean mandatory, final int maxLength) {
+        return new JValidatedTextField(new StringValidator(mandatory, maxLength));
+    }
+
+    //-------------------------------------------------------------------------
+    /**
      * Creates a {@code JTextField} that validates a {@code Byte} value.
      * 
      * @param mandatory  true if mandatory
@@ -148,23 +160,28 @@ public final class JValidatedTextFields {
     }
 
     //-------------------------------------------------------------------------
-    private static final class ByteValidator extends JValidatedTextFieldValidator {
+    private static final class StringValidator extends DefaultJTextFieldValidator {
         /** Valid characters for double. */
-        private static final Pattern VALID = Pattern.compile("[0-9A-Za-z.+-]*");
+        private static final Pattern VALID = Pattern.compile(".*");
+
+        private StringValidator(boolean mandatory, int maxLength) {
+            super(mandatory, maxLength, VALID);
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    private static final class ByteValidator extends DefaultJTextFieldValidator {
+        /** Valid characters for double. */
+        private static final Pattern VALID = Pattern.compile("[0-9+-]*");
         /** Error message key for double. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Byte.invalid");
+        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Byte.invalid");
 
         private ByteValidator(boolean mandatory) {
-            super(mandatory);
+            super(mandatory, 5, VALID);
         }
 
         @Override
-        protected boolean validateChange(String text) {
-            return text.length() <= 5 && VALID.matcher(text).matches();
-        }
-
-        @Override
-        protected ErrorStatus validateExit(String text) {
+        protected ErrorStatus checkStatus(String text) {
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
@@ -178,34 +195,29 @@ public final class JValidatedTextFields {
 
         @Override
         protected String onExit(String text) {
-            if (validateExit(text).isValid()) {
+            if (checkStatus(text).isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                     return (isMandatory() ? "0" : "");
                 }
-                return text;
+                return text.replace("+", "");
             }
             return text;
         }
     }
 
     //-------------------------------------------------------------------------
-    private static final class ShortValidator extends JValidatedTextFieldValidator {
+    private static final class ShortValidator extends DefaultJTextFieldValidator {
         /** Valid characters for double. */
-        private static final Pattern VALID = Pattern.compile("[0-9A-Za-z.+-]*");
+        private static final Pattern VALID = Pattern.compile("[0-9+-]*");
         /** Error message key for double. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Short.invalid");
+        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Short.invalid");
 
         private ShortValidator(boolean mandatory) {
-            super(mandatory);
+            super(mandatory, 7, VALID);
         }
 
         @Override
-        protected boolean validateChange(String text) {
-            return text.length() <= 7 && VALID.matcher(text).matches();
-        }
-
-        @Override
-        protected ErrorStatus validateExit(String text) {
+        protected ErrorStatus checkStatus(String text) {
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
@@ -219,34 +231,29 @@ public final class JValidatedTextFields {
 
         @Override
         protected String onExit(String text) {
-            if (validateExit(text).isValid()) {
+            if (checkStatus(text).isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                     return (isMandatory() ? "0" : "");
                 }
-                return text;
+                return text.replace("+", "");
             }
             return text;
         }
     }
 
     //-------------------------------------------------------------------------
-    private static final class IntegerValidator extends JValidatedTextFieldValidator {
+    private static final class IntegerValidator extends DefaultJTextFieldValidator {
         /** Valid characters for double. */
-        private static final Pattern VALID = Pattern.compile("[0-9A-Za-z.+-]*");
+        private static final Pattern VALID = Pattern.compile("[0-9+-]*");
         /** Error message key for double. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Integer.invalid");
+        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Integer.invalid");
 
         private IntegerValidator(boolean mandatory) {
-            super(mandatory);
+            super(mandatory, 12, VALID);
         }
 
         @Override
-        protected boolean validateChange(String text) {
-            return text.length() <= 12 && VALID.matcher(text).matches();
-        }
-
-        @Override
-        protected ErrorStatus validateExit(String text) {
+        protected ErrorStatus checkStatus(String text) {
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
@@ -260,34 +267,29 @@ public final class JValidatedTextFields {
 
         @Override
         protected String onExit(String text) {
-            if (validateExit(text).isValid()) {
+            if (checkStatus(text).isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                     return (isMandatory() ? "0" : "");
                 }
-                return text;
+                return text.replace("+", "");
             }
             return text;
         }
     }
 
     //-------------------------------------------------------------------------
-    private static final class LongValidator extends JValidatedTextFieldValidator {
+    private static final class LongValidator extends DefaultJTextFieldValidator {
         /** Valid characters for double. */
-        private static final Pattern VALID = Pattern.compile("[0-9A-Za-z.+-]*");
+        private static final Pattern VALID = Pattern.compile("[0-9+-]*");
         /** Error message key for double. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Long.invalid");
+        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Long.invalid");
 
         private LongValidator(boolean mandatory) {
-            super(mandatory);
+            super(mandatory, 21, VALID);
         }
 
         @Override
-        protected boolean validateChange(String text) {
-            return text.length() <= 21 && VALID.matcher(text).matches();
-        }
-
-        @Override
-        protected ErrorStatus validateExit(String text) {
+        protected ErrorStatus checkStatus(String text) {
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
@@ -301,34 +303,29 @@ public final class JValidatedTextFields {
 
         @Override
         protected String onExit(String text) {
-            if (validateExit(text).isValid()) {
+            if (checkStatus(text).isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                     return (isMandatory() ? "0" : "");
                 }
-                return text;
+                return text.replace("+", "");
             }
             return text;
         }
     }
 
     //-------------------------------------------------------------------------
-    private static final class DoubleValidator extends JValidatedTextFieldValidator {
+    private static final class DoubleValidator extends DefaultJTextFieldValidator {
         /** Valid characters for double. */
         private static final Pattern VALID = Pattern.compile("[0-9A-Za-z.+-]*");
         /** Error message key for double. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Double.invalid");
+        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Double.invalid");
 
         private DoubleValidator(boolean mandatory) {
-            super(mandatory);
+            super(mandatory, 128, VALID);
         }
 
         @Override
-        protected boolean validateChange(String text) {
-            return text.length() < 100 && VALID.matcher(text).matches();
-        }
-
-        @Override
-        protected ErrorStatus validateExit(String text) {
+        protected ErrorStatus checkStatus(String text) {
             if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".") || text.endsWith("e") || text.endsWith("E")) {
                 return ErrorStatus.VALID;
             }
@@ -342,7 +339,7 @@ public final class JValidatedTextFields {
 
         @Override
         protected String onExit(String text) {
-            if (validateExit(text).isValid()) {
+            if (checkStatus(text).isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".")) {
                     return (isMandatory() ? "0" : "");
                 }
