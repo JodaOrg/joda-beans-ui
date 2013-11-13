@@ -51,9 +51,9 @@ public class BooleanObjectPropertyBinder
     private static final Map<Boolean, String> TRUE_FALSE;
     static {
         Map<Boolean, String> map = new LinkedHashMap<>();
-        map.put(Boolean.TRUE, BinderMsg.lookup("Boolean.Yes"));
-        map.put(Boolean.FALSE, BinderMsg.lookup("Boolean.Yes"));
-        map.put(null, BinderMsg.lookup("Boolean.Null"));
+        map.put(Boolean.TRUE, BinderMsg.lookup("Boolean.true"));
+        map.put(Boolean.FALSE, BinderMsg.lookup("Boolean.false"));
+        map.put(null, BinderMsg.lookup("Boolean.null"));
         TRUE_FALSE = Collections.unmodifiableMap(map);
     }
 
