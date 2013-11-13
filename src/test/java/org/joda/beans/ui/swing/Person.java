@@ -47,6 +47,8 @@ public class Person implements Bean {
     @PropertyDefinition
     private int tripCount;
     @PropertyDefinition
+    private double successRatio;
+    @PropertyDefinition
     private boolean child;
     @PropertyDefinition
     private Boolean married;
@@ -184,6 +186,31 @@ public class Person implements Bean {
      */
     public final Property<Integer> tripCount() {
         return metaBean().tripCount().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the successRatio.
+     * @return the value of the property
+     */
+    public double getSuccessRatio() {
+        return successRatio;
+    }
+
+    /**
+     * Sets the successRatio.
+     * @param successRatio  the new value of the property
+     */
+    public void setSuccessRatio(double successRatio) {
+        this.successRatio = successRatio;
+    }
+
+    /**
+     * Gets the the {@code successRatio} property.
+     * @return the property, not null
+     */
+    public final Property<Double> successRatio() {
+        return metaBean().successRatio().createProperty(this);
     }
 
     //-----------------------------------------------------------------------
@@ -338,6 +365,7 @@ public class Person implements Bean {
                     JodaBeanUtils.equal(getSurname(), other.getSurname()) &&
                     (getAge() == other.getAge()) &&
                     (getTripCount() == other.getTripCount()) &&
+                    JodaBeanUtils.equal(getSuccessRatio(), other.getSuccessRatio()) &&
                     (isChild() == other.isChild()) &&
                     JodaBeanUtils.equal(getMarried(), other.getMarried()) &&
                     JodaBeanUtils.equal(getFavouriteColour(), other.getFavouriteColour()) &&
@@ -354,6 +382,7 @@ public class Person implements Bean {
         hash += hash * 31 + JodaBeanUtils.hashCode(getSurname());
         hash += hash * 31 + JodaBeanUtils.hashCode(getAge());
         hash += hash * 31 + JodaBeanUtils.hashCode(getTripCount());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getSuccessRatio());
         hash += hash * 31 + JodaBeanUtils.hashCode(isChild());
         hash += hash * 31 + JodaBeanUtils.hashCode(getMarried());
         hash += hash * 31 + JodaBeanUtils.hashCode(getFavouriteColour());
@@ -364,7 +393,7 @@ public class Person implements Bean {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(320);
+        StringBuilder buf = new StringBuilder(352);
         buf.append("Person{");
         int len = buf.length();
         toString(buf);
@@ -380,6 +409,7 @@ public class Person implements Bean {
         buf.append("surname").append('=').append(JodaBeanUtils.toString(getSurname())).append(',').append(' ');
         buf.append("age").append('=').append(JodaBeanUtils.toString(getAge())).append(',').append(' ');
         buf.append("tripCount").append('=').append(JodaBeanUtils.toString(getTripCount())).append(',').append(' ');
+        buf.append("successRatio").append('=').append(JodaBeanUtils.toString(getSuccessRatio())).append(',').append(' ');
         buf.append("child").append('=').append(JodaBeanUtils.toString(isChild())).append(',').append(' ');
         buf.append("married").append('=').append(JodaBeanUtils.toString(getMarried())).append(',').append(' ');
         buf.append("favouriteColour").append('=').append(JodaBeanUtils.toString(getFavouriteColour())).append(',').append(' ');
@@ -418,6 +448,11 @@ public class Person implements Bean {
         private final MetaProperty<Integer> tripCount = DirectMetaProperty.ofReadWrite(
                 this, "tripCount", Person.class, Integer.TYPE);
         /**
+         * The meta-property for the {@code successRatio} property.
+         */
+        private final MetaProperty<Double> successRatio = DirectMetaProperty.ofReadWrite(
+                this, "successRatio", Person.class, Double.TYPE);
+        /**
          * The meta-property for the {@code child} property.
          */
         private final MetaProperty<Boolean> child = DirectMetaProperty.ofReadWrite(
@@ -452,6 +487,7 @@ public class Person implements Bean {
                 "surname",
                 "age",
                 "tripCount",
+                "successRatio",
                 "child",
                 "married",
                 "favouriteColour",
@@ -475,6 +511,8 @@ public class Person implements Bean {
                     return age;
                 case -424035350:  // tripCount
                     return tripCount;
+                case -664622648:  // successRatio
+                    return successRatio;
                 case 94631196:  // child
                     return child;
                 case 839462772:  // married
@@ -538,6 +576,14 @@ public class Person implements Bean {
         }
 
         /**
+         * The meta-property for the {@code successRatio} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<Double> successRatio() {
+            return successRatio;
+        }
+
+        /**
          * The meta-property for the {@code child} property.
          * @return the meta-property, not null
          */
@@ -589,6 +635,8 @@ public class Person implements Bean {
                     return ((Person) bean).getAge();
                 case -424035350:  // tripCount
                     return ((Person) bean).getTripCount();
+                case -664622648:  // successRatio
+                    return ((Person) bean).getSuccessRatio();
                 case 94631196:  // child
                     return ((Person) bean).isChild();
                 case 839462772:  // married
@@ -618,6 +666,9 @@ public class Person implements Bean {
                     return;
                 case -424035350:  // tripCount
                     ((Person) bean).setTripCount((Integer) newValue);
+                    return;
+                case -664622648:  // successRatio
+                    ((Person) bean).setSuccessRatio((Double) newValue);
                     return;
                 case 94631196:  // child
                     ((Person) bean).setChild((Boolean) newValue);

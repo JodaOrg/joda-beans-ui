@@ -15,6 +15,8 @@
  */
 package org.joda.beans.ui.swing.component;
 
+import java.util.Locale;
+
 import org.joda.beans.ui.swing.component.JValidatedTextField.TextFieldValidator;
 
 /**
@@ -128,7 +130,7 @@ public final class JComponentUtils {
         TextFieldValidator validator = new TextFieldValidator() {
             @Override
             public boolean isValid(String text) {
-                if (text.isEmpty() || text.equals("-")) {
+                if (isMidEdit(text)) {
                     return true;
                 }
                 try {
@@ -141,13 +143,13 @@ public final class JComponentUtils {
                         return false;
                     }
                     return true;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException ex) {
                     return false;
                 }
             }
             @Override
             public String fixOnExit(String text) {
-                if (text.isEmpty() || text.equals("-") || isValid(text) == false) {
+                if (isMidEdit(text) || isValid(text) == false) {
                     if (allowEmpty) {
                         return "";
                     }
@@ -161,6 +163,101 @@ public final class JComponentUtils {
                     return (allowEmpty ? "" : Long.toString(maxInclusive));
                 }
                 return text;
+            }
+            private boolean isMidEdit(String text) {
+                return text.isEmpty() || text.equals("-");
+            }
+        };
+        return new JValidatedTextField(validator);
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Creates a {@code JTextField} that validates a {@code Double} value.
+     * 
+     * @param allowEmpty  true to allow the empty string on exit,
+     *  true for {@code Double}, false for {@code double}
+     * @return the text field, not null
+     */
+    public static JValidatedTextField createDoubleTextField(final boolean allowEmpty) {
+        return createDoubleTextField(allowEmpty, true, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
+    /**
+     * Creates a {@code JTextField} that validates a {@code Double} value.
+     * 
+     * @param allowEmpty  true to allow the empty string on exit,
+     *  true for {@code Double}, false for {@code double}
+     * @param allowNaN  true to allow NaN
+     * @param minInclusive  the minimum valid value, inclusive
+     * @param maxInclusive  the maximum valid value, inclusive
+     * @return the text field, not null
+     */
+    public static JValidatedTextField createDoubleTextField(final boolean allowEmpty, final boolean allowNaN, final double minInclusive, final double maxInclusive) {
+        TextFieldValidator validator = new TextFieldValidator() {
+            @Override
+            public boolean isValid(String text) {
+                String upper = text.toUpperCase(Locale.US);
+                if (upper.endsWith("F") || upper.endsWith("D")) {
+                    text = text.substring(0, text.length() - 1);
+                    upper = upper.substring(0, upper.length() - 1);
+                    if (upper.endsWith("F") || upper.endsWith("D")) {
+                        return false;
+                    }
+                }
+                if (allowNaN && (text.equals("N") || text.equals("Na"))) {
+                    return true;
+                }
+                if (text.isEmpty() || text.equals("-") || text.equals(".") || 
+                        (upper.endsWith("E") && upper.endsWith("EE") == false) ||
+                        (upper.endsWith("E-") && upper.endsWith("EE-") == false)) {
+                    return true;
+                }
+                try {
+                    double value = Double.parseDouble(text);
+                    if ((minInclusive > 0 && value >= 0 && value < minInclusive) ||
+                            (maxInclusive < 0 && value <= 0 && value > maxInclusive)) {
+                        return true;
+                    }
+                    if (value < minInclusive || value > maxInclusive) {
+                        return false;
+                    }
+                    return true;
+                } catch (NumberFormatException ex) {
+                    return false;
+                }
+            }
+            @Override
+            public String fixOnExit(String text) {
+                if (text.equals("N") || text.equals("Na")) {
+                    text = "NaN";
+                }
+                String upper = text.toUpperCase(Locale.US);
+                if (upper.endsWith("E")) {
+                    text = text.substring(0, text.length() - 1);
+                }
+                if (upper.endsWith("E-")) {
+                    text = text.substring(0, text.length() - 2);
+                }
+                text = (text.toUpperCase(Locale.US).endsWith("D") ? text.substring(0, text.length() - 1) : text);
+                text = (text.toUpperCase(Locale.US).endsWith("F") ? text.substring(0, text.length() - 1) : text);
+                text = (text.endsWith(".0") ? text.substring(0, text.length() - 2) : text);
+                double value;
+                try {
+                    value = Double.parseDouble(text);
+                } catch (NumberFormatException ex) {
+                    if (allowEmpty) {
+                        return "";
+                    }
+                    value = 0;
+                }
+                if (value < minInclusive) {
+                    return (allowEmpty ? "" : Double.toString(minInclusive));
+                }
+                if (value > maxInclusive) {
+                    return (allowEmpty ? "" : Double.toString(maxInclusive));
+                }
+                return text.replace('E', 'e').replace(".0e", "e");
             }
         };
         return new JValidatedTextField(validator);

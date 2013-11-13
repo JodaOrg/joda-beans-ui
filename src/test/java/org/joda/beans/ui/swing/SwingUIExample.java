@@ -45,7 +45,7 @@ public class SwingUIExample {
             JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scrollPane.setBorder(BorderFactory.createEmptyBorder());
             frame.getContentPane().add(scrollPane);
-            frame.setSize(400, 300);
+            frame.setSize(600, 500);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLocationByPlatform(true);
             frame.setVisible(true);

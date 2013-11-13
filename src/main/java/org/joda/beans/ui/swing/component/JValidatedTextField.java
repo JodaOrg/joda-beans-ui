@@ -61,7 +61,6 @@ public class JValidatedTextField extends JTextField {
     // override to fix text on exit
     @Override
     protected void processFocusEvent(FocusEvent e) {
-        super.processFocusEvent(e);
         if (e.isTemporary() == false && e.getID() == FocusEvent.FOCUS_LOST) {
             String text = getText();
             String fixed = validator.fixOnExit(text);
@@ -69,6 +68,7 @@ public class JValidatedTextField extends JTextField {
                 setText(fixed);
             }
         }
+        super.processFocusEvent(e);
     }
 
     //-------------------------------------------------------------------------
