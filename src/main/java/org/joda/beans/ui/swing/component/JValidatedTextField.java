@@ -158,10 +158,11 @@ public class JValidatedTextField extends JTextField {
      * Implementations must not access methods on the document.
      * 
      * @param text  the whole text of the field to validate, not null
+     * @param onExit  true if exiting, false if editing
      * @return the error status, not null
      */
-    protected ErrorStatus validatedStatus(String text) {
-        return (validator != null ? validator.checkStatus(text) : ErrorStatus.VALID);
+    protected ErrorStatus validatedStatus(String text, boolean onExit) {
+        return (validator != null ? validator.checkStatus(text, onExit) : ErrorStatus.VALID);
     }
 
     /**
@@ -181,7 +182,7 @@ public class JValidatedTextField extends JTextField {
      * @return true if the text is a valid value for exit
      */
     protected String validatedExit(String text) {
-        return (validator != null ? validator.onExit(text) : text);
+        return (validator != null ? validator.onExit(text, errorStatus) : text);
     }
 
     /**
@@ -197,7 +198,7 @@ public class JValidatedTextField extends JTextField {
      * @param text  the whole text of the field to validate, not null
      */
     protected void handleChange(String text) {
-        ErrorStatus status = (text.isEmpty() ? ErrorStatus.VALID : validatedStatus(text));
+        ErrorStatus status = (text.isEmpty() ? ErrorStatus.VALID : validatedStatus(text, false));
         setErrorStatus(status);
         String errorText = (status.isError() ? status.getErrorText() : null);
         setToolTipText(errorText);
@@ -221,12 +222,14 @@ public class JValidatedTextField extends JTextField {
      * @return true if the text is a valid value for exit
      */
     protected String handleExit(String text) {
-        ErrorStatus status = validatedStatus(text);
-        setErrorStatus(status);
-        String errorText = (status.isError() ? status.getErrorText() : null);
-        setToolTipText(errorText);
-        repaint();
-        return (validator != null ? validator.onExit(text) : text);
+        ErrorStatus status = validatedStatus(text, true);
+        if (status.equals(this.errorStatus) == false) {
+            setErrorStatus(status);
+            String errorText = (status.isError() ? status.getErrorText() : null);
+            setToolTipText(errorText);
+            repaint();
+        }
+        return validatedExit(text);
     }
 
     //-------------------------------------------------------------------------

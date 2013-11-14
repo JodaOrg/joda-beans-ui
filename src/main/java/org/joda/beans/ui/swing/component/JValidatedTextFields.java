@@ -181,7 +181,7 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected ErrorStatus checkStatus(String text) {
+        protected ErrorStatus checkStatus(String text, boolean onExit) {
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
@@ -194,8 +194,8 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected String onExit(String text) {
-            if (checkStatus(text).isValid()) {
+        protected String onExit(String text, ErrorStatus status) {
+            if (status.isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                     return (isMandatory() ? "0" : "");
                 }
@@ -217,7 +217,7 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected ErrorStatus checkStatus(String text) {
+        protected ErrorStatus checkStatus(String text, boolean onExit) {
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
@@ -230,8 +230,8 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected String onExit(String text) {
-            if (checkStatus(text).isValid()) {
+        protected String onExit(String text, ErrorStatus status) {
+            if (status.isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                     return (isMandatory() ? "0" : "");
                 }
@@ -253,7 +253,7 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected ErrorStatus checkStatus(String text) {
+        protected ErrorStatus checkStatus(String text, boolean onExit) {
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
@@ -266,8 +266,8 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected String onExit(String text) {
-            if (checkStatus(text).isValid()) {
+        protected String onExit(String text, ErrorStatus status) {
+            if (status.isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                     return (isMandatory() ? "0" : "");
                 }
@@ -289,7 +289,7 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected ErrorStatus checkStatus(String text) {
+        protected ErrorStatus checkStatus(String text, boolean onExit) {
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
@@ -302,8 +302,8 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected String onExit(String text) {
-            if (checkStatus(text).isValid()) {
+        protected String onExit(String text, ErrorStatus status) {
+            if (status.isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                     return (isMandatory() ? "0" : "");
                 }
@@ -316,7 +316,7 @@ public final class JValidatedTextFields {
     //-------------------------------------------------------------------------
     private static final class DoubleValidator extends DefaultJTextFieldValidator {
         /** Valid characters for double. */
-        private static final Pattern VALID = Pattern.compile("[0-9A-Za-z.+-]*");
+        private static final Pattern VALID = Pattern.compile("[0-9eE.+-]*[fd]?");
         /** Error message key for double. */
         private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Double.invalid");
 
@@ -325,8 +325,19 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected ErrorStatus checkStatus(String text) {
-            if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".") || text.endsWith("e") || text.endsWith("E")) {
+        protected boolean validateChange(String text) {
+            if ("NaN".startsWith(text) || "Infinity".startsWith(text) || "-Infinity".startsWith(text)) {
+                return true;
+            }
+            return super.validateChange(text);
+        }
+
+        @Override
+        protected ErrorStatus checkStatus(String text, boolean onExit) {
+            String upper = text.toUpperCase(Locale.US);
+            if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".") ||
+                    (upper.endsWith("E") && upper.endsWith("EE") == false) ||
+                    "NaN".startsWith(text) || "Infinity".startsWith(text) || "-Infinity".startsWith(text)) {
                 return ErrorStatus.VALID;
             }
             try {
@@ -338,10 +349,19 @@ public final class JValidatedTextFields {
         }
 
         @Override
-        protected String onExit(String text) {
-            if (checkStatus(text).isValid()) {
+        protected String onExit(String text, ErrorStatus status) {
+            if (status.isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".")) {
                     return (isMandatory() ? "0" : "");
+                }
+                if ("NaN".startsWith(text)) {
+                    text = "NaN";
+                }
+                if ("Infinity".startsWith(text)) {
+                    text = "Infinity";
+                }
+                if ("-Infinity".startsWith(text)) {
+                    text = "-Infinity";
                 }
                 String upper = text.toUpperCase(Locale.US);
                 text = (upper.endsWith("E") ? text.substring(0, text.length() - 1) : text);  // ignore incomplete trailing exponent

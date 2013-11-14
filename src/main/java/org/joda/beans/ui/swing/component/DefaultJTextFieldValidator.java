@@ -86,7 +86,7 @@ public class DefaultJTextFieldValidator extends JTextFieldValidator {
     }
 
     @Override
-    protected ErrorStatus checkStatus(String text) {
+    protected ErrorStatus checkStatus(String text, boolean onExit) {
         if (text.isEmpty() && isMandatory()) {
             return ErrorStatus.MANDATORY;
         }

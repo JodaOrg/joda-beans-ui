@@ -53,9 +53,10 @@ public class JTextFieldValidator {
      * Implementations must not access methods on the document.
      * 
      * @param text  the whole text of the field to validate, not null
+     * @param onExit  true if exiting, false if editing
      * @return the error status, not null
      */
-    protected ErrorStatus checkStatus(String text) {
+    protected ErrorStatus checkStatus(String text, boolean onExit) {
         return ErrorStatus.VALID;
     }
 
@@ -73,9 +74,10 @@ public class JTextFieldValidator {
      * Implementations must not access methods on the document.
      * 
      * @param text  the whole text of the field to validate, not null
+     * @param status  the current error status, not null
      * @return true if the text is a valid value for exit
      */
-    protected String onExit(String text) {
+    protected String onExit(String text, ErrorStatus status) {
         return text;
     }
 
