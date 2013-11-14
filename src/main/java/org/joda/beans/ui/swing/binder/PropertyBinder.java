@@ -19,6 +19,8 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import org.joda.beans.Bean;
+
 /**
  * Binds a list of components to a single property.
  * <p>
@@ -42,12 +44,16 @@ public abstract class PropertyBinder {
 
     /**
      * Updates the UI with the value of the property.
+     * 
+     * @param bean  the bean to update from, not null
      */
-    public abstract void updateUI();
+    public abstract void updateUI(Bean bean);
 
     /**
      * Updates the property with the value of the UI.
+     * 
+     * @param bean  the bean to update to, not null
      */
-    public abstract void updateProperty();
+    public abstract void updateProperty(Bean bean);
 
 }

@@ -20,7 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.joda.beans.Bean;
-import org.joda.beans.MetaProperty;
+import org.joda.beans.ui.form.MetaUIComponent;
+import org.joda.beans.ui.form.MetaUIFactory;
+import org.joda.beans.ui.form.MetaUIForm;
 import org.joda.beans.ui.swing.binder.PropertyBinder;
 import org.joda.beans.ui.swing.binder.PropertyBinderFactory;
 
@@ -30,27 +32,28 @@ import org.joda.beans.ui.swing.binder.PropertyBinderFactory;
 public class JodaBeanSwingUI {
 
     public JPanel createReadOnly(final Bean bean) {
+        MetaUIForm form = new MetaUIFactory().createForm(bean.metaBean());
         SwingFormPanelBuilder builder = new SwingFormPanelBuilder();
-        for (MetaProperty<?> mp : bean.metaBean().metaPropertyIterable()) {
-            JComponent field = createField(mp, bean);
+        for (MetaUIComponent comp : form.getComponents()) {
+            JComponent field = createField(comp, bean);
             if (field != null) {
-                String name = DisplayMsg.lookupFieldPrompt(mp);
+                String name = DisplayMsg.lookupFieldPrompt(comp);
                 builder.append(name, field);
             }
         }
         return builder.build();
     }
 
-    private JComponent createField(MetaProperty<?> mp, final Bean bean) {
-        Object value = mp.get(bean);
+    private JComponent createField(MetaUIComponent metaComponent, final Bean bean) {
+        Object value = metaComponent.getMetaProperty().get(bean);
         for (PropertyBinderFactory factory : SwingUISettings.INSTANCE.getFactories()) {
-            PropertyBinder binder = factory.createBinder(bean, mp);
+            PropertyBinder binder = factory.createBinder(metaComponent);
             if (binder != null) {
-                binder.updateUI();
+                binder.updateUI(bean);
                 return binder.getComponentList().get(0);
             }
         }
-        if (Bean.class.isAssignableFrom(mp.propertyType())) {
+        if (Bean.class.isAssignableFrom(metaComponent.getPropertyType())) {
             return new JLabel(value.toString());
         } else {
             return null;

@@ -15,13 +15,11 @@
  */
 package org.joda.beans.ui.swing.binder;
 
-import java.util.Objects;
-
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 import org.joda.beans.Bean;
-import org.joda.beans.MetaProperty;
+import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.swing.SwingUISettings;
 import org.joda.beans.ui.swing.component.JValidatedTextFields;
 import org.joda.beans.ui.swing.component.TextUndoManager;
@@ -38,10 +36,10 @@ public class StringPropertyBinder
      */
     public static final PropertyBinderFactory FACTORY = new PropertyBinderFactory() {
         @Override
-        public PropertyBinder createBinder(Bean bean, MetaProperty<?> metaProperty) {
+        public PropertyBinder createBinder(MetaUIComponent metaComponent) {
             StringConvert convert = SwingUISettings.INSTANCE.getStringConvert();
-            if (convert.isConvertible(metaProperty.propertyType())) {
-                return new StringPropertyBinder(bean, metaProperty);
+            if (convert.isConvertible(metaComponent.getPropertyType())) {
+                return new StringPropertyBinder(metaComponent);
             }
             return null;
         }
@@ -51,26 +49,15 @@ public class StringPropertyBinder
      * The associated component.
      */
     private final JTextField component;
-    /**
-     * The associated bean.
-     */
-    private final Bean bean;
-    /**
-     * The associated property.
-     */
-    private final MetaProperty<?> metaProperty;
 
     /**
      * Creates an instance.
      * 
-     * @param bean  the bean, not null
-     * @param metaProperty  the property to bind, not null
+     * @param metaComponent  the component to bind, not null
      */
-    public StringPropertyBinder(Bean bean, MetaProperty<?> metaProperty) {
-        super();
-        this.bean = Objects.requireNonNull(bean, "bean");
-        this.metaProperty = Objects.requireNonNull(metaProperty, "metaProperty");
-        this.component = JValidatedTextFields.createStringTextField(false, -1);
+    public StringPropertyBinder(MetaUIComponent metaComponent) {
+        super(metaComponent);
+        this.component = JValidatedTextFields.createStringTextField(metaComponent.isMandatory(), metaComponent.getMaxSize());
         TextUndoManager.applyTo(component);
     }
 
@@ -81,21 +68,15 @@ public class StringPropertyBinder
     }
 
     @Override
-    public void updateUI() {
+    public void updateUI(Bean bean) {
         StringConvert converter = SwingUISettings.INSTANCE.getStringConvert();
-        component.setText(metaProperty.getString(bean, converter));
+        component.setText(getMetaProperty().getString(bean, converter));
     }
 
     @Override
-    public void updateProperty() {
+    public void updateProperty(Bean bean) {
         StringConvert converter = SwingUISettings.INSTANCE.getStringConvert();
-        metaProperty.setString(bean, component.getText(), converter);
-    }
-
-    //-------------------------------------------------------------------------
-    @Override
-    public String toString() {
-        return metaProperty.toString() + "::" + component.getClass().getSimpleName();
+        getMetaProperty().setString(bean, component.getText(), converter);
     }
 
 }

@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
 import org.joda.beans.Bean;
 import org.joda.beans.BeanBuilder;
 import org.joda.beans.BeanDefinition;
@@ -38,24 +42,38 @@ import org.joda.beans.impl.direct.DirectMetaPropertyMap;
 @BeanDefinition
 public class Person implements Bean {
 
-    @PropertyDefinition
+    @Size(max = 40)
+    @PropertyDefinition(validate = "notNull")
     private String forename;
-    @PropertyDefinition
+
+    @Size(max = 40)
+    @PropertyDefinition(validate = "notNull")
     private String surname;
+
+    @Max(value = 150)
+    @Min(value = 0)
     @PropertyDefinition
     private short age;
+
+    @Min(value = 0)
     @PropertyDefinition
     private int tripCount;
+
     @PropertyDefinition
     private double successRatio;
+
     @PropertyDefinition
     private boolean child;
+
     @PropertyDefinition
     private Boolean married;
+
     @PropertyDefinition
-    private Colour favouriteColour;
+    private WorldRegion region;
+
     @PropertyDefinition
     private Address address;
+
     @PropertyDefinition
     private List<Person> friends = new ArrayList<Person>();
 
@@ -91,7 +109,7 @@ public class Person implements Bean {
     //-----------------------------------------------------------------------
     /**
      * Gets the forename.
-     * @return the value of the property
+     * @return the value of the property, not null
      */
     public String getForename() {
         return forename;
@@ -99,9 +117,10 @@ public class Person implements Bean {
 
     /**
      * Sets the forename.
-     * @param forename  the new value of the property
+     * @param forename  the new value of the property, not null
      */
     public void setForename(String forename) {
+        JodaBeanUtils.notNull(forename, "forename");
         this.forename = forename;
     }
 
@@ -116,7 +135,7 @@ public class Person implements Bean {
     //-----------------------------------------------------------------------
     /**
      * Gets the surname.
-     * @return the value of the property
+     * @return the value of the property, not null
      */
     public String getSurname() {
         return surname;
@@ -124,9 +143,10 @@ public class Person implements Bean {
 
     /**
      * Sets the surname.
-     * @param surname  the new value of the property
+     * @param surname  the new value of the property, not null
      */
     public void setSurname(String surname) {
+        JodaBeanUtils.notNull(surname, "surname");
         this.surname = surname;
     }
 
@@ -265,27 +285,27 @@ public class Person implements Bean {
 
     //-----------------------------------------------------------------------
     /**
-     * Gets the favouriteColour.
+     * Gets the region.
      * @return the value of the property
      */
-    public Colour getFavouriteColour() {
-        return favouriteColour;
+    public WorldRegion getRegion() {
+        return region;
     }
 
     /**
-     * Sets the favouriteColour.
-     * @param favouriteColour  the new value of the property
+     * Sets the region.
+     * @param region  the new value of the property
      */
-    public void setFavouriteColour(Colour favouriteColour) {
-        this.favouriteColour = favouriteColour;
+    public void setRegion(WorldRegion region) {
+        this.region = region;
     }
 
     /**
-     * Gets the the {@code favouriteColour} property.
+     * Gets the the {@code region} property.
      * @return the property, not null
      */
-    public final Property<Colour> favouriteColour() {
-        return metaBean().favouriteColour().createProperty(this);
+    public final Property<WorldRegion> region() {
+        return metaBean().region().createProperty(this);
     }
 
     //-----------------------------------------------------------------------
@@ -368,7 +388,7 @@ public class Person implements Bean {
                     JodaBeanUtils.equal(getSuccessRatio(), other.getSuccessRatio()) &&
                     (isChild() == other.isChild()) &&
                     JodaBeanUtils.equal(getMarried(), other.getMarried()) &&
-                    JodaBeanUtils.equal(getFavouriteColour(), other.getFavouriteColour()) &&
+                    JodaBeanUtils.equal(getRegion(), other.getRegion()) &&
                     JodaBeanUtils.equal(getAddress(), other.getAddress()) &&
                     JodaBeanUtils.equal(getFriends(), other.getFriends());
         }
@@ -385,7 +405,7 @@ public class Person implements Bean {
         hash += hash * 31 + JodaBeanUtils.hashCode(getSuccessRatio());
         hash += hash * 31 + JodaBeanUtils.hashCode(isChild());
         hash += hash * 31 + JodaBeanUtils.hashCode(getMarried());
-        hash += hash * 31 + JodaBeanUtils.hashCode(getFavouriteColour());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getRegion());
         hash += hash * 31 + JodaBeanUtils.hashCode(getAddress());
         hash += hash * 31 + JodaBeanUtils.hashCode(getFriends());
         return hash;
@@ -412,7 +432,7 @@ public class Person implements Bean {
         buf.append("successRatio").append('=').append(JodaBeanUtils.toString(getSuccessRatio())).append(',').append(' ');
         buf.append("child").append('=').append(JodaBeanUtils.toString(isChild())).append(',').append(' ');
         buf.append("married").append('=').append(JodaBeanUtils.toString(getMarried())).append(',').append(' ');
-        buf.append("favouriteColour").append('=').append(JodaBeanUtils.toString(getFavouriteColour())).append(',').append(' ');
+        buf.append("region").append('=').append(JodaBeanUtils.toString(getRegion())).append(',').append(' ');
         buf.append("address").append('=').append(JodaBeanUtils.toString(getAddress())).append(',').append(' ');
         buf.append("friends").append('=').append(JodaBeanUtils.toString(getFriends())).append(',').append(' ');
     }
@@ -463,10 +483,10 @@ public class Person implements Bean {
         private final MetaProperty<Boolean> married = DirectMetaProperty.ofReadWrite(
                 this, "married", Person.class, Boolean.class);
         /**
-         * The meta-property for the {@code favouriteColour} property.
+         * The meta-property for the {@code region} property.
          */
-        private final MetaProperty<Colour> favouriteColour = DirectMetaProperty.ofReadWrite(
-                this, "favouriteColour", Person.class, Colour.class);
+        private final MetaProperty<WorldRegion> region = DirectMetaProperty.ofReadWrite(
+                this, "region", Person.class, WorldRegion.class);
         /**
          * The meta-property for the {@code address} property.
          */
@@ -490,7 +510,7 @@ public class Person implements Bean {
                 "successRatio",
                 "child",
                 "married",
-                "favouriteColour",
+                "region",
                 "address",
                 "friends");
 
@@ -517,8 +537,8 @@ public class Person implements Bean {
                     return child;
                 case 839462772:  // married
                     return married;
-                case -1213306923:  // favouriteColour
-                    return favouriteColour;
+                case -934795532:  // region
+                    return region;
                 case -1147692044:  // address
                     return address;
                 case -600094315:  // friends
@@ -600,11 +620,11 @@ public class Person implements Bean {
         }
 
         /**
-         * The meta-property for the {@code favouriteColour} property.
+         * The meta-property for the {@code region} property.
          * @return the meta-property, not null
          */
-        public final MetaProperty<Colour> favouriteColour() {
-            return favouriteColour;
+        public final MetaProperty<WorldRegion> region() {
+            return region;
         }
 
         /**
@@ -641,8 +661,8 @@ public class Person implements Bean {
                     return ((Person) bean).isChild();
                 case 839462772:  // married
                     return ((Person) bean).getMarried();
-                case -1213306923:  // favouriteColour
-                    return ((Person) bean).getFavouriteColour();
+                case -934795532:  // region
+                    return ((Person) bean).getRegion();
                 case -1147692044:  // address
                     return ((Person) bean).getAddress();
                 case -600094315:  // friends
@@ -676,8 +696,8 @@ public class Person implements Bean {
                 case 839462772:  // married
                     ((Person) bean).setMarried((Boolean) newValue);
                     return;
-                case -1213306923:  // favouriteColour
-                    ((Person) bean).setFavouriteColour((Colour) newValue);
+                case -934795532:  // region
+                    ((Person) bean).setRegion((WorldRegion) newValue);
                     return;
                 case -1147692044:  // address
                     ((Person) bean).setAddress((Address) newValue);
@@ -687,6 +707,12 @@ public class Person implements Bean {
                     return;
             }
             super.propertySet(bean, propertyName, newValue, quiet);
+        }
+
+        @Override
+        protected void validate(Bean bean) {
+            JodaBeanUtils.notNull(((Person) bean).forename, "forename");
+            JodaBeanUtils.notNull(((Person) bean).surname, "surname");
         }
 
     }

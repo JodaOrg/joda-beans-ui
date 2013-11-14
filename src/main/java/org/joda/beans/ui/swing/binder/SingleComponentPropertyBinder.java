@@ -17,8 +17,12 @@ package org.joda.beans.ui.swing.binder;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.JComponent;
+
+import org.joda.beans.MetaProperty;
+import org.joda.beans.ui.form.MetaUIComponent;
 
 /**
  * Defines how a property is bound to the UI.
@@ -26,9 +30,36 @@ import javax.swing.JComponent;
 public abstract class SingleComponentPropertyBinder extends PropertyBinder {
 
     /**
-     * Creates an instance.
+     * The meta-component.
      */
-    protected SingleComponentPropertyBinder() {
+    private final MetaUIComponent metaComponent;
+
+    /**
+     * Creates an instance.
+     * 
+     * @param metaComponent  the meta-component, not null
+     */
+    protected SingleComponentPropertyBinder(MetaUIComponent metaComponent) {
+        this.metaComponent = Objects.requireNonNull(metaComponent, "metaComponent");
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Gets the meta-component.
+     * 
+     * @return the meta-component, not null
+     */
+    public MetaUIComponent getMetaComponent() {
+        return metaComponent;
+    }
+
+    /**
+     * Gets the meta-property.
+     * 
+     * @return the meta-property, not null
+     */
+    public MetaProperty<?> getMetaProperty() {
+        return metaComponent.getMetaProperty();
     }
 
     //-------------------------------------------------------------------------
@@ -47,5 +78,11 @@ public abstract class SingleComponentPropertyBinder extends PropertyBinder {
      * @return the component to display, not null
      */
     protected abstract JComponent getComponent();
+
+    //-------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return getMetaComponent().toString() + "::" + getComponent().getClass().getSimpleName();
+    }
 
 }

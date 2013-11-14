@@ -16,19 +16,19 @@
 package org.joda.beans.ui.swing;
 
 /**
- * Example colour enum.
+ * Example country enum.
  */
-public enum Colour {
+public enum WorldRegion {
 
-    RED,
-    ORANGE,
-    YELLOW,
-    GREEN,
-    BLUE,
-    PURPLE,
-    WHITE,
-    BROWN,
-    GREY,
-    BLACK;
+    UK,
+    FRANCE,
+    GERMANY,
+    ITALY,
+    SPAIN,
+    BENELUX,
+    OTHER_EU,
+    US,
+    CANADA,
+    OTHER;
 
 }

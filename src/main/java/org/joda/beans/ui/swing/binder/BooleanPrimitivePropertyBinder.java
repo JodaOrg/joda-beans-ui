@@ -18,13 +18,11 @@ package org.joda.beans.ui.swing.binder;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.swing.JComponent;
 
 import org.joda.beans.Bean;
-import org.joda.beans.MetaProperty;
-import org.joda.beans.Property;
+import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.swing.component.JRadioButtonPanel;
 
 /**
@@ -38,9 +36,9 @@ public class BooleanPrimitivePropertyBinder
      */
     public static final PropertyBinderFactory FACTORY = new PropertyBinderFactory() {
         @Override
-        public PropertyBinder createBinder(Bean bean, MetaProperty<?> metaProperty) {
-            if (metaProperty.propertyType() == Boolean.TYPE) {
-                return new BooleanPrimitivePropertyBinder(metaProperty.createProperty(bean));
+        public PropertyBinder createBinder(MetaUIComponent metaComponent) {
+            if (metaComponent.getPropertyType() == Boolean.TYPE) {
+                return new BooleanPrimitivePropertyBinder(metaComponent);
             }
             return null;
         }
@@ -60,19 +58,14 @@ public class BooleanPrimitivePropertyBinder
      * The associated component.
      */
     private final JRadioButtonPanel<Boolean> component;
-    /**
-     * The associated property.
-     */
-    private final Property<?> property;
 
     /**
      * Creates an instance.
      * 
-     * @param property  the property to bind, not null
+     * @param metaComponent  the meta-component to bind, not null
      */
-    public BooleanPrimitivePropertyBinder(Property<?> property) {
-        super();
-        this.property = Objects.requireNonNull(property, "property");
+    public BooleanPrimitivePropertyBinder(MetaUIComponent metaComponent) {
+        super(metaComponent);
         this.component = new JRadioButtonPanel<Boolean>(TRUE_FALSE);
     }
 
@@ -83,23 +76,17 @@ public class BooleanPrimitivePropertyBinder
     }
 
     @Override
-    public void updateUI() {
-        component.setSelection((Boolean) property.get());
+    public void updateUI(Bean bean) {
+        component.setSelection((Boolean) getMetaProperty().get(bean));
     }
 
     @Override
-    public void updateProperty() {
+    public void updateProperty(Bean bean) {
         Boolean value = component.getSelection();
         if (value == null) {  // should not happen
             value = Boolean.FALSE;
         }
-        property.set(value);
-    }
-
-    //-------------------------------------------------------------------------
-    @Override
-    public String toString() {
-        return property.toString() + "::" + component.getClass().getSimpleName();
+        getMetaProperty().set(bean, component.getSelection());
     }
 
 }

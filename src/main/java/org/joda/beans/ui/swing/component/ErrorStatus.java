@@ -25,16 +25,20 @@ public final class ErrorStatus {
     /**
      * Result indicating valid.
      */
-    public static final ErrorStatus VALID = new ErrorStatus("");
+    public static final ErrorStatus VALID = new ErrorStatus("", "");
     /**
      * Result indicating mandatory input missing.
      */
-    public static final ErrorStatus MANDATORY = new ErrorStatus("Error.mandatory");
+    public static final ErrorStatus MANDATORY = new ErrorStatus("Error.mandatory", "");
 
     /**
      * The error key.
      */
     private final String errorKey;
+    /**
+     * The additional information to display.
+     */
+    private final String errorInfo;
 
     //-------------------------------------------------------------------------
     /**
@@ -44,7 +48,28 @@ public final class ErrorStatus {
      * @return the result, not null
      */
     public static ErrorStatus of(String errorKey) {
-        return new ErrorStatus(errorKey);
+        return new ErrorStatus(errorKey, "");
+    }
+
+    /**
+     * Creates an error status.
+     * 
+     * @param errorKey  the key, not null
+     * @param errorInfo  the additional information for display, not null
+     * @return the result, not null
+     */
+    public static ErrorStatus of(String errorKey, String errorInfo) {
+        return new ErrorStatus(errorKey, errorInfo);
+    }
+
+    /**
+     * Creates an error status for range errors.
+     * 
+     * @param errorInfo  the additional information for display, not null
+     * @return the result, not null
+     */
+    public static ErrorStatus range(String errorInfo) {
+        return new ErrorStatus("Error.range", errorInfo);
     }
 
     //-------------------------------------------------------------------------
@@ -52,9 +77,11 @@ public final class ErrorStatus {
      * Restricted constructor.
      * 
      * @param errorKey  the key, not null
+     * @param errorInfo  the additional information for display, not null
      */
-    private ErrorStatus(String errorKey) {
+    private ErrorStatus(String errorKey, String errorInfo) {
         this.errorKey = Objects.requireNonNull(errorKey, "errorKey");
+        this.errorInfo = Objects.requireNonNull(errorInfo, "errorInfo");
     }
 
     //-------------------------------------------------------------------------
@@ -86,13 +113,22 @@ public final class ErrorStatus {
     }
 
     /**
+     * Gets the additional error information.
+     * 
+     * @return the additional error information, not null
+     */
+    public String getErrorInfo() {
+        return errorInfo;
+    }
+
+    /**
      * Gets the error text.
      * 
      * @return the error text, empty if valid, not null
      */
     public String getErrorText() {
         if (isError()) {
-            return ComponentMsg.lookup(errorKey);
+            return ComponentMsg.lookup(errorKey) + (getErrorInfo().length() > 0 ? " " + getErrorInfo() : "");
         }
         return "";
     }

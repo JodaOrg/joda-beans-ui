@@ -15,8 +15,7 @@
  */
 package org.joda.beans.ui.swing.binder;
 
-import org.joda.beans.Bean;
-import org.joda.beans.MetaProperty;
+import org.joda.beans.ui.form.MetaUIComponent;
 
 /**
  * Factory to create a binding to the UI.
@@ -24,12 +23,11 @@ import org.joda.beans.MetaProperty;
 public interface PropertyBinderFactory {
 
     /**
-     * Creates a field for the specified property.
+     * Creates a field for the specified UI component.
      * 
-     * @param bean  the bean to create the field for, not null
-     * @param metaProperty  the meta-property, not null
+     * @param metaComponent  the meta-component, not null
      * @return the binder, not null
      */
-    PropertyBinder createBinder(Bean bean, MetaProperty<?> metaProperty);
+    PropertyBinder createBinder(MetaUIComponent metaComponent);
 
 }

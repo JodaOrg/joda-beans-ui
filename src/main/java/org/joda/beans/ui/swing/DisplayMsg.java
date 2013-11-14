@@ -20,6 +20,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.joda.beans.MetaProperty;
+import org.joda.beans.ui.form.MetaUIComponent;
 
 /**
  * Access localized text.
@@ -57,6 +58,20 @@ public final class DisplayMsg {
     }
 
     //-------------------------------------------------------------------------
+    /**
+     * Gets the localized text for the UI component.
+     * 
+     * @param component  the UI component, not null
+     * @return the text, not null
+     */
+    public static String lookupFieldPrompt(MetaUIComponent component) {
+        String prompt = lookupFieldPrompt(component.getMetaProperty());
+        if (component.isMandatory()) {
+            prompt += "*";
+        }
+        return prompt;
+    }
+
     /**
      * Gets the localized text for the meta-property.
      * 

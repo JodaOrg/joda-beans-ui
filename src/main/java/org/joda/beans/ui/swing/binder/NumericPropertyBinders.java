@@ -15,17 +15,13 @@
  */
 package org.joda.beans.ui.swing.binder;
 
-import java.util.Objects;
-
 import javax.swing.JComponent;
 
 import org.joda.beans.Bean;
-import org.joda.beans.MetaProperty;
-import org.joda.beans.Property;
+import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.swing.SwingUISettings;
 import org.joda.beans.ui.swing.component.JValidatedTextField;
 import org.joda.beans.ui.swing.component.JValidatedTextFields;
-import org.joda.convert.StringConvert;
 
 /**
  * Binder for numeric types.
@@ -35,82 +31,68 @@ public class NumericPropertyBinders {
     /**
      * Factory for {@code byte}.
      */
-    public static final PropertyBinderFactory BYTE_PRIMITIVE = new IntegralPropertyBinderFactory(Byte.TYPE, Byte.MIN_VALUE, Byte.MAX_VALUE);
+    public static final PropertyBinderFactory BYTE_PRIMITIVE = new IntegralPropertyBinderFactory(Byte.TYPE);
     /**
      * Factory for {@code Byte}.
      */
-    public static final PropertyBinderFactory BYTE_OBJECT = new IntegralPropertyBinderFactory(Byte.class, Byte.MIN_VALUE, Byte.MAX_VALUE);
+    public static final PropertyBinderFactory BYTE_OBJECT = new IntegralPropertyBinderFactory(Byte.class);
     /**
      * Factory for {@code short}.
      */
-    public static final PropertyBinderFactory SHORT_PRIMITIVE = new IntegralPropertyBinderFactory(Short.TYPE, Short.MIN_VALUE, Short.MAX_VALUE);
+    public static final PropertyBinderFactory SHORT_PRIMITIVE = new IntegralPropertyBinderFactory(Short.TYPE);
     /**
      * Factory for {@code Short}.
      */
-    public static final PropertyBinderFactory SHORT_OBJECT = new IntegralPropertyBinderFactory(Short.class, Short.MIN_VALUE, Short.MAX_VALUE);
+    public static final PropertyBinderFactory SHORT_OBJECT = new IntegralPropertyBinderFactory(Short.class);
     /**
      * Factory for {@code int}.
      */
-    public static final PropertyBinderFactory INT_PRIMITIVE = new IntegralPropertyBinderFactory(Integer.TYPE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    public static final PropertyBinderFactory INT_PRIMITIVE = new IntegralPropertyBinderFactory(Integer.TYPE);
     /**
      * Factory for {@code Integer}.
      */
-    public static final PropertyBinderFactory INT_OBJECT = new IntegralPropertyBinderFactory(Integer.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    public static final PropertyBinderFactory INT_OBJECT = new IntegralPropertyBinderFactory(Integer.class);
     /**
      * Factory for {@code long}.
      */
-    public static final PropertyBinderFactory LONG_PRIMITIVE = new IntegralPropertyBinderFactory(Long.TYPE, Long.MIN_VALUE, Long.MAX_VALUE);
+    public static final PropertyBinderFactory LONG_PRIMITIVE = new IntegralPropertyBinderFactory(Long.TYPE);
     /**
      * Factory for {@code Long}.
      */
-    public static final PropertyBinderFactory LONG_OBJECT = new IntegralPropertyBinderFactory(Long.class, Long.MIN_VALUE, Long.MAX_VALUE);
+    public static final PropertyBinderFactory LONG_OBJECT = new IntegralPropertyBinderFactory(Long.class);
     /**
      * Factory for {@code double}.
      */
-    public static final PropertyBinderFactory DOUBLE_PRIMITIVE = new DoublePropertyBinderFactory(Double.TYPE, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    public static final PropertyBinderFactory DOUBLE_PRIMITIVE = new DoublePropertyBinderFactory(Double.TYPE);
     /**
      * Factory for {@code Double}.
      */
-    public static final PropertyBinderFactory DOUBLE_OBJECT = new DoublePropertyBinderFactory(Double.class, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    public static final PropertyBinderFactory DOUBLE_OBJECT = new DoublePropertyBinderFactory(Double.class);
 
     //-------------------------------------------------------------------------
     /**
      * Factory for an integral type.
      */
     static class IntegralPropertyBinderFactory implements PropertyBinderFactory {
-        
         /**
          * The type.
          */
         private final Class<?> type;
-        /**
-         * The min.
-         */
-        private final long minInclusive;
-        /**
-         * The max.
-         */
-        private final long maxInclusive;
 
         /**
          * Creates an instance.
          * 
          * @param type  the type to validate, not null
-         * @param minInclusive  the minimum value, inclusive
-         * @param maxInclusive  the minimum value, inclusive
          */
-        IntegralPropertyBinderFactory(Class<?> type, long minInclusive, long maxInclusive) {
-            super();
+        IntegralPropertyBinderFactory(Class<?> type) {
             this.type = type;
-            this.minInclusive = minInclusive;
-            this.maxInclusive = maxInclusive;
         }
 
         //-------------------------------------------------------------------------
         @Override
-        public PropertyBinder createBinder(Bean bean, MetaProperty<?> metaProperty) {
-            if (metaProperty.propertyType() == type) {
-                return new IntegralPropertyBinder(metaProperty.createProperty(bean), type, minInclusive, maxInclusive);
+        public PropertyBinder createBinder(MetaUIComponent metaComponent) {
+            if (metaComponent.getPropertyType() == type) {
+                return new IntegralPropertyBinder(metaComponent);
             }
             return null;
         }
@@ -121,40 +103,39 @@ public class NumericPropertyBinders {
      * Binder for an integral type.
      */
     static class IntegralPropertyBinder extends SingleComponentPropertyBinder {
-
         /**
          * The associated component.
          */
         private final JValidatedTextField component;
-        /**
-         * The associated property.
-         */
-        private final Property<?> property;
-        /**
-         * The type.
-         */
-        private final Class<?> type;
 
         /**
          * Creates an instance.
          * 
          * @param property  the property to bind, not null
-         * @param type  the type to validate, not null
-         * @param minInclusive  the minimum value, inclusive
-         * @param maxInclusive  the minimum value, inclusive
          */
-        public IntegralPropertyBinder(Property<?> property, Class<?> type, long minInclusive, long maxInclusive) {
-            super();
-            this.property = Objects.requireNonNull(property, "property");
-            this.type = type;
+        public IntegralPropertyBinder(MetaUIComponent metaComponent) {
+            super(metaComponent);
+            Class<?> type = metaComponent.getPropertyType();
             if (type == Long.class || type == Long.TYPE) {
-                this.component = JValidatedTextFields.createLongTextField(type.isPrimitive() == false, minInclusive, maxInclusive);
+                this.component = JValidatedTextFields.createLongTextField(
+                        metaComponent.isMandatory(),
+                        metaComponent.getMinValue(Long.MIN_VALUE),
+                        metaComponent.getMaxValue(Long.MAX_VALUE));
             } else if (type == Integer.class || type == Integer.TYPE) {
-                this.component = JValidatedTextFields.createIntegerTextField(type.isPrimitive() == false, (int) minInclusive, (int) maxInclusive);
+                this.component = JValidatedTextFields.createIntegerTextField(
+                        metaComponent.isMandatory(),
+                        metaComponent.getMinValue(Integer.MIN_VALUE),
+                        metaComponent.getMaxValue(Integer.MAX_VALUE));
             } else if (type == Short.class || type == Short.TYPE) {
-                this.component = JValidatedTextFields.createShortTextField(type.isPrimitive() == false, (short) minInclusive, (short) maxInclusive);
+                this.component = JValidatedTextFields.createShortTextField(
+                        metaComponent.isMandatory(),
+                        metaComponent.getMinValue(Short.MIN_VALUE),
+                        metaComponent.getMaxValue(Short.MAX_VALUE));
             } else if (type == Byte.class || type == Byte.TYPE) {
-                this.component = JValidatedTextFields.createByteTextField(type.isPrimitive() == false, (byte) minInclusive, (byte) maxInclusive);
+                this.component = JValidatedTextFields.createByteTextField(
+                        metaComponent.isMandatory(),
+                        metaComponent.getMinValue(Byte.MIN_VALUE),
+                        metaComponent.getMaxValue(Byte.MAX_VALUE));
             } else {
                 throw new IllegalArgumentException();
             }
@@ -167,25 +148,19 @@ public class NumericPropertyBinders {
         }
 
         @Override
-        public void updateUI() {
-            component.setText(property.get().toString());
+        public void updateUI(Bean bean) {
+            String text = getMetaProperty().getString(bean, SwingUISettings.INSTANCE.getStringConvert());
+            component.setText(text);
         }
 
         @Override
-        public void updateProperty() {
-            String value = component.getText();
-            if (value == null) { // should not happen
-                value = "0";
+        public void updateProperty(Bean bean) {
+            String text = component.getText();
+            if (text == null) { // should not happen
+                text = "0";
             }
-            property.set(StringConvert.INSTANCE.convertFromString(type, value));
+            getMetaProperty().setString(bean, text, SwingUISettings.INSTANCE.getStringConvert());
         }
-
-        //-------------------------------------------------------------------------
-        @Override
-        public String toString() {
-            return property.toString() + "::" + component.getClass().getSimpleName();
-        }
-
     }
 
     //-------------------------------------------------------------------------
@@ -193,19 +168,10 @@ public class NumericPropertyBinders {
      * Factory for a {@code Double} type.
      */
     static class DoublePropertyBinderFactory implements PropertyBinderFactory {
-        
         /**
          * The type.
          */
         private final Class<?> type;
-        /**
-         * The min.
-         */
-        private final double minInclusive;
-        /**
-         * The max.
-         */
-        private final double maxInclusive;
 
         /**
          * Creates an instance.
@@ -214,17 +180,15 @@ public class NumericPropertyBinders {
          * @param minInclusive  the minimum value, inclusive
          * @param maxInclusive  the minimum value, inclusive
          */
-        DoublePropertyBinderFactory(Class<?> type, double minInclusive, double maxInclusive) {
+        DoublePropertyBinderFactory(Class<?> type) {
             this.type = type;
-            this.minInclusive = minInclusive;
-            this.maxInclusive = maxInclusive;
         }
 
         //-------------------------------------------------------------------------
         @Override
-        public PropertyBinder createBinder(Bean bean, MetaProperty<?> metaProperty) {
-            if (metaProperty.propertyType() == type) {
-                return new DoublePropertyBinder(metaProperty.createProperty(bean), type, minInclusive, maxInclusive);
+        public PropertyBinder createBinder(MetaUIComponent metaComponent) {
+            if (metaComponent.getPropertyType() == type) {
+                return new DoublePropertyBinder(metaComponent);
             }
             return null;
         }
@@ -240,27 +204,20 @@ public class NumericPropertyBinders {
          * The associated component.
          */
         private final JValidatedTextField component;
-        /**
-         * The associated property.
-         */
-        private final Property<?> property;
-        /**
-         * The type.
-         */
-        private final Class<?> type;
 
         /**
          * Creates an instance.
          * 
          * @param property  the property to bind, not null
-         * @param type  the type to validate, not null
          * @param minInclusive  the minimum value, inclusive
          * @param maxInclusive  the minimum value, inclusive
          */
-        public DoublePropertyBinder(Property<?> property, Class<?> type, double minInclusive, double maxInclusive) {
-            this.property = Objects.requireNonNull(property, "property");
-            this.type = type;
-            this.component = JValidatedTextFields.createDoubleTextField(type.isPrimitive(), true, minInclusive, maxInclusive);
+        public DoublePropertyBinder(MetaUIComponent metaComponent) {
+            super(metaComponent);
+            this.component = JValidatedTextFields.createDoubleTextField(
+                    metaComponent.isMandatory(), true,
+                    metaComponent.getMinValue(Double.NEGATIVE_INFINITY),
+                    metaComponent.getMaxValue(Double.POSITIVE_INFINITY));
         }
 
         //-------------------------------------------------------------------------
@@ -270,25 +227,19 @@ public class NumericPropertyBinders {
         }
 
         @Override
-        public void updateUI() {
-            component.setText(SwingUISettings.INSTANCE.getStringConvert().convertToString(property.get()));
+        public void updateUI(Bean bean) {
+            String text = getMetaProperty().getString(bean, SwingUISettings.INSTANCE.getStringConvert());
+            component.setText(text);
         }
 
         @Override
-        public void updateProperty() {
-            String value = component.getText();
-            if (value == null) { // should not happen
-                value = "0";
+        public void updateProperty(Bean bean) {
+            String text = component.getText();
+            if (text == null) { // should not happen
+                text = "0";
             }
-            property.set(SwingUISettings.INSTANCE.getStringConvert().convertFromString(type, value));
+            getMetaProperty().setString(bean, text, SwingUISettings.INSTANCE.getStringConvert());
         }
-
-        //-------------------------------------------------------------------------
-        @Override
-        public String toString() {
-            return property.toString() + "::" + component.getClass().getSimpleName();
-        }
-
     }
 
 }
