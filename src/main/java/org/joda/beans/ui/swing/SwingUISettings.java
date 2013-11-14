@@ -17,34 +17,29 @@ package org.joda.beans.ui.swing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
 
 import org.joda.beans.Bean;
 import org.joda.beans.BeanBuilder;
 import org.joda.beans.BeanDefinition;
 import org.joda.beans.JodaBeanUtils;
 import org.joda.beans.MetaProperty;
-import org.joda.beans.Property;
 import org.joda.beans.PropertyDefinition;
 import org.joda.beans.impl.direct.DirectBeanBuilder;
-import org.joda.beans.impl.direct.DirectMetaBean;
 import org.joda.beans.impl.direct.DirectMetaProperty;
 import org.joda.beans.impl.direct.DirectMetaPropertyMap;
+import org.joda.beans.ui.form.UISettings;
 import org.joda.beans.ui.swing.binder.BooleanObjectPropertyBinder;
 import org.joda.beans.ui.swing.binder.BooleanPrimitivePropertyBinder;
 import org.joda.beans.ui.swing.binder.NumericPropertyBinders;
 import org.joda.beans.ui.swing.binder.PropertyBinderFactory;
 import org.joda.beans.ui.swing.binder.StringPropertyBinder;
-import org.joda.convert.StringConvert;
 
 /**
  * Settings for the Swing UI.
  */
-@BeanDefinition
-public class SwingUISettings implements Bean {
+@BeanDefinition(style = "minimal")
+public class SwingUISettings extends UISettings {
 
     /**
      * The singleton settings.
@@ -56,21 +51,6 @@ public class SwingUISettings implements Bean {
      */
     @PropertyDefinition(validate = "notNull", set = "private")
     private final List<PropertyBinderFactory> factories = new ArrayList<>();
-    /**
-     * The string converter, which can be edited
-     */
-    @PropertyDefinition(validate = "notNull")
-    private StringConvert stringConvert = StringConvert.create();
-    /**
-     * The locale.
-     */
-    @PropertyDefinition(validate = "notNull")
-    private Locale locale = Locale.getDefault();
-    /**
-     * The time-zone.
-     */
-    @PropertyDefinition(validate = "notNull")
-    private TimeZone timeZone = TimeZone.getDefault();
 
     //-------------------------------------------------------------------------
     /**
@@ -111,16 +91,6 @@ public class SwingUISettings implements Bean {
         return SwingUISettings.Meta.INSTANCE;
     }
 
-    @Override
-    public <R> Property<R> property(String propertyName) {
-        return metaBean().<R>metaProperty(propertyName).createProperty(this);
-    }
-
-    @Override
-    public Set<String> propertyNames() {
-        return metaBean().metaPropertyMap().keySet();
-    }
-
     //-----------------------------------------------------------------------
     /**
      * Gets the list of factories, which can be edited.
@@ -139,106 +109,10 @@ public class SwingUISettings implements Bean {
         this.factories.addAll(factories);
     }
 
-    /**
-     * Gets the the {@code factories} property.
-     * @return the property, not null
-     */
-    public final Property<List<PropertyBinderFactory>> factories() {
-        return metaBean().factories().createProperty(this);
-    }
-
-    //-----------------------------------------------------------------------
-    /**
-     * Gets the string converter, which can be edited
-     * @return the value of the property, not null
-     */
-    public StringConvert getStringConvert() {
-        return stringConvert;
-    }
-
-    /**
-     * Sets the string converter, which can be edited
-     * @param stringConvert  the new value of the property, not null
-     */
-    public void setStringConvert(StringConvert stringConvert) {
-        JodaBeanUtils.notNull(stringConvert, "stringConvert");
-        this.stringConvert = stringConvert;
-    }
-
-    /**
-     * Gets the the {@code stringConvert} property.
-     * @return the property, not null
-     */
-    public final Property<StringConvert> stringConvert() {
-        return metaBean().stringConvert().createProperty(this);
-    }
-
-    //-----------------------------------------------------------------------
-    /**
-     * Gets the locale.
-     * @return the value of the property, not null
-     */
-    public Locale getLocale() {
-        return locale;
-    }
-
-    /**
-     * Sets the locale.
-     * @param locale  the new value of the property, not null
-     */
-    public void setLocale(Locale locale) {
-        JodaBeanUtils.notNull(locale, "locale");
-        this.locale = locale;
-    }
-
-    /**
-     * Gets the the {@code locale} property.
-     * @return the property, not null
-     */
-    public final Property<Locale> locale() {
-        return metaBean().locale().createProperty(this);
-    }
-
-    //-----------------------------------------------------------------------
-    /**
-     * Gets the time-zone.
-     * @return the value of the property, not null
-     */
-    public TimeZone getTimeZone() {
-        return timeZone;
-    }
-
-    /**
-     * Sets the time-zone.
-     * @param timeZone  the new value of the property, not null
-     */
-    public void setTimeZone(TimeZone timeZone) {
-        JodaBeanUtils.notNull(timeZone, "timeZone");
-        this.timeZone = timeZone;
-    }
-
-    /**
-     * Gets the the {@code timeZone} property.
-     * @return the property, not null
-     */
-    public final Property<TimeZone> timeZone() {
-        return metaBean().timeZone().createProperty(this);
-    }
-
     //-----------------------------------------------------------------------
     @Override
     public SwingUISettings clone() {
-        BeanBuilder<? extends SwingUISettings> builder = metaBean().builder();
-        for (MetaProperty<?> mp : metaBean().metaPropertyIterable()) {
-            if (mp.style().isBuildable()) {
-                Object value = mp.get(this);
-                if (value instanceof Bean) {
-                    value = ((Bean) value).clone();
-                }
-                builder.set(mp.name(), value);
-            }
-        }
-        return builder.build();
+        return (SwingUISettings) super.clone();
     }
 
     @Override
@@ -249,26 +123,21 @@ public class SwingUISettings implements Bean {
         if (obj != null && obj.getClass() == this.getClass()) {
             SwingUISettings other = (SwingUISettings) obj;
             return JodaBeanUtils.equal(getFactories(), other.getFactories()) &&
-                    JodaBeanUtils.equal(getStringConvert(), other.getStringConvert()) &&
-                    JodaBeanUtils.equal(getLocale(), other.getLocale()) &&
-                    JodaBeanUtils.equal(getTimeZone(), other.getTimeZone());
+                    super.equals(obj);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        int hash = getClass().hashCode();
+        int hash = 7;
         hash += hash * 31 + JodaBeanUtils.hashCode(getFactories());
-        hash += hash * 31 + JodaBeanUtils.hashCode(getStringConvert());
-        hash += hash * 31 + JodaBeanUtils.hashCode(getLocale());
-        hash += hash * 31 + JodaBeanUtils.hashCode(getTimeZone());
-        return hash;
+        return hash ^ super.hashCode();
     }
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(160);
+        StringBuilder buf = new StringBuilder(64);
         buf.append("SwingUISettings{");
         int len = buf.length();
         toString(buf);
@@ -279,18 +148,17 @@ public class SwingUISettings implements Bean {
         return buf.toString();
     }
 
+    @Override
     protected void toString(StringBuilder buf) {
+        super.toString(buf);
         buf.append("factories").append('=').append(JodaBeanUtils.toString(getFactories())).append(',').append(' ');
-        buf.append("stringConvert").append('=').append(JodaBeanUtils.toString(getStringConvert())).append(',').append(' ');
-        buf.append("locale").append('=').append(JodaBeanUtils.toString(getLocale())).append(',').append(' ');
-        buf.append("timeZone").append('=').append(JodaBeanUtils.toString(getTimeZone())).append(',').append(' ');
     }
 
     //-----------------------------------------------------------------------
     /**
      * The meta-bean for {@code SwingUISettings}.
      */
-    public static class Meta extends DirectMetaBean {
+    public static class Meta extends UISettings.Meta {
         /**
          * The singleton instance of the meta-bean.
          */
@@ -303,29 +171,11 @@ public class SwingUISettings implements Bean {
         private final MetaProperty<List<PropertyBinderFactory>> factories = DirectMetaProperty.ofReadWrite(
                 this, "factories", SwingUISettings.class, (Class) List.class);
         /**
-         * The meta-property for the {@code stringConvert} property.
-         */
-        private final MetaProperty<StringConvert> stringConvert = DirectMetaProperty.ofReadWrite(
-                this, "stringConvert", SwingUISettings.class, StringConvert.class);
-        /**
-         * The meta-property for the {@code locale} property.
-         */
-        private final MetaProperty<Locale> locale = DirectMetaProperty.ofReadWrite(
-                this, "locale", SwingUISettings.class, Locale.class);
-        /**
-         * The meta-property for the {@code timeZone} property.
-         */
-        private final MetaProperty<TimeZone> timeZone = DirectMetaProperty.ofReadWrite(
-                this, "timeZone", SwingUISettings.class, TimeZone.class);
-        /**
          * The meta-properties.
          */
         private final Map<String, MetaProperty<?>> metaPropertyMap$ = new DirectMetaPropertyMap(
-                this, null,
-                "factories",
-                "stringConvert",
-                "locale",
-                "timeZone");
+                this, (DirectMetaPropertyMap) super.metaPropertyMap(),
+                "factories");
 
         /**
          * Restricted constructor.
@@ -338,12 +188,6 @@ public class SwingUISettings implements Bean {
             switch (propertyName.hashCode()) {
                 case -1327306968:  // factories
                     return factories;
-                case 1044598882:  // stringConvert
-                    return stringConvert;
-                case -1097462182:  // locale
-                    return locale;
-                case -2077180903:  // timeZone
-                    return timeZone;
             }
             return super.metaPropertyGet(propertyName);
         }
@@ -364,50 +208,11 @@ public class SwingUISettings implements Bean {
         }
 
         //-----------------------------------------------------------------------
-        /**
-         * The meta-property for the {@code factories} property.
-         * @return the meta-property, not null
-         */
-        public final MetaProperty<List<PropertyBinderFactory>> factories() {
-            return factories;
-        }
-
-        /**
-         * The meta-property for the {@code stringConvert} property.
-         * @return the meta-property, not null
-         */
-        public final MetaProperty<StringConvert> stringConvert() {
-            return stringConvert;
-        }
-
-        /**
-         * The meta-property for the {@code locale} property.
-         * @return the meta-property, not null
-         */
-        public final MetaProperty<Locale> locale() {
-            return locale;
-        }
-
-        /**
-         * The meta-property for the {@code timeZone} property.
-         * @return the meta-property, not null
-         */
-        public final MetaProperty<TimeZone> timeZone() {
-            return timeZone;
-        }
-
-        //-----------------------------------------------------------------------
         @Override
         protected Object propertyGet(Bean bean, String propertyName, boolean quiet) {
             switch (propertyName.hashCode()) {
                 case -1327306968:  // factories
                     return ((SwingUISettings) bean).getFactories();
-                case 1044598882:  // stringConvert
-                    return ((SwingUISettings) bean).getStringConvert();
-                case -1097462182:  // locale
-                    return ((SwingUISettings) bean).getLocale();
-                case -2077180903:  // timeZone
-                    return ((SwingUISettings) bean).getTimeZone();
             }
             return super.propertyGet(bean, propertyName, quiet);
         }
@@ -419,15 +224,6 @@ public class SwingUISettings implements Bean {
                 case -1327306968:  // factories
                     ((SwingUISettings) bean).setFactories((List<PropertyBinderFactory>) newValue);
                     return;
-                case 1044598882:  // stringConvert
-                    ((SwingUISettings) bean).setStringConvert((StringConvert) newValue);
-                    return;
-                case -1097462182:  // locale
-                    ((SwingUISettings) bean).setLocale((Locale) newValue);
-                    return;
-                case -2077180903:  // timeZone
-                    ((SwingUISettings) bean).setTimeZone((TimeZone) newValue);
-                    return;
             }
             super.propertySet(bean, propertyName, newValue, quiet);
         }
@@ -435,9 +231,7 @@ public class SwingUISettings implements Bean {
         @Override
         protected void validate(Bean bean) {
             JodaBeanUtils.notNull(((SwingUISettings) bean).factories, "factories");
-            JodaBeanUtils.notNull(((SwingUISettings) bean).stringConvert, "stringConvert");
-            JodaBeanUtils.notNull(((SwingUISettings) bean).locale, "locale");
-            JodaBeanUtils.notNull(((SwingUISettings) bean).timeZone, "timeZone");
+            super.validate(bean);
         }
 
     }
