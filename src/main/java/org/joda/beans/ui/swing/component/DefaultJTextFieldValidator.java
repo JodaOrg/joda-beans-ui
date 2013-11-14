@@ -72,7 +72,7 @@ public class DefaultJTextFieldValidator extends JTextFieldValidator {
      * 
      * @return the valid characters regex, not null
      */
-    public Pattern getValidCharacters() {
+    public Pattern getValidCharactersRegex() {
         return validChars;
     }
 
@@ -82,7 +82,7 @@ public class DefaultJTextFieldValidator extends JTextFieldValidator {
         if (getMaxLength() > 0 && text.length() > getMaxLength()) {
             return false;
         }
-        return getValidCharacters().matcher(text).matches();
+        return getValidCharactersRegex().matcher(text).matches();
     }
 
     @Override
