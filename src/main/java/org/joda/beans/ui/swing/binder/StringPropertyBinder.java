@@ -24,6 +24,7 @@ import org.joda.beans.Bean;
 import org.joda.beans.MetaProperty;
 import org.joda.beans.ui.swing.SwingUISettings;
 import org.joda.beans.ui.swing.component.JValidatedTextFields;
+import org.joda.beans.ui.swing.component.TextUndoManager;
 import org.joda.convert.StringConvert;
 
 /**
@@ -70,6 +71,7 @@ public class StringPropertyBinder
         this.bean = Objects.requireNonNull(bean, "bean");
         this.metaProperty = Objects.requireNonNull(metaProperty, "metaProperty");
         this.component = JValidatedTextFields.createStringTextField(false, -1);
+        TextUndoManager.applyTo(component);
     }
 
     //-------------------------------------------------------------------------
