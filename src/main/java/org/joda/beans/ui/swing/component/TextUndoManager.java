@@ -35,6 +35,10 @@ import javax.swing.undo.UndoableEdit;
 
 /**
  * An advanced {@code UndoManager} for text fields.
+ * <p>
+ * This undo manager adds time-based grouping to undo management.
+ * Any edits made where the duration between two edits is less than 500ms are merged.
+ * The duration is configurable.
  */
 public final class TextUndoManager extends UndoManager {
 
