@@ -165,7 +165,7 @@ public final class JValidatedTextFields {
      * @return the text field, not null
      */
     public static JValidatedTextField createDoubleTextField(final boolean mandatory, final boolean allowNaN, final double minInclusive, final double maxInclusive) {
-        return new JValidatedTextField(new DoubleValidator(mandatory));
+        return new JValidatedTextField(new DoubleValidator(mandatory, allowNaN, minInclusive, maxInclusive));
     }
 
     //-------------------------------------------------------------------------
@@ -199,6 +199,9 @@ public final class JValidatedTextFields {
 
         @Override
         protected ErrorStatus checkStatus(String text, boolean onExit) {
+            if (onExit && text.isEmpty()) {
+                return ErrorStatus.MANDATORY;
+            }
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
@@ -217,7 +220,7 @@ public final class JValidatedTextFields {
         protected String onExit(String text, ErrorStatus status) {
             if (status.isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-")) {
-                    return (isMandatory() ? "0" : "");
+                    return "";
                 }
                 return text.replace("+", "");
             }
@@ -231,9 +234,21 @@ public final class JValidatedTextFields {
         private static final Pattern VALID = Pattern.compile("[0-9eE.+-]*[fd]?");
         /** Error message key. */
         private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Double.invalid");
+        /** Error message key. */
+        private static final ErrorStatus ERROR_NAN = ErrorStatus.of("Error.Double.nan");
 
-        private DoubleValidator(boolean mandatory) {
+        /** Whether to allow NaN. */
+        private final boolean allowNaN;
+        /** The minimum value. */
+        private final double minInclusive;
+        /** The maximum value. */
+        private final double maxInclusive;
+
+        private DoubleValidator(boolean mandatory, boolean allowNaN, double minInclusive, double maxInclusive) {
             super(mandatory, 128, VALID);
+            this.minInclusive = minInclusive;
+            this.maxInclusive = maxInclusive;
+            this.allowNaN = allowNaN;
         }
 
         @Override
@@ -246,6 +261,12 @@ public final class JValidatedTextFields {
 
         @Override
         protected ErrorStatus checkStatus(String text, boolean onExit) {
+            if (onExit && text.isEmpty()) {
+                return ErrorStatus.MANDATORY;
+            }
+            if (allowNaN == false && "NaN".startsWith(text)) {
+                return ERROR_NAN;
+            }
             String upper = text.toUpperCase(Locale.US);
             if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".") ||
                     (upper.endsWith("E") && upper.endsWith("EE") == false) ||
@@ -253,7 +274,10 @@ public final class JValidatedTextFields {
                 return ErrorStatus.VALID;
             }
             try {
-                Double.parseDouble(text);
+                double value = Double.parseDouble(text);
+                if (value < minInclusive || value > maxInclusive) {
+                    return ErrorStatus.range(minInclusive + " - " + maxInclusive);
+                }
                 return ErrorStatus.VALID;
             } catch (NumberFormatException ex) {
                 return ERROR_INVALID;
@@ -264,7 +288,7 @@ public final class JValidatedTextFields {
         protected String onExit(String text, ErrorStatus status) {
             if (status.isValid()) {
                 if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".")) {
-                    return (isMandatory() ? "0" : "");
+                    return "";
                 }
                 if ("NaN".startsWith(text)) {
                     text = "NaN";

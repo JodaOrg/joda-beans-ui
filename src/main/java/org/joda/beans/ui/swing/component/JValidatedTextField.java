@@ -21,11 +21,11 @@ import java.awt.event.FocusEvent;
 import java.util.Objects;
 
 import javax.swing.JTextField;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
-import javax.swing.text.PlainDocument;
 
 /**
  * A text field that can validate itself.
@@ -53,6 +53,10 @@ public class JValidatedTextField extends JTextField {
      * The validator to use, may be null.
      */
     private final JTextFieldValidator validator;
+    /**
+     * The filter.
+     */
+    private final ValidationDocumentFilter filter;
 
     /**
      * Creates an instance.
@@ -94,8 +98,9 @@ public class JValidatedTextField extends JTextField {
     public JValidatedTextField(int columns, JTextFieldValidator validator) {
         super(columns);
         this.validator = validator;
-        PlainDocument doc = (PlainDocument) getDocument();
-        doc.setDocumentFilter(new ValidationDocumentFilter(this));
+        this.filter = new ValidationDocumentFilter(this);
+        AbstractDocument doc = (AbstractDocument) getDocument();
+        doc.setDocumentFilter(filter);
     }
 
     //-------------------------------------------------------------------------
@@ -106,7 +111,10 @@ public class JValidatedTextField extends JTextField {
             String text = Objects.toString(getText(), "");
             String fixed = handleExit(text);
             if (Objects.equals(text, fixed) == false) {
+                AbstractDocument doc = (AbstractDocument) getDocument();
+                doc.setDocumentFilter(null);
                 setText(fixed);
+                doc.setDocumentFilter(filter);
             }
         }
         super.processFocusEvent(e);
@@ -182,7 +190,7 @@ public class JValidatedTextField extends JTextField {
      * @return true if the text is a valid value for exit
      */
     protected String validatedExit(String text) {
-        return (validator != null ? validator.onExit(text, errorStatus) : text);
+        return (validator != null ? validator.onExit(text, getErrorStatus()) : text);
     }
 
     /**
@@ -199,9 +207,18 @@ public class JValidatedTextField extends JTextField {
      */
     protected void handleChange(String text) {
         ErrorStatus status = (text.isEmpty() ? ErrorStatus.VALID : validatedStatus(text, false));
-        setErrorStatus(status);
-        String errorText = (status.isError() ? status.getErrorText() : null);
-        setToolTipText(errorText);
+        updateErrorStatus(status, false);
+    }
+
+    protected void updateErrorStatus(ErrorStatus status, boolean repaint) {
+        if (status.equals(getErrorStatus()) == false) {
+            setErrorStatus(status);
+            String errorText = (status.isError() ? status.getErrorText() : null);
+            setToolTipText(errorText);
+            if (repaint) {
+                repaint();
+            }
+        }
     }
 
     /**
@@ -223,13 +240,13 @@ public class JValidatedTextField extends JTextField {
      */
     protected String handleExit(String text) {
         ErrorStatus status = validatedStatus(text, true);
-        if (status.equals(this.errorStatus) == false) {
-            setErrorStatus(status);
-            String errorText = (status.isError() ? status.getErrorText() : null);
-            setToolTipText(errorText);
-            repaint();
+        updateErrorStatus(status, true);
+        String resultText = validatedExit(text);
+        if (Objects.equals(text, resultText) == false) {
+            status = validatedStatus(resultText, true);
+            updateErrorStatus(status, true);
         }
-        return validatedExit(text);
+        return resultText;
     }
 
     //-------------------------------------------------------------------------
