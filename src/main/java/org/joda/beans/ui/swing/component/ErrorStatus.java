@@ -127,10 +127,19 @@ public final class ErrorStatus {
      * @return the error text, empty if valid, not null
      */
     public String getErrorText() {
+        String result = "";
         if (isError()) {
-            return ComponentMsg.lookup(errorKey) + (getErrorInfo().length() > 0 ? " " + getErrorInfo() : "");
+            result = ComponentMsg.lookup(errorKey);
+            if (getErrorInfo().length() > 0) {
+                if (result.contains("{}")) {
+                    result = result.replace("{}", getErrorInfo());
+                } else {
+                    result += " " + getErrorInfo();
+                }
+            }
+            return result;
         }
-        return "";
+        return result;
     }
 
     //-------------------------------------------------------------------------
