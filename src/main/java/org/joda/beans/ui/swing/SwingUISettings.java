@@ -31,7 +31,7 @@ import org.joda.beans.ui.form.DefaultUIComponentFactory;
 import org.joda.beans.ui.form.UIComponentFactory;
 import org.joda.beans.ui.form.UISettings;
 import org.joda.beans.ui.swing.type.BooleanSwingUIComponent;
-import org.joda.beans.ui.swing.type.DoubleSwingUIComponent;
+import org.joda.beans.ui.swing.type.FloatingSwingUIComponent;
 import org.joda.beans.ui.swing.type.IntegralSwingUIComponent;
 import org.joda.beans.ui.swing.type.StringSwingUIComponent;
 
@@ -67,8 +67,10 @@ public class SwingUISettings extends UISettings {
         factories.put(Integer.class, DefaultUIComponentFactory.of(IntegralSwingUIComponent.class));
         factories.put(Long.TYPE, DefaultUIComponentFactory.of(IntegralSwingUIComponent.class));
         factories.put(Long.class, DefaultUIComponentFactory.of(IntegralSwingUIComponent.class));
-        factories.put(Double.TYPE, DefaultUIComponentFactory.of(DoubleSwingUIComponent.class));
-        factories.put(Double.class, DefaultUIComponentFactory.of(DoubleSwingUIComponent.class));
+        factories.put(Float.TYPE, DefaultUIComponentFactory.of(FloatingSwingUIComponent.class));
+        factories.put(Float.class, DefaultUIComponentFactory.of(FloatingSwingUIComponent.class));
+        factories.put(Double.TYPE, DefaultUIComponentFactory.of(FloatingSwingUIComponent.class));
+        factories.put(Double.class, DefaultUIComponentFactory.of(FloatingSwingUIComponent.class));
         factories.put(String.class, DefaultUIComponentFactory.of(StringSwingUIComponent.class));
     }
 

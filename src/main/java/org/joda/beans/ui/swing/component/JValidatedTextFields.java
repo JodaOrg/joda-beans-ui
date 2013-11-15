@@ -31,6 +31,14 @@ public final class JValidatedTextFields {
     private static final ErrorStatus ERROR_INTEGER_INVALID = ErrorStatus.of("Error.Integer.invalid");
     /** Error message key. */
     private static final ErrorStatus ERROR_LONG_INVALID = ErrorStatus.of("Error.Long.invalid");
+    /** Error message key. */
+    private static final ErrorStatus ERROR_FLOAT_INVALID = ErrorStatus.of("Error.Float.invalid");
+    /** Error message key. */
+    private static final ErrorStatus ERROR_FLOAT_NAN = ErrorStatus.of("Error.Float.nan");
+    /** Error message key. */
+    private static final ErrorStatus ERROR_DOUBLE_INVALID = ErrorStatus.of("Error.Double.invalid");
+    /** Error message key. */
+    private static final ErrorStatus ERROR_DOUBLE_NAN = ErrorStatus.of("Error.Double.nan");
 
     /**
      * Restricted constructor.
@@ -146,6 +154,30 @@ public final class JValidatedTextFields {
 
     //-------------------------------------------------------------------------
     /**
+     * Creates a {@code JTextField} that validates a {@code Float} value.
+     * 
+     * @param mandatory  true if mandatory
+     * @return the text field, not null
+     */
+    public static JValidatedTextField createFloatTextField(final boolean mandatory) {
+        return createDoubleTextField(mandatory, true, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
+    /**
+     * Creates a {@code JTextField} that validates a {@code Float} value.
+     * 
+     * @param mandatory  true if mandatory
+     * @param allowNaN  true to allow NaN
+     * @param minInclusive  the minimum valid value, inclusive
+     * @param maxInclusive  the maximum valid value, inclusive
+     * @return the text field, not null
+     */
+    public static JValidatedTextField createFloatTextField(final boolean mandatory, final boolean allowNaN, final float minInclusive, final float maxInclusive) {
+        return new JValidatedTextField(new FloatingPointValidator(ERROR_FLOAT_INVALID, ERROR_FLOAT_NAN, mandatory, allowNaN, minInclusive, maxInclusive));
+    }
+
+    //-------------------------------------------------------------------------
+    /**
      * Creates a {@code JTextField} that validates a {@code Double} value.
      * 
      * @param mandatory  true if mandatory
@@ -165,7 +197,7 @@ public final class JValidatedTextFields {
      * @return the text field, not null
      */
     public static JValidatedTextField createDoubleTextField(final boolean mandatory, final boolean allowNaN, final double minInclusive, final double maxInclusive) {
-        return new JValidatedTextField(new DoubleValidator(mandatory, allowNaN, minInclusive, maxInclusive));
+        return new JValidatedTextField(new FloatingPointValidator(ERROR_DOUBLE_INVALID, ERROR_DOUBLE_NAN, mandatory, allowNaN, minInclusive, maxInclusive));
     }
 
     //-------------------------------------------------------------------------
@@ -229,14 +261,14 @@ public final class JValidatedTextFields {
     }
 
     //-------------------------------------------------------------------------
-    private static final class DoubleValidator extends DefaultJTextFieldValidator {
+    private static final class FloatingPointValidator extends DefaultJTextFieldValidator {
         /** Valid characters for double. */
         private static final Pattern VALID = Pattern.compile("[0-9eE.+-]*[fd]?");
-        /** Error message key. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Double.invalid");
-        /** Error message key. */
-        private static final ErrorStatus ERROR_NAN = ErrorStatus.of("Error.Double.nan");
 
+        /** The error to use when invalid. */
+        private final ErrorStatus errorWhenInvalid;
+        /** The error to use when invalid. */
+        private final ErrorStatus errorWhenNan;
         /** Whether to allow NaN. */
         private final boolean allowNaN;
         /** The minimum value. */
@@ -244,8 +276,11 @@ public final class JValidatedTextFields {
         /** The maximum value. */
         private final double maxInclusive;
 
-        private DoubleValidator(boolean mandatory, boolean allowNaN, double minInclusive, double maxInclusive) {
+        private FloatingPointValidator(ErrorStatus errorWhenInvalid, ErrorStatus errorWhenNan,
+                boolean mandatory, boolean allowNaN, double minInclusive, double maxInclusive) {
             super(mandatory, 128, VALID);
+            this.errorWhenInvalid = errorWhenInvalid;
+            this.errorWhenNan = errorWhenNan;
             this.minInclusive = minInclusive;
             this.maxInclusive = maxInclusive;
             this.allowNaN = allowNaN;
@@ -265,22 +300,46 @@ public final class JValidatedTextFields {
                 return ErrorStatus.MANDATORY;
             }
             if (allowNaN == false && "NaN".startsWith(text)) {
-                return ERROR_NAN;
+                return errorWhenNan;
             }
             String upper = text.toUpperCase(Locale.US);
             if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".") ||
                     (upper.endsWith("E") && upper.endsWith("EE") == false) ||
-                    "NaN".startsWith(text) || "Infinity".startsWith(text) || "-Infinity".startsWith(text)) {
+                    (upper.endsWith("E-") && upper.endsWith("EE-") == false) ||
+                    "NaN".startsWith(text)) {
+                return ErrorStatus.VALID;
+            }
+            if ("Infinity".startsWith(text)) {
+                if (maxInclusive < Double.POSITIVE_INFINITY) {
+                    return ErrorStatus.range(minInclusive + " - " + maxInclusive);
+                }
+                return ErrorStatus.VALID;
+            }
+            if ("-Infinity".startsWith(text)) {
+                if (minInclusive > Double.NEGATIVE_INFINITY) {
+                    return ErrorStatus.range(minInclusive + " - " + maxInclusive);
+                }
                 return ErrorStatus.VALID;
             }
             try {
-                double value = Double.parseDouble(text);
+                double value;
+                if (errorWhenInvalid == ERROR_DOUBLE_INVALID) {
+                    value = Double.parseDouble(text);
+                    if (value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY) {
+                        return errorWhenInvalid;
+                    }
+                } else {
+                    value = Float.parseFloat(text);
+                    if (value == Float.POSITIVE_INFINITY || value == Float.NEGATIVE_INFINITY) {
+                        return errorWhenInvalid;
+                    }
+                }
                 if (value < minInclusive || value > maxInclusive) {
                     return ErrorStatus.range(minInclusive + " - " + maxInclusive);
                 }
                 return ErrorStatus.VALID;
             } catch (NumberFormatException ex) {
-                return ERROR_INVALID;
+                return errorWhenInvalid;
             }
         }
 
@@ -300,6 +359,7 @@ public final class JValidatedTextFields {
                     text = "-Infinity";
                 }
                 String upper = text.toUpperCase(Locale.US);
+                text = (upper.endsWith("E-") ? text.substring(0, text.length() - 2) : text);  // ignore incomplete trailing exponent
                 text = (upper.endsWith("E") ? text.substring(0, text.length() - 1) : text);  // ignore incomplete trailing exponent
                 text = (upper.endsWith("D") ? text.substring(0, text.length() - 1) : text);  // Java doubles can end in 'd'
                 text = (upper.endsWith("F") ? text.substring(0, text.length() - 1) : text);  // Java doubles can end in 'f'

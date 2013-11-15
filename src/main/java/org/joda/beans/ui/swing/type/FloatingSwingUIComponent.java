@@ -23,9 +23,9 @@ import org.joda.beans.ui.swing.component.JValidatedTextField;
 import org.joda.beans.ui.swing.component.JValidatedTextFields;
 
 /**
- * An instantiated Swing component for a {@code Double}.
+ * An instantiated Swing component for floating point numerics.
  */
-public class DoubleSwingUIComponent extends SwingUIComponent<JValidatedTextField> {
+public class FloatingSwingUIComponent extends SwingUIComponent<JValidatedTextField> {
 
     /**
      * Meta-component additional field.
@@ -38,16 +38,21 @@ public class DoubleSwingUIComponent extends SwingUIComponent<JValidatedTextField
      * 
      * @param metaComponent  the meta-component, not null
      */
-    public DoubleSwingUIComponent(MetaUIComponent metaComponent) {
+    public FloatingSwingUIComponent(MetaUIComponent metaComponent) {
         super(metaComponent);
+        Boolean allowNan = (Boolean) metaComponent.getAdditional().get(ALLOW_NAN);
         Class<?> type = metaComponent.getPropertyType();
         JValidatedTextField component;
         if (type == Double.class || type == Double.TYPE) {
-            Boolean allowNan = (Boolean) metaComponent.getAdditional().get(ALLOW_NAN);
             component = JValidatedTextFields.createDoubleTextField(
                     metaComponent.isMandatory(), allowNan != null && allowNan.booleanValue(),
                     metaComponent.getMinValue(Double.NEGATIVE_INFINITY).doubleValue(),
                     metaComponent.getMaxValue(Double.POSITIVE_INFINITY).doubleValue());
+        } else if (type == Float.class || type == Float.TYPE) {
+            component = JValidatedTextFields.createFloatTextField(
+                    metaComponent.isMandatory(), allowNan != null && allowNan.booleanValue(),
+                    metaComponent.getMinValue(Float.NEGATIVE_INFINITY).floatValue(),
+                    metaComponent.getMaxValue(Float.POSITIVE_INFINITY).floatValue());
         } else {
             throw new IllegalArgumentException("Unknown type: " + type);
         }
