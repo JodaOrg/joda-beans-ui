@@ -23,6 +23,15 @@ import java.util.regex.Pattern;
  */
 public final class JValidatedTextFields {
 
+    /** Error message key. */
+    private static final ErrorStatus ERROR_BYTE_INVALID = ErrorStatus.of("Error.Byte.invalid");
+    /** Error message key. */
+    private static final ErrorStatus ERROR_SHORT_INVALID = ErrorStatus.of("Error.Short.invalid");
+    /** Error message key. */
+    private static final ErrorStatus ERROR_INTEGER_INVALID = ErrorStatus.of("Error.Integer.invalid");
+    /** Error message key. */
+    private static final ErrorStatus ERROR_LONG_INVALID = ErrorStatus.of("Error.Long.invalid");
+
     /**
      * Restricted constructor.
      */
@@ -61,7 +70,7 @@ public final class JValidatedTextFields {
      * @return the text field, not null
      */
     public static JValidatedTextField createByteTextField(final boolean mandatory, final byte minInclusive, final byte maxInclusive) {
-        return new JValidatedTextField(new ByteValidator(mandatory));
+        return new JValidatedTextField(new IntegralValidator(ERROR_BYTE_INVALID, 4, mandatory, minInclusive, maxInclusive));
     }
 
     //-------------------------------------------------------------------------
@@ -84,7 +93,7 @@ public final class JValidatedTextFields {
      * @return the text field, not null
      */
     public static JValidatedTextField createShortTextField(final boolean mandatory, final short minInclusive, final short maxInclusive) {
-        return new JValidatedTextField(new ShortValidator(mandatory));
+        return new JValidatedTextField(new IntegralValidator(ERROR_SHORT_INVALID, 6, mandatory, minInclusive, maxInclusive));
     }
 
     //-------------------------------------------------------------------------
@@ -108,7 +117,7 @@ public final class JValidatedTextFields {
      * @return the text field, not null
      */
     public static JValidatedTextField createIntegerTextField(final boolean mandatory, final int minInclusive, final int maxInclusive) {
-        return new JValidatedTextField(new IntegerValidator(mandatory, minInclusive, maxInclusive));
+        return new JValidatedTextField(new IntegralValidator(ERROR_INTEGER_INVALID, 11, mandatory, minInclusive, maxInclusive));
     }
 
     //-------------------------------------------------------------------------
@@ -132,7 +141,7 @@ public final class JValidatedTextFields {
      * @return the text field, not null
      */
     public static JValidatedTextField createLongTextField(final boolean mandatory, final long minInclusive, final long maxInclusive) {
-        return new JValidatedTextField(new LongValidator(mandatory));
+        return new JValidatedTextField(new IntegralValidator(ERROR_LONG_INVALID, 20, mandatory, minInclusive, maxInclusive));
     }
 
     //-------------------------------------------------------------------------
@@ -170,91 +179,20 @@ public final class JValidatedTextFields {
     }
 
     //-------------------------------------------------------------------------
-    private static final class ByteValidator extends DefaultJTextFieldValidator {
-        /** Valid characters for double. */
+    private static final class IntegralValidator extends DefaultJTextFieldValidator {
+        /** Valid characters for integral. */
         private static final Pattern VALID = Pattern.compile("[0-9+-]*");
-        /** Error message key. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Byte.invalid");
 
-        private ByteValidator(boolean mandatory) {
-            super(mandatory, 5, VALID);
-        }
-
-        @Override
-        protected ErrorStatus checkStatus(String text, boolean onExit) {
-            if (text.isEmpty() || text.equals("+") || text.equals("-")) {
-                return ErrorStatus.VALID;
-            }
-            try {
-                Byte.parseByte(text);
-                return ErrorStatus.VALID;
-            } catch (NumberFormatException ex) {
-                return ERROR_INVALID;
-            }
-        }
-
-        @Override
-        protected String onExit(String text, ErrorStatus status) {
-            if (status.isValid()) {
-                if (text.isEmpty() || text.equals("+") || text.equals("-")) {
-                    return (isMandatory() ? "0" : "");
-                }
-                return text.replace("+", "");
-            }
-            return text;
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    private static final class ShortValidator extends DefaultJTextFieldValidator {
-        /** Valid characters for double. */
-        private static final Pattern VALID = Pattern.compile("[0-9+-]*");
-        /** Error message key. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Short.invalid");
-
-        private ShortValidator(boolean mandatory) {
-            super(mandatory, 7, VALID);
-        }
-
-        @Override
-        protected ErrorStatus checkStatus(String text, boolean onExit) {
-            if (text.isEmpty() || text.equals("+") || text.equals("-")) {
-                return ErrorStatus.VALID;
-            }
-            try {
-                Short.parseShort(text);
-                return ErrorStatus.VALID;
-            } catch (NumberFormatException ex) {
-                return ERROR_INVALID;
-            }
-        }
-
-        @Override
-        protected String onExit(String text, ErrorStatus status) {
-            if (status.isValid()) {
-                if (text.isEmpty() || text.equals("+") || text.equals("-")) {
-                    return (isMandatory() ? "0" : "");
-                }
-                return text.replace("+", "");
-            }
-            return text;
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    private static final class IntegerValidator extends DefaultJTextFieldValidator {
-        /** Valid characters for double. */
-        private static final Pattern VALID = Pattern.compile("[0-9+-]*");
-        /** Error message key. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Integer.invalid");
-
+        /** The error to use when invalid. */
+        private final ErrorStatus errorWhenInvalid;
         /** The minimum value. */
-        private final int minInclusive;
+        private final long minInclusive;
         /** The maximum value. */
-        private final int maxInclusive;
+        private final long maxInclusive;
 
-        private IntegerValidator(boolean mandatory, int minInclusive, int maxInclusive) {
-            super(mandatory, 12, VALID);
+        private IntegralValidator(ErrorStatus errorWhenInvalid, int maxSize, boolean mandatory, long minInclusive, long maxInclusive) {
+            super(mandatory, maxSize, VALID);
+            this.errorWhenInvalid = errorWhenInvalid;
             this.minInclusive = minInclusive;
             this.maxInclusive = maxInclusive;
         }
@@ -265,49 +203,13 @@ public final class JValidatedTextFields {
                 return ErrorStatus.VALID;
             }
             try {
-                int value = Integer.parseInt(text);
+                long value = Long.parseLong(text);
                 if (value < minInclusive || value > maxInclusive) {
                     return ErrorStatus.range(minInclusive + " - " + maxInclusive);
                 }
                 return ErrorStatus.VALID;
             } catch (NumberFormatException ex) {
-                return ERROR_INVALID;
-            }
-        }
-
-        @Override
-        protected String onExit(String text, ErrorStatus status) {
-            if (status.isValid()) {
-                if (text.isEmpty() || text.equals("+") || text.equals("-")) {
-                    return (isMandatory() ? "0" : "");
-                }
-                return text.replace("+", "");
-            }
-            return text;
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    private static final class LongValidator extends DefaultJTextFieldValidator {
-        /** Valid characters for double. */
-        private static final Pattern VALID = Pattern.compile("[0-9+-]*");
-        /** Error message key. */
-        private static final ErrorStatus ERROR_INVALID = ErrorStatus.of("Error.Long.invalid");
-
-        private LongValidator(boolean mandatory) {
-            super(mandatory, 21, VALID);
-        }
-
-        @Override
-        protected ErrorStatus checkStatus(String text, boolean onExit) {
-            if (text.isEmpty() || text.equals("+") || text.equals("-")) {
-                return ErrorStatus.VALID;
-            }
-            try {
-                Long.parseLong(text);
-                return ErrorStatus.VALID;
-            } catch (NumberFormatException ex) {
-                return ERROR_INVALID;
+                return errorWhenInvalid;
             }
         }
 
