@@ -34,6 +34,8 @@ import org.joda.beans.PropertyDefinition;
 
 /**
  * Factory used to create {@code MetaUIForm} instances.
+ * <p>
+ * This class is designed to be subclassed.
  */
 public class MetaUIFactory {
 
@@ -52,11 +54,21 @@ public class MetaUIFactory {
      */
     public MetaUIForm createForm(final MetaBean metaBean) {
         Objects.requireNonNull(metaBean, "metaBean");
-        MetaUIForm form = new MetaUIForm(metaBean);
+        MetaUIForm form = createEmptyMetaForm(metaBean);
         for (MetaProperty<?> mp : metaBean.metaPropertyIterable()) {
             buildComponent(form, mp);
         }
         return form;
+    }
+
+    /**
+     * Creates an empty form.
+     * 
+     * @param metaBean  the meta-bean, not null
+     * @return the empty form, not null
+     */
+    protected MetaUIForm createEmptyMetaForm(final MetaBean metaBean) {
+        return new MetaUIForm(metaBean);
     }
 
     /**
@@ -66,12 +78,22 @@ public class MetaUIFactory {
      * @param mp  the meta-property, not null
      */
     protected void buildComponent(MetaUIForm form, MetaProperty<?> mp) {
-        MetaUIComponent comp = new MetaUIComponent(mp);
+        MetaUIComponent comp = createEmptyMetaComponent(mp);
         buildMandatory(comp);
         buildMinMax(comp);
         buildSize(comp);
         buildValues(comp);
         form.getComponents().add(comp);
+    }
+
+    /**
+     * Creates an empty component.
+     * 
+     * @param metaProperty  the meta-property, not null
+     * @return the empty component, not null
+     */
+    protected MetaUIComponent createEmptyMetaComponent(MetaProperty<?> metaProperty) {
+        return new MetaUIComponent(metaProperty);
     }
 
     /**
