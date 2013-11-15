@@ -16,6 +16,7 @@
 package org.joda.beans.ui.swing;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +71,9 @@ public class Person implements Bean {
 
     @PropertyDefinition
     private WorldRegion region;
+
+    @PropertyDefinition
+    private GregorianCalendar birthDate;
 
     @PropertyDefinition
     private Address address;
@@ -310,6 +314,31 @@ public class Person implements Bean {
 
     //-----------------------------------------------------------------------
     /**
+     * Gets the birthDate.
+     * @return the value of the property
+     */
+    public GregorianCalendar getBirthDate() {
+        return birthDate;
+    }
+
+    /**
+     * Sets the birthDate.
+     * @param birthDate  the new value of the property
+     */
+    public void setBirthDate(GregorianCalendar birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    /**
+     * Gets the the {@code birthDate} property.
+     * @return the property, not null
+     */
+    public final Property<GregorianCalendar> birthDate() {
+        return metaBean().birthDate().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
      * Gets the address.
      * @return the value of the property
      */
@@ -389,6 +418,7 @@ public class Person implements Bean {
                     (isChild() == other.isChild()) &&
                     JodaBeanUtils.equal(getMarried(), other.getMarried()) &&
                     JodaBeanUtils.equal(getRegion(), other.getRegion()) &&
+                    JodaBeanUtils.equal(getBirthDate(), other.getBirthDate()) &&
                     JodaBeanUtils.equal(getAddress(), other.getAddress()) &&
                     JodaBeanUtils.equal(getFriends(), other.getFriends());
         }
@@ -406,6 +436,7 @@ public class Person implements Bean {
         hash += hash * 31 + JodaBeanUtils.hashCode(isChild());
         hash += hash * 31 + JodaBeanUtils.hashCode(getMarried());
         hash += hash * 31 + JodaBeanUtils.hashCode(getRegion());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getBirthDate());
         hash += hash * 31 + JodaBeanUtils.hashCode(getAddress());
         hash += hash * 31 + JodaBeanUtils.hashCode(getFriends());
         return hash;
@@ -413,7 +444,7 @@ public class Person implements Bean {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(352);
+        StringBuilder buf = new StringBuilder(384);
         buf.append("Person{");
         int len = buf.length();
         toString(buf);
@@ -433,6 +464,7 @@ public class Person implements Bean {
         buf.append("child").append('=').append(JodaBeanUtils.toString(isChild())).append(',').append(' ');
         buf.append("married").append('=').append(JodaBeanUtils.toString(getMarried())).append(',').append(' ');
         buf.append("region").append('=').append(JodaBeanUtils.toString(getRegion())).append(',').append(' ');
+        buf.append("birthDate").append('=').append(JodaBeanUtils.toString(getBirthDate())).append(',').append(' ');
         buf.append("address").append('=').append(JodaBeanUtils.toString(getAddress())).append(',').append(' ');
         buf.append("friends").append('=').append(JodaBeanUtils.toString(getFriends())).append(',').append(' ');
     }
@@ -488,6 +520,11 @@ public class Person implements Bean {
         private final MetaProperty<WorldRegion> region = DirectMetaProperty.ofReadWrite(
                 this, "region", Person.class, WorldRegion.class);
         /**
+         * The meta-property for the {@code birthDate} property.
+         */
+        private final MetaProperty<GregorianCalendar> birthDate = DirectMetaProperty.ofReadWrite(
+                this, "birthDate", Person.class, GregorianCalendar.class);
+        /**
          * The meta-property for the {@code address} property.
          */
         private final MetaProperty<Address> address = DirectMetaProperty.ofReadWrite(
@@ -511,6 +548,7 @@ public class Person implements Bean {
                 "child",
                 "married",
                 "region",
+                "birthDate",
                 "address",
                 "friends");
 
@@ -539,6 +577,8 @@ public class Person implements Bean {
                     return married;
                 case -934795532:  // region
                     return region;
+                case -1210031859:  // birthDate
+                    return birthDate;
                 case -1147692044:  // address
                     return address;
                 case -600094315:  // friends
@@ -628,6 +668,14 @@ public class Person implements Bean {
         }
 
         /**
+         * The meta-property for the {@code birthDate} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<GregorianCalendar> birthDate() {
+            return birthDate;
+        }
+
+        /**
          * The meta-property for the {@code address} property.
          * @return the meta-property, not null
          */
@@ -663,6 +711,8 @@ public class Person implements Bean {
                     return ((Person) bean).getMarried();
                 case -934795532:  // region
                     return ((Person) bean).getRegion();
+                case -1210031859:  // birthDate
+                    return ((Person) bean).getBirthDate();
                 case -1147692044:  // address
                     return ((Person) bean).getAddress();
                 case -600094315:  // friends
@@ -698,6 +748,9 @@ public class Person implements Bean {
                     return;
                 case -934795532:  // region
                     ((Person) bean).setRegion((WorldRegion) newValue);
+                    return;
+                case -1210031859:  // birthDate
+                    ((Person) bean).setBirthDate((GregorianCalendar) newValue);
                     return;
                 case -1147692044:  // address
                     ((Person) bean).setAddress((Address) newValue);
