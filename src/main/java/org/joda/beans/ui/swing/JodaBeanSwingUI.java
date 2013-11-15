@@ -20,11 +20,13 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 import org.joda.beans.Bean;
+import org.joda.beans.ui.form.DefaultUIComponentFactory;
 import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.form.MetaUIFactory;
 import org.joda.beans.ui.form.MetaUIForm;
 import org.joda.beans.ui.form.UIComponentFactory;
 import org.joda.beans.ui.swing.component.SwingFormPanelBuilder;
+import org.joda.beans.ui.swing.type.EnumSwingUIComponent;
 
 /**
  * Entry point factory class capable of creating a Swing UI for a bean.
@@ -54,6 +56,11 @@ public class JodaBeanSwingUI {
         Map<Class<?>, UIComponentFactory> factories = SwingUISettings.INSTANCE.getFactories();
         for (MetaUIComponent comp : form.getComponents()) {
             UIComponentFactory factory = factories.get(comp.getMetaProperty().propertyType());
+            if (factory == null) {
+                if (Enum.class.isAssignableFrom(comp.getMetaProperty().propertyType())) {
+                    factory = DefaultUIComponentFactory.of(EnumSwingUIComponent.class);
+                }
+            }
             comp.setComponentFactory(factory);
         }
     }

@@ -59,6 +59,31 @@ public final class ApplicationMsg {
 
     //-------------------------------------------------------------------------
     /**
+     * Gets the localized text for selection text.
+     * 
+     * @param type  the type of the selection, not null
+     * @param value  the value to lookup, not null
+     * @return the text, not null
+     */
+    public static String lookupSelectionText(Class<?> type, String value) {
+        try {
+            String key = type + "." + value;
+            return RESOURCE_BUNDLE.getString(key);
+        } catch (MissingResourceException ex) {
+            try {
+                String key = type.getSimpleName() + "." + value;
+                return RESOURCE_BUNDLE.getString(key);
+            } catch (MissingResourceException ex2) {
+                if (value.length() <= 3) {
+                    return value.toUpperCase(Locale.US);
+                }
+                return titleCase(value.toLowerCase(Locale.US).replace('_', ' '));
+            }
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    /**
      * Gets the localized text for the UI component.
      * 
      * @param component  the UI component, not null
@@ -101,7 +126,14 @@ public final class ApplicationMsg {
         }
         String format = "(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])";
         String split = input.replaceAll(format, " ");
-        return Character.toUpperCase(split.charAt(0)) + split.substring(1).toLowerCase(Locale.US);
+        return titleCase(split);
+    }
+
+    private static String titleCase(String text) {
+        if (text.isEmpty()) {
+            return text;
+        }
+        return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase(Locale.US);
     }
 
 }
