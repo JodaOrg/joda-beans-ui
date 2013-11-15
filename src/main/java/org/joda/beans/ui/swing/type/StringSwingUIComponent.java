@@ -25,7 +25,7 @@ import org.joda.beans.ui.swing.component.JValidatedTextFields;
 import org.joda.beans.ui.swing.component.TextUndoManager;
 
 /**
- * An instantiated Swing {@code JTextField}.
+ * An instantiated Swing component for a string.
  */
 public class StringSwingUIComponent extends SwingUIComponent<JTextField> {
 

@@ -24,6 +24,7 @@ import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.form.MetaUIFactory;
 import org.joda.beans.ui.form.MetaUIForm;
 import org.joda.beans.ui.form.UIComponentFactory;
+import org.joda.beans.ui.swing.component.SwingFormPanelBuilder;
 
 /**
  * Entry point factory class capable of creating a Swing UI for a bean.
