@@ -92,6 +92,12 @@ public class MetaUIComponent implements Bean {
      */
     @PropertyDefinition(validate = "notNull")
     private final FlexiBean additional = new FlexiBean();
+    /**
+     * The factory that allows the real UI component to be created.
+     * For example, this might return a Swing-based factory.
+     */
+    @PropertyDefinition
+    private UIComponentFactory componentFactory;
 
     /**
      * Creates an instance.
@@ -343,6 +349,25 @@ public class MetaUIComponent implements Bean {
     }
 
     //-----------------------------------------------------------------------
+    /**
+     * Gets the factory that allows the real UI component to be created.
+     * For example, this might return a Swing-based factory.
+     * @return the value of the property
+     */
+    public UIComponentFactory getComponentFactory() {
+        return componentFactory;
+    }
+
+    /**
+     * Sets the factory that allows the real UI component to be created.
+     * For example, this might return a Swing-based factory.
+     * @param componentFactory  the new value of the property
+     */
+    public void setComponentFactory(UIComponentFactory componentFactory) {
+        this.componentFactory = componentFactory;
+    }
+
+    //-----------------------------------------------------------------------
     @Override
     public MetaUIComponent clone() {
         BeanBuilder<? extends MetaUIComponent> builder = metaBean().builder();
@@ -373,7 +398,8 @@ public class MetaUIComponent implements Bean {
                     (getMaxSize() == other.getMaxSize()) &&
                     (isLimitedValues() == other.isLimitedValues()) &&
                     JodaBeanUtils.equal(getSelectableValues(), other.getSelectableValues()) &&
-                    JodaBeanUtils.equal(getAdditional(), other.getAdditional());
+                    JodaBeanUtils.equal(getAdditional(), other.getAdditional()) &&
+                    JodaBeanUtils.equal(getComponentFactory(), other.getComponentFactory());
         }
         return false;
     }
@@ -390,12 +416,13 @@ public class MetaUIComponent implements Bean {
         hash += hash * 31 + JodaBeanUtils.hashCode(isLimitedValues());
         hash += hash * 31 + JodaBeanUtils.hashCode(getSelectableValues());
         hash += hash * 31 + JodaBeanUtils.hashCode(getAdditional());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getComponentFactory());
         return hash;
     }
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(320);
+        StringBuilder buf = new StringBuilder(352);
         buf.append("MetaUIComponent{");
         int len = buf.length();
         toString(buf);
@@ -416,6 +443,7 @@ public class MetaUIComponent implements Bean {
         buf.append("limitedValues").append('=').append(JodaBeanUtils.toString(isLimitedValues())).append(',').append(' ');
         buf.append("selectableValues").append('=').append(JodaBeanUtils.toString(getSelectableValues())).append(',').append(' ');
         buf.append("additional").append('=').append(JodaBeanUtils.toString(getAdditional())).append(',').append(' ');
+        buf.append("componentFactory").append('=').append(JodaBeanUtils.toString(getComponentFactory())).append(',').append(' ');
     }
 
     //-----------------------------------------------------------------------
@@ -478,6 +506,11 @@ public class MetaUIComponent implements Bean {
         private final MetaProperty<FlexiBean> additional = DirectMetaProperty.ofReadWrite(
                 this, "additional", MetaUIComponent.class, FlexiBean.class);
         /**
+         * The meta-property for the {@code componentFactory} property.
+         */
+        private final MetaProperty<UIComponentFactory> componentFactory = DirectMetaProperty.ofReadWrite(
+                this, "componentFactory", MetaUIComponent.class, UIComponentFactory.class);
+        /**
          * The meta-properties.
          */
         private final Map<String, MetaProperty<?>> metaPropertyMap$ = new DirectMetaPropertyMap(
@@ -490,7 +523,8 @@ public class MetaUIComponent implements Bean {
                 "maxSize",
                 "limitedValues",
                 "selectableValues",
-                "additional");
+                "additional",
+                "componentFactory");
 
         /**
          * Restricted constructor.
@@ -519,6 +553,8 @@ public class MetaUIComponent implements Bean {
                     return selectableValues;
                 case -1931413465:  // additional
                     return additional;
+                case 1361478989:  // componentFactory
+                    return componentFactory;
             }
             return super.metaPropertyGet(propertyName);
         }
@@ -560,6 +596,8 @@ public class MetaUIComponent implements Bean {
                     return ((MetaUIComponent) bean).getSelectableValues();
                 case -1931413465:  // additional
                     return ((MetaUIComponent) bean).getAdditional();
+                case 1361478989:  // componentFactory
+                    return ((MetaUIComponent) bean).getComponentFactory();
             }
             return super.propertyGet(bean, propertyName, quiet);
         }
@@ -594,6 +632,9 @@ public class MetaUIComponent implements Bean {
                     return;
                 case -1931413465:  // additional
                     ((MetaUIComponent) bean).setAdditional((FlexiBean) newValue);
+                    return;
+                case 1361478989:  // componentFactory
+                    ((MetaUIComponent) bean).setComponentFactory((UIComponentFactory) newValue);
                     return;
             }
             super.propertySet(bean, propertyName, newValue, quiet);

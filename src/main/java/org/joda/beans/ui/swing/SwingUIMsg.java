@@ -13,20 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.joda.beans.ui.swing.binder;
+package org.joda.beans.ui.swing;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- * Access localized text.
+ * Access localized text for the Joda-Beans-UI Swing framework.
  */
-public final class BinderMsg {
+public final class SwingUIMsg {
 
     /**
      * The bundle file.
      */
-    private static final String BUNDLE_NAME = "org.joda.beans.ui.swing.binder.BinderMsg";
+    private static final String BUNDLE_NAME = "org.joda.beans.ui.swing.SwingUIMsg";
     /**
      * The loaded bundle.
      */
@@ -35,7 +35,7 @@ public final class BinderMsg {
     /**
      * Restricted constructor.
      */
-    private BinderMsg() {
+    private SwingUIMsg() {
     }
 
     //-------------------------------------------------------------------------

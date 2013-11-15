@@ -23,14 +23,14 @@ import org.joda.beans.MetaProperty;
 import org.joda.beans.ui.form.MetaUIComponent;
 
 /**
- * Access localized text.
+ * Access localized text at the application level.
  */
-public final class DisplayMsg {
+public final class ApplicationMsg {
 
     /**
      * The bundle file.
      */
-    private static final String BUNDLE_NAME = "org.joda.beans.ui.swing.DisplayMsg";
+    private static final String BUNDLE_NAME = "org.joda.beans.ui.swing.ApplicationMsg";
     /**
      * The loaded bundle.
      */
@@ -39,7 +39,7 @@ public final class DisplayMsg {
     /**
      * Restricted constructor.
      */
-    private DisplayMsg() {
+    private ApplicationMsg() {
     }
 
     //-------------------------------------------------------------------------

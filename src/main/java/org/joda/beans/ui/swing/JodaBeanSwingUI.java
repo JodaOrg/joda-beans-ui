@@ -15,50 +15,59 @@
  */
 package org.joda.beans.ui.swing;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+import java.util.Map;
+
 import javax.swing.JPanel;
 
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.form.MetaUIFactory;
 import org.joda.beans.ui.form.MetaUIForm;
-import org.joda.beans.ui.swing.binder.PropertyBinder;
-import org.joda.beans.ui.swing.binder.PropertyBinderFactory;
+import org.joda.beans.ui.form.UIComponentFactory;
 
 /**
  * Entry point factory class capable of creating a Swing UI for a bean.
  */
 public class JodaBeanSwingUI {
 
-    public JPanel createReadOnly(final Bean bean) {
-        MetaUIForm form = new MetaUIFactory().createForm(bean.metaBean());
-        SwingFormPanelBuilder builder = new SwingFormPanelBuilder();
+    /**
+     * Creates a form for the specified bean.
+     * <p>
+     * The bean is examined for meta-data and a form created.
+     * 
+     * @param bean  the bean to examine, not null
+     * @return the created form panel, not null
+     */
+    public JPanel createForm(final Bean bean) {
+        MetaUIForm metaForm = createMetaForm(bean);
+        selectSwingComponents(bean, metaForm);
+        JPanel form = createSwingForm(bean, metaForm);
+        return form;
+    }
+
+    protected MetaUIForm createMetaForm(Bean bean) {
+        return new MetaUIFactory().createForm(bean.metaBean());
+    }
+
+    protected void selectSwingComponents(Bean bean, MetaUIForm form) {
+        Map<Class<?>, UIComponentFactory> factories = SwingUISettings.INSTANCE.getFactories();
         for (MetaUIComponent comp : form.getComponents()) {
-            JComponent field = createField(comp, bean);
-            if (field != null) {
-                String name = DisplayMsg.lookupFieldPrompt(comp);
-                builder.append(name, field);
+            UIComponentFactory factory = factories.get(comp.getMetaProperty().propertyType());
+            comp.setComponentFactory(factory);
+        }
+    }
+
+    protected JPanel createSwingForm(Bean bean, MetaUIForm form) {
+        SwingFormPanelBuilder builder = new SwingFormPanelBuilder();
+        for (MetaUIComponent metaComp : form.getComponents()) {
+            if (metaComp.getComponentFactory() != null) {
+                SwingUIComponent<?> comp = (SwingUIComponent<?>) metaComp.getComponentFactory().createComponent(metaComp);
+                String name = ApplicationMsg.lookupFieldPrompt(metaComp);
+                builder.append(name, comp.getComponent());
+                comp.updateUI(bean);
             }
         }
         return builder.build();
-    }
-
-    private JComponent createField(MetaUIComponent metaComponent, final Bean bean) {
-        Object value = metaComponent.getMetaProperty().get(bean);
-        for (PropertyBinderFactory factory : SwingUISettings.INSTANCE.getFactories()) {
-            PropertyBinder binder = factory.createBinder(metaComponent);
-            if (binder != null) {
-                binder.updateUI(bean);
-                return binder.getComponentList().get(0);
-            }
-        }
-        if (Bean.class.isAssignableFrom(metaComponent.getPropertyType())) {
-            return new JLabel(value.toString());
-        } else {
-            return null;
-            //throw new IllegalArgumentException("Unable to create UI as declared type is neither a bean nor a simple type: " + mp.propertyType().getName());
-        }
     }
 
 }

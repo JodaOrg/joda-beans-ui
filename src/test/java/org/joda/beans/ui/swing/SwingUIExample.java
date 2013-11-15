@@ -39,7 +39,7 @@ public class SwingUIExample {
             person.getAddress().setStreet("186 Park Street");
             person.getAddress().setCity("London");
             
-            JPanel panel = new JodaBeanSwingUI().createReadOnly(person);
+            JPanel panel = new JodaBeanSwingUI().createForm(person);
             
             JFrame frame = new JFrame("Swing bean example");
             JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
