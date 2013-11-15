@@ -15,6 +15,8 @@
  */
 package org.joda.beans.ui.form;
 
+import java.util.Objects;
+
 import org.joda.beans.Bean;
 import org.joda.beans.MetaProperty;
 
@@ -35,6 +37,14 @@ public abstract class UIComponent<T> {
      * The UI component.
      */
     private T component;
+    /**
+     * Whether the component should be marked as mandatory.
+     * This is set by default from the meta-component.
+     * However on occasion, users might perceive a component as mandatory
+     * even when it is not. For example, a {@code Boolean} exposed as
+     * three radio buttons is best indicated to the user as mandatory.
+     */
+    private boolean displayedAsMandatory;
 
     /**
      * Creates an instance.
@@ -42,7 +52,8 @@ public abstract class UIComponent<T> {
      * @param metaComponent  the meta-component, not null
      */
     protected UIComponent(MetaUIComponent metaComponent) {
-        this.metaComponent = metaComponent;
+        this.metaComponent = Objects.requireNonNull(metaComponent, "metaComponent");
+        this.displayedAsMandatory = metaComponent.isMandatory();
     }
 
     //-----------------------------------------------------------------------
@@ -73,6 +84,34 @@ public abstract class UIComponent<T> {
      */
     protected void setComponent(T component) {
         this.component = component;
+    }
+
+    /**
+     * Whether the component should be marked as mandatory.
+     * <p>
+     * This is set by default from the meta-component.
+     * However on occasion, users might perceive a component as mandatory
+     * even when it is not. For example, a {@code Boolean} exposed as
+     * three radio buttons is best indicated to the user as mandatory.
+     * 
+     * @return true if visibly mandatory
+     */
+    public boolean isDisplayedAsMandatory() {
+        return displayedAsMandatory;
+    }
+
+    /**
+     * Sets whether the component should be marked as mandatory.
+     * <p>
+     * This is set by default from the meta-component.
+     * However on occasion, users might perceive a component as mandatory
+     * even when it is not. For example, a {@code Boolean} exposed as
+     * three radio buttons is best indicated to the user as mandatory.
+     * 
+     * @param displayedAsMandatory  true to be visibly mandatory
+     */
+    public void setDisplayedAsMandatory(boolean displayedAsMandatory) {
+        this.displayedAsMandatory = displayedAsMandatory;
     }
 
     //-------------------------------------------------------------------------

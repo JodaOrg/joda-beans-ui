@@ -63,7 +63,7 @@ public class JodaBeanSwingUI {
         for (MetaUIComponent metaComp : form.getComponents()) {
             if (metaComp.getComponentFactory() != null) {
                 SwingUIComponent<?> comp = (SwingUIComponent<?>) metaComp.getComponentFactory().createComponent(metaComp);
-                String name = ApplicationMsg.lookupFieldPrompt(metaComp);
+                String name = ApplicationMsg.lookupFieldPrompt(comp);
                 builder.append(name, comp.getComponent());
                 comp.updateUI(bean);
             }

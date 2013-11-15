@@ -66,6 +66,7 @@ public class BooleanSwingUIComponent extends SwingUIComponent<JRadioButtonPanel<
         } else {
             throw new IllegalArgumentException("Unknown type: " + type);
         }
+        setDisplayedAsMandatory(true);
         setComponent(component);
     }
 
