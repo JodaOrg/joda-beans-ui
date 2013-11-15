@@ -31,6 +31,7 @@ import org.joda.beans.impl.direct.DirectBeanBuilder;
 import org.joda.beans.impl.direct.DirectMetaBean;
 import org.joda.beans.impl.direct.DirectMetaProperty;
 import org.joda.beans.impl.direct.DirectMetaPropertyMap;
+import org.joda.beans.impl.flexi.FlexiBean;
 
 /**
  * A description of a UI component.
@@ -86,6 +87,11 @@ public class MetaUIComponent implements Bean {
      */
     @PropertyDefinition
     private List<Object> selectableValues;
+    /**
+     * The storage for additional meta-component information.
+     */
+    @PropertyDefinition(validate = "notNull")
+    private final FlexiBean additional = new FlexiBean();
 
     /**
      * Creates an instance.
@@ -243,38 +249,38 @@ public class MetaUIComponent implements Bean {
     //-----------------------------------------------------------------------
     /**
      * Gets the minimum size, inclusive.
-     * Default null.
+     * Default zero.
      * @return the value of the property
      */
-    public Integer getMinSize() {
+    public int getMinSize() {
         return minSize;
     }
 
     /**
      * Sets the minimum size, inclusive.
-     * Default null.
+     * Default zero.
      * @param minSize  the new value of the property
      */
-    public void setMinSize(Integer minSize) {
+    public void setMinSize(int minSize) {
         this.minSize = minSize;
     }
 
     //-----------------------------------------------------------------------
     /**
      * Gets the maximum size, inclusive.
-     * Default null.
+     * Default Integer.MAX_VALUE.
      * @return the value of the property
      */
-    public Integer getMaxSize() {
+    public int getMaxSize() {
         return maxSize;
     }
 
     /**
      * Sets the maximum size, inclusive.
-     * Default null.
+     * Default Integer.MAX_VALUE.
      * @param maxSize  the new value of the property
      */
-    public void setMaxSize(Integer maxSize) {
+    public void setMaxSize(int maxSize) {
         this.maxSize = maxSize;
     }
 
@@ -319,6 +325,24 @@ public class MetaUIComponent implements Bean {
     }
 
     //-----------------------------------------------------------------------
+    /**
+     * Gets the storage for additional meta-component information.
+     * @return the value of the property, not null
+     */
+    public FlexiBean getAdditional() {
+        return additional;
+    }
+
+    /**
+     * Sets the storage for additional meta-component information.
+     * @param additional  the new value of the property
+     */
+    public void setAdditional(FlexiBean additional) {
+        this.additional.clear();
+        this.additional.putAll(additional);
+    }
+
+    //-----------------------------------------------------------------------
     @Override
     public MetaUIComponent clone() {
         BeanBuilder<? extends MetaUIComponent> builder = metaBean().builder();
@@ -345,10 +369,11 @@ public class MetaUIComponent implements Bean {
                     (isMandatory() == other.isMandatory()) &&
                     JodaBeanUtils.equal(getMinValue(), other.getMinValue()) &&
                     JodaBeanUtils.equal(getMaxValue(), other.getMaxValue()) &&
-                    JodaBeanUtils.equal(getMinSize(), other.getMinSize()) &&
-                    JodaBeanUtils.equal(getMaxSize(), other.getMaxSize()) &&
+                    (getMinSize() == other.getMinSize()) &&
+                    (getMaxSize() == other.getMaxSize()) &&
                     (isLimitedValues() == other.isLimitedValues()) &&
-                    JodaBeanUtils.equal(getSelectableValues(), other.getSelectableValues());
+                    JodaBeanUtils.equal(getSelectableValues(), other.getSelectableValues()) &&
+                    JodaBeanUtils.equal(getAdditional(), other.getAdditional());
         }
         return false;
     }
@@ -364,12 +389,13 @@ public class MetaUIComponent implements Bean {
         hash += hash * 31 + JodaBeanUtils.hashCode(getMaxSize());
         hash += hash * 31 + JodaBeanUtils.hashCode(isLimitedValues());
         hash += hash * 31 + JodaBeanUtils.hashCode(getSelectableValues());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getAdditional());
         return hash;
     }
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(288);
+        StringBuilder buf = new StringBuilder(320);
         buf.append("MetaUIComponent{");
         int len = buf.length();
         toString(buf);
@@ -389,6 +415,7 @@ public class MetaUIComponent implements Bean {
         buf.append("maxSize").append('=').append(JodaBeanUtils.toString(getMaxSize())).append(',').append(' ');
         buf.append("limitedValues").append('=').append(JodaBeanUtils.toString(isLimitedValues())).append(',').append(' ');
         buf.append("selectableValues").append('=').append(JodaBeanUtils.toString(getSelectableValues())).append(',').append(' ');
+        buf.append("additional").append('=').append(JodaBeanUtils.toString(getAdditional())).append(',').append(' ');
     }
 
     //-----------------------------------------------------------------------
@@ -428,12 +455,12 @@ public class MetaUIComponent implements Bean {
          * The meta-property for the {@code minSize} property.
          */
         private final MetaProperty<Integer> minSize = DirectMetaProperty.ofReadWrite(
-                this, "minSize", MetaUIComponent.class, Integer.class);
+                this, "minSize", MetaUIComponent.class, Integer.TYPE);
         /**
          * The meta-property for the {@code maxSize} property.
          */
         private final MetaProperty<Integer> maxSize = DirectMetaProperty.ofReadWrite(
-                this, "maxSize", MetaUIComponent.class, Integer.class);
+                this, "maxSize", MetaUIComponent.class, Integer.TYPE);
         /**
          * The meta-property for the {@code limitedValues} property.
          */
@@ -446,6 +473,11 @@ public class MetaUIComponent implements Bean {
         private final MetaProperty<List<Object>> selectableValues = DirectMetaProperty.ofReadWrite(
                 this, "selectableValues", MetaUIComponent.class, (Class) List.class);
         /**
+         * The meta-property for the {@code additional} property.
+         */
+        private final MetaProperty<FlexiBean> additional = DirectMetaProperty.ofReadWrite(
+                this, "additional", MetaUIComponent.class, FlexiBean.class);
+        /**
          * The meta-properties.
          */
         private final Map<String, MetaProperty<?>> metaPropertyMap$ = new DirectMetaPropertyMap(
@@ -457,7 +489,8 @@ public class MetaUIComponent implements Bean {
                 "minSize",
                 "maxSize",
                 "limitedValues",
-                "selectableValues");
+                "selectableValues",
+                "additional");
 
         /**
          * Restricted constructor.
@@ -484,6 +517,8 @@ public class MetaUIComponent implements Bean {
                     return limitedValues;
                 case 953376024:  // selectableValues
                     return selectableValues;
+                case -1931413465:  // additional
+                    return additional;
             }
             return super.metaPropertyGet(propertyName);
         }
@@ -523,6 +558,8 @@ public class MetaUIComponent implements Bean {
                     return ((MetaUIComponent) bean).isLimitedValues();
                 case 953376024:  // selectableValues
                     return ((MetaUIComponent) bean).getSelectableValues();
+                case -1931413465:  // additional
+                    return ((MetaUIComponent) bean).getAdditional();
             }
             return super.propertyGet(bean, propertyName, quiet);
         }
@@ -555,6 +592,9 @@ public class MetaUIComponent implements Bean {
                 case 953376024:  // selectableValues
                     ((MetaUIComponent) bean).setSelectableValues((List<Object>) newValue);
                     return;
+                case -1931413465:  // additional
+                    ((MetaUIComponent) bean).setAdditional((FlexiBean) newValue);
+                    return;
             }
             super.propertySet(bean, propertyName, newValue, quiet);
         }
@@ -562,6 +602,7 @@ public class MetaUIComponent implements Bean {
         @Override
         protected void validate(Bean bean) {
             JodaBeanUtils.notNull(((MetaUIComponent) bean).metaProperty, "metaProperty");
+            JodaBeanUtils.notNull(((MetaUIComponent) bean).additional, "additional");
         }
 
     }
