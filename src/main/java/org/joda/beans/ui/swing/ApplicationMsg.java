@@ -67,11 +67,11 @@ public final class ApplicationMsg {
      */
     public static String lookupSelectionText(Class<?> type, String value) {
         try {
-            String key = type + "." + value;
+            String key = type + "." + value + ".text";
             return RESOURCE_BUNDLE.getString(key);
         } catch (MissingResourceException ex) {
             try {
-                String key = type.getSimpleName() + "." + value;
+                String key = type.getSimpleName() + "." + value + ".text";
                 return RESOURCE_BUNDLE.getString(key);
             } catch (MissingResourceException ex2) {
                 if (value.length() <= 3) {
@@ -105,12 +105,12 @@ public final class ApplicationMsg {
      */
     public static String lookupFieldPrompt(MetaProperty<?> metaProperty) {
         try {
-            String key = metaProperty.declaringType() + "." + metaProperty.name();
+            String key = metaProperty.declaringType() + "." + metaProperty.name() + ".prompt";
             String prompt = RESOURCE_BUNDLE.getString(key);
             return (prompt.endsWith(":") ? prompt : prompt + ":");
         } catch (MissingResourceException ex) {
             try {
-                String key = metaProperty.declaringType().getSimpleName() + "." + metaProperty.name();
+                String key = metaProperty.declaringType().getSimpleName() + "." + metaProperty.name() + ".prompt";
                 String prompt = RESOURCE_BUNDLE.getString(key);
                 return (prompt.endsWith(":") ? prompt : prompt + ":");
             } catch (MissingResourceException ex2) {
