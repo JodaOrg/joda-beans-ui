@@ -119,23 +119,23 @@ public class NumericPropertyBinders {
             if (type == Long.class || type == Long.TYPE) {
                 this.component = JValidatedTextFields.createLongTextField(
                         metaComponent.isMandatory(),
-                        metaComponent.getMinValue(Long.MIN_VALUE),
-                        metaComponent.getMaxValue(Long.MAX_VALUE));
+                        metaComponent.getMinValue(Long.MIN_VALUE).longValue(),
+                        metaComponent.getMaxValue(Long.MAX_VALUE).longValue());
             } else if (type == Integer.class || type == Integer.TYPE) {
                 this.component = JValidatedTextFields.createIntegerTextField(
                         metaComponent.isMandatory(),
-                        metaComponent.getMinValue(Integer.MIN_VALUE),
-                        metaComponent.getMaxValue(Integer.MAX_VALUE));
+                        metaComponent.getMinValue(Integer.MIN_VALUE).intValue(),
+                        metaComponent.getMaxValue(Integer.MAX_VALUE).intValue());
             } else if (type == Short.class || type == Short.TYPE) {
                 this.component = JValidatedTextFields.createShortTextField(
                         metaComponent.isMandatory(),
-                        metaComponent.getMinValue(Short.MIN_VALUE),
-                        metaComponent.getMaxValue(Short.MAX_VALUE));
+                        metaComponent.getMinValue(Short.MIN_VALUE).shortValue(),
+                        metaComponent.getMaxValue(Short.MAX_VALUE).shortValue());
             } else if (type == Byte.class || type == Byte.TYPE) {
                 this.component = JValidatedTextFields.createByteTextField(
                         metaComponent.isMandatory(),
-                        metaComponent.getMinValue(Byte.MIN_VALUE),
-                        metaComponent.getMaxValue(Byte.MAX_VALUE));
+                        metaComponent.getMinValue(Byte.MIN_VALUE).byteValue(),
+                        metaComponent.getMaxValue(Byte.MAX_VALUE).byteValue());
             } else {
                 throw new IllegalArgumentException();
             }
@@ -216,8 +216,8 @@ public class NumericPropertyBinders {
             super(metaComponent);
             this.component = JValidatedTextFields.createDoubleTextField(
                     metaComponent.isMandatory(), true,
-                    metaComponent.getMinValue(Double.NEGATIVE_INFINITY),
-                    metaComponent.getMaxValue(Double.POSITIVE_INFINITY));
+                    metaComponent.getMinValue(Double.NEGATIVE_INFINITY).doubleValue(),
+                    metaComponent.getMaxValue(Double.POSITIVE_INFINITY).doubleValue());
         }
 
         //-------------------------------------------------------------------------

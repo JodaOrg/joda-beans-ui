@@ -16,10 +16,13 @@
 package org.joda.beans.ui.form;
 
 import java.lang.annotation.Annotation;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -98,43 +101,19 @@ public class MetaUIFactory {
      * @param comp  the component, not null
      */
     protected void buildMinMax(MetaUIComponent comp) {
+        DecimalMax dmaxAnno = findAnnotation(comp, DecimalMax.class);
+        DecimalMin dminAnno = findAnnotation(comp, DecimalMin.class);
         Max maxAnno = findAnnotation(comp, Max.class);
         Min minAnno = findAnnotation(comp, Min.class);
-        Class<?> type = comp.getMetaProperty().propertyType();
-        if (type == Byte.class || type == Byte.TYPE) {
-            if (minAnno != null) {
-                comp.setMinValue((byte) minAnno.value());
-            }
-            if (maxAnno != null) {
-                comp.setMaxValue((byte) maxAnno.value());
-            }
-        } else if (type == Short.class || type == Short.TYPE) {
-            if (minAnno != null) {
-                comp.setMinValue((short) minAnno.value());
-            }
-            if (maxAnno != null) {
-                comp.setMaxValue((short) maxAnno.value());
-            }
-        } else if (type == Integer.class || type == Integer.TYPE) {
-            if (minAnno != null) {
-                comp.setMinValue((int) minAnno.value());
-            }
-            if (maxAnno != null) {
-                comp.setMaxValue((int) maxAnno.value());
-            }
-        } else if (type == Long.class || type == Long.TYPE) {
-            if (minAnno != null) {
-                comp.setMinValue((byte) minAnno.value());
-            }
-            if (maxAnno != null) {
-                comp.setMaxValue((byte) maxAnno.value());
-            }
-        } else if (type == Float.class || type == Float.TYPE) {
-            comp.setMinValue(Float.NEGATIVE_INFINITY);
-            comp.setMaxValue(Float.POSITIVE_INFINITY);
-        } else if (type == Double.class || type == Double.TYPE) {
-            comp.setMinValue(Double.NEGATIVE_INFINITY);
-            comp.setMaxValue(Double.POSITIVE_INFINITY);
+        if (dminAnno != null) {
+            comp.setMinValue(new BigDecimal(dminAnno.value()));
+        } else if (minAnno != null) {
+            comp.setMinValue(minAnno.value());
+        }
+        if (dmaxAnno != null) {
+            comp.setMaxValue(new BigDecimal(dmaxAnno.value()));
+        } else if (maxAnno != null) {
+            comp.setMaxValue(maxAnno.value());
         }
     }
 
