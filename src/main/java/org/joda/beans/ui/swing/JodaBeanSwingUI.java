@@ -25,7 +25,7 @@ import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.form.MetaUIFactory;
 import org.joda.beans.ui.form.MetaUIForm;
 import org.joda.beans.ui.form.UIComponentFactory;
-import org.joda.beans.ui.swing.component.SwingFormPanelBuilder;
+import org.joda.beans.ui.form.UIForm;
 import org.joda.beans.ui.swing.type.EnumSwingUIComponent;
 
 /**
@@ -44,8 +44,9 @@ public class JodaBeanSwingUI {
     public JPanel createForm(final Bean bean) {
         MetaUIForm metaForm = createMetaForm(bean);
         selectSwingComponents(bean, metaForm);
-        JPanel form = createSwingForm(bean, metaForm);
-        return form;
+        UIForm<JPanel> form = createSwingForm(bean, metaForm);
+        form.updateUI(bean);
+        return form.getForm();
     }
 
     protected MetaUIForm createMetaForm(Bean bean) {
@@ -65,17 +66,8 @@ public class JodaBeanSwingUI {
         }
     }
 
-    protected JPanel createSwingForm(Bean bean, MetaUIForm form) {
-        SwingFormPanelBuilder builder = new SwingFormPanelBuilder();
-        for (MetaUIComponent metaComp : form.getComponents()) {
-            if (metaComp.getComponentFactory() != null) {
-                SwingUIComponent<?> comp = (SwingUIComponent<?>) metaComp.getComponentFactory().createComponent(metaComp);
-                String name = ApplicationMsg.lookupFieldPrompt(comp);
-                builder.append(name, comp.getComponent());
-                comp.updateUI(bean);
-            }
-        }
-        return builder.build();
+    protected SwingUIForm createSwingForm(Bean bean, MetaUIForm form) {
+        return new SwingUIForm(form);
     }
 
 }

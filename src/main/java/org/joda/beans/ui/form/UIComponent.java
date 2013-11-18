@@ -33,18 +33,6 @@ public abstract class UIComponent<T> {
      * The meta-component.
      */
     private final MetaUIComponent metaComponent;
-    /**
-     * The UI component.
-     */
-    private T component;
-    /**
-     * Whether the component should be marked as mandatory.
-     * This is set by default from the meta-component.
-     * However on occasion, users might perceive a component as mandatory
-     * even when it is not. For example, a {@code Boolean} exposed as
-     * three radio buttons is best indicated to the user as mandatory.
-     */
-    private boolean displayedAsMandatory;
 
     /**
      * Creates an instance.
@@ -53,7 +41,6 @@ public abstract class UIComponent<T> {
      */
     protected UIComponent(MetaUIComponent metaComponent) {
         this.metaComponent = Objects.requireNonNull(metaComponent, "metaComponent");
-        this.displayedAsMandatory = metaComponent.isMandatory();
     }
 
     //-----------------------------------------------------------------------
@@ -71,20 +58,7 @@ public abstract class UIComponent<T> {
      * 
      * @return the UI component, null if not yet created
      */
-    public T getComponent() {
-        return component;
-    }
-
-    /**
-     * Sets the UI component.
-     * <p>
-     * This is typically invoked from the subclass constructor.
-     * 
-     * @param component  the component that was created, may be null
-     */
-    protected void setComponent(T component) {
-        this.component = component;
-    }
+    public abstract T getComponent();
 
     /**
      * Whether the component should be marked as mandatory.
@@ -97,21 +71,7 @@ public abstract class UIComponent<T> {
      * @return true if visibly mandatory
      */
     public boolean isDisplayedAsMandatory() {
-        return displayedAsMandatory;
-    }
-
-    /**
-     * Sets whether the component should be marked as mandatory.
-     * <p>
-     * This is set by default from the meta-component.
-     * However on occasion, users might perceive a component as mandatory
-     * even when it is not. For example, a {@code Boolean} exposed as
-     * three radio buttons is best indicated to the user as mandatory.
-     * 
-     * @param displayedAsMandatory  true to be visibly mandatory
-     */
-    public void setDisplayedAsMandatory(boolean displayedAsMandatory) {
-        this.displayedAsMandatory = displayedAsMandatory;
+        return getMetaComponent().isMandatory();
     }
 
     //-------------------------------------------------------------------------
@@ -138,13 +98,13 @@ public abstract class UIComponent<T> {
      * @return true if valid, false if in error
      */
     public boolean isValid() {
-        return false;
+        return true;
     }
 
     //-------------------------------------------------------------------------
     @Override
     public String toString() {
-        return metaComponent + "::" + (component != null ? component.getClass().getSimpleName() : "");
+        return metaComponent + "::" + (getComponent() != null ? getComponent().getClass().getSimpleName() : "");
     }
 
 }
