@@ -15,6 +15,7 @@
  */
 package org.joda.beans.ui.swing.type;
 
+import java.util.Currency;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -27,30 +28,30 @@ import org.joda.beans.ui.swing.ApplicationMsg;
 import org.joda.beans.ui.swing.SwingUIComponent;
 
 /**
- * An instantiated Swing component for an enum.
+ * An instantiated Swing component for a {@code Currency}.
  */
 @SuppressWarnings({"rawtypes", "unchecked" })
-public class EnumSwingUIComponent extends SwingUIComponent<JXComboBox> {
+public class CurrencySwingUIComponent extends SwingUIComponent<JXComboBox> {
 
     /**
      * The model.
      */
-    private final MapComboBoxModel<String, Enum> model;
+    private final MapComboBoxModel<String, Currency> model;
 
     /**
      * Creates an instance.
      * 
      * @param metaComponent  the meta-component, not null
      */
-    public EnumSwingUIComponent(MetaUIComponent metaComponent) {
+    public CurrencySwingUIComponent(MetaUIComponent metaComponent) {
         super(metaComponent);
-        Class<Enum> type = (Class<Enum>) metaComponent.getPropertyType();
-        if (type.isEnum() == false) {
+        Class<?> type = metaComponent.getPropertyType();
+        if (type != Currency.class) {
             throw new IllegalArgumentException("Unknown type: " + type);
         }
-        Map<String, Enum> map = new TreeMap<>();
-        for (Enum en : type.getEnumConstants()) {
-            map.put(ApplicationMsg.lookupSelectionText(type, en.name(), true), en);
+        Map<String, Currency> map = new TreeMap<>();
+        for (Currency currency : Currency.getAvailableCurrencies()) {
+            map.put(ApplicationMsg.lookupSelectionText(Currency.class, currency.getCurrencyCode(), false), currency);
         }
         this.model = new MapComboBoxModel(map);
         JXComboBox component = new JXComboBox(model);

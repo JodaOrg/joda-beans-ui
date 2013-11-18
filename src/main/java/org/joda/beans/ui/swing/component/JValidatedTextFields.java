@@ -15,6 +15,8 @@
  */
 package org.joda.beans.ui.swing.component;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -39,6 +41,10 @@ public final class JValidatedTextFields {
     private static final ErrorStatus ERROR_DOUBLE_INVALID = ErrorStatus.of("Error.Double.invalid");
     /** Error message key. */
     private static final ErrorStatus ERROR_DOUBLE_NAN = ErrorStatus.of("Error.Double.nan");
+    /** Error message key. */
+    private static final ErrorStatus ERROR_BIG_INTEGER_INVALID = ErrorStatus.of("Error.BigInteger.invalid");
+    /** Error message key. */
+    private static final ErrorStatus ERROR_BIG_DECIMAL_INVALID = ErrorStatus.of("Error.BigDecimal.invalid");
 
     /**
      * Restricted constructor.
@@ -201,6 +207,52 @@ public final class JValidatedTextFields {
     }
 
     //-------------------------------------------------------------------------
+    /**
+     * Creates a {@code JTextField} that validates a {@code BigInteger} value.
+     * 
+     * @param mandatory  true if mandatory
+     * @return the text field, not null
+     */
+    public static JValidatedTextField createBigIntegerTextField(final boolean mandatory) {
+        return createBigIntegerTextField(mandatory, null, null);
+    }
+
+    /**
+     * Creates a {@code JTextField} that validates a {@code BigInteger} value.
+     * 
+     * @param mandatory  true if mandatory
+     * @param minInclusive  the minimum valid value, inclusive, null for no limit
+     * @param maxInclusive  the maximum valid value, inclusive, null for no limit
+     * @return the text field, not null
+     */
+    public static JValidatedTextField createBigIntegerTextField(final boolean mandatory, final BigInteger minInclusive, final BigInteger maxInclusive) {
+        return new JValidatedTextField(new IntegralValidator(ERROR_BIG_INTEGER_INVALID, 128, mandatory, minInclusive, maxInclusive));
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Creates a {@code JTextField} that validates a {@code BigDecimal} value.
+     * 
+     * @param mandatory  true if mandatory
+     * @return the text field, not null
+     */
+    public static JValidatedTextField createBigDecimalTextField(final boolean mandatory) {
+        return createBigDecimalTextField(mandatory, null, null);
+    }
+
+    /**
+     * Creates a {@code JTextField} that validates a {@code BigDecimal} value.
+     * 
+     * @param mandatory  true if mandatory
+     * @param minInclusive  the minimum valid value, inclusive, null for no limit
+     * @param maxInclusive  the maximum valid value, inclusive, null for no limit
+     * @return the text field, not null
+     */
+    public static JValidatedTextField createBigDecimalTextField(final boolean mandatory, final BigDecimal minInclusive, final BigDecimal maxInclusive) {
+        return new JValidatedTextField(new BigDecimalValidator(ERROR_BIG_DECIMAL_INVALID, mandatory, minInclusive, maxInclusive));
+    }
+
+    //-------------------------------------------------------------------------
     private static final class StringValidator extends DefaultJTextFieldValidator {
         /** Valid characters for double. */
         private static final Pattern VALID = Pattern.compile(".*");
@@ -213,16 +265,23 @@ public final class JValidatedTextFields {
     //-------------------------------------------------------------------------
     private static final class IntegralValidator extends DefaultJTextFieldValidator {
         /** Valid characters for integral. */
-        private static final Pattern VALID = Pattern.compile("[0-9+-]*");
+        private static final Pattern VALID = Pattern.compile("[+-]?[0-9]*");
 
         /** The error to use when invalid. */
         private final ErrorStatus errorWhenInvalid;
         /** The minimum value. */
-        private final long minInclusive;
+        private final BigInteger minInclusive;
         /** The maximum value. */
-        private final long maxInclusive;
+        private final BigInteger maxInclusive;
 
         private IntegralValidator(ErrorStatus errorWhenInvalid, int maxSize, boolean mandatory, long minInclusive, long maxInclusive) {
+            super(mandatory, maxSize, VALID);
+            this.errorWhenInvalid = errorWhenInvalid;
+            this.minInclusive = BigInteger.valueOf(minInclusive);
+            this.maxInclusive = BigInteger.valueOf(maxInclusive);
+        }
+
+        private IntegralValidator(ErrorStatus errorWhenInvalid, int maxSize, boolean mandatory, BigInteger minInclusive, BigInteger maxInclusive) {
             super(mandatory, maxSize, VALID);
             this.errorWhenInvalid = errorWhenInvalid;
             this.minInclusive = minInclusive;
@@ -231,15 +290,17 @@ public final class JValidatedTextFields {
 
         @Override
         protected ErrorStatus checkStatus(String text, boolean onExit) {
-            if (onExit && text.isEmpty()) {
+            if (onExit && isMandatory() && text.isEmpty()) {
                 return ErrorStatus.MANDATORY;
             }
             if (text.isEmpty() || text.equals("+") || text.equals("-")) {
                 return ErrorStatus.VALID;
             }
+            text = (text.startsWith("+") ? text.substring(1) : text);
             try {
-                long value = Long.parseLong(text);
-                if (value < minInclusive || value > maxInclusive) {
+                BigInteger value = new BigInteger(text);
+                if ((minInclusive != null && value.compareTo(minInclusive) < 0) ||
+                        (maxInclusive != null && value.compareTo(maxInclusive) > 0)) {
                     return ErrorStatus.range(minInclusive + " - " + maxInclusive);
                 }
                 return ErrorStatus.VALID;
@@ -296,7 +357,7 @@ public final class JValidatedTextFields {
 
         @Override
         protected ErrorStatus checkStatus(String text, boolean onExit) {
-            if (onExit && text.isEmpty()) {
+            if (onExit && isMandatory() && text.isEmpty()) {
                 return ErrorStatus.MANDATORY;
             }
             if (allowNaN == false && "NaN".startsWith(text)) {
@@ -306,6 +367,7 @@ public final class JValidatedTextFields {
             if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".") ||
                     (upper.endsWith("E") && upper.endsWith("EE") == false) ||
                     (upper.endsWith("E-") && upper.endsWith("EE-") == false) ||
+                    (upper.endsWith("E+") && upper.endsWith("EE+") == false) ||
                     "NaN".startsWith(text)) {
                 return ErrorStatus.VALID;
             }
@@ -360,6 +422,72 @@ public final class JValidatedTextFields {
                 }
                 String upper = text.toUpperCase(Locale.US);
                 text = (upper.endsWith("E-") ? text.substring(0, text.length() - 2) : text);  // ignore incomplete trailing exponent
+                text = (upper.endsWith("E+") ? text.substring(0, text.length() - 2) : text);  // ignore incomplete trailing exponent
+                text = (upper.endsWith("E") ? text.substring(0, text.length() - 1) : text);  // ignore incomplete trailing exponent
+                text = (upper.endsWith("D") ? text.substring(0, text.length() - 1) : text);  // Java doubles can end in 'd'
+                text = (upper.endsWith("F") ? text.substring(0, text.length() - 1) : text);  // Java doubles can end in 'f'
+                text = (text.endsWith(".0") ? text.substring(0, text.length() - 2) : text);
+                return text.replace('E', 'e').replace(".0e", "e").replace("+", "");
+            }
+            return text;
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    private static final class BigDecimalValidator extends DefaultJTextFieldValidator {
+        /** Valid characters for double. */
+        private static final Pattern VALID = Pattern.compile("[0-9eE.+-]*[fd]?");
+
+        /** The error to use when invalid. */
+        private final ErrorStatus errorWhenInvalid;
+        /** The minimum value. */
+        private final BigDecimal minInclusive;
+        /** The maximum value. */
+        private final BigDecimal maxInclusive;
+
+        private BigDecimalValidator(ErrorStatus errorWhenInvalid, boolean mandatory, BigDecimal minInclusive, BigDecimal maxInclusive) {
+            super(mandatory, 128, VALID);
+            this.errorWhenInvalid = errorWhenInvalid;
+            this.minInclusive = minInclusive;
+            this.maxInclusive = maxInclusive;
+        }
+
+        @Override
+        protected ErrorStatus checkStatus(String text, boolean onExit) {
+            if (onExit && isMandatory() && text.isEmpty()) {
+                return ErrorStatus.MANDATORY;
+            }
+            String upper = text.toUpperCase(Locale.US);
+            text = (upper.endsWith("D") ? text.substring(0, text.length() - 1) : text);  // Java doubles can end in 'd'
+            text = (upper.endsWith("F") ? text.substring(0, text.length() - 1) : text);  // Java doubles can end in 'f'
+            upper = text.toUpperCase(Locale.US);
+            if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".") ||
+                    (upper.endsWith("E") && upper.endsWith("EE") == false) ||
+                    (upper.endsWith("E-") && upper.endsWith("EE-") == false) ||
+                    (upper.endsWith("E+") && upper.endsWith("EE+") == false)) {
+                return ErrorStatus.VALID;
+            }
+            try {
+                BigDecimal value = new BigDecimal(text);
+                if ((minInclusive != null && value.compareTo(minInclusive) < 0) ||
+                        (maxInclusive != null && value.compareTo(maxInclusive) > 0)) {
+                    return ErrorStatus.range(minInclusive + " - " + maxInclusive);
+                }
+                return ErrorStatus.VALID;
+            } catch (NumberFormatException ex) {
+                return errorWhenInvalid;
+            }
+        }
+
+        @Override
+        protected String onExit(String text, ErrorStatus status) {
+            if (status.isValid()) {
+                if (text.isEmpty() || text.equals("+") || text.equals("-") || text.equals(".")) {
+                    return "";
+                }
+                String upper = text.toUpperCase(Locale.US);
+                text = (upper.endsWith("E-") ? text.substring(0, text.length() - 2) : text);  // ignore incomplete trailing exponent
+                text = (upper.endsWith("E+") ? text.substring(0, text.length() - 2) : text);  // ignore incomplete trailing exponent
                 text = (upper.endsWith("E") ? text.substring(0, text.length() - 1) : text);  // ignore incomplete trailing exponent
                 text = (upper.endsWith("D") ? text.substring(0, text.length() - 1) : text);  // Java doubles can end in 'd'
                 text = (upper.endsWith("F") ? text.substring(0, text.length() - 1) : text);  // Java doubles can end in 'f'

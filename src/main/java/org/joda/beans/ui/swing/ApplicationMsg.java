@@ -63,9 +63,10 @@ public final class ApplicationMsg {
      * 
      * @param type  the type of the selection, not null
      * @param value  the value to lookup, not null
+     * @param format  true to apply a default humanizing format to the value
      * @return the text, not null
      */
-    public static String lookupSelectionText(Class<?> type, String value) {
+    public static String lookupSelectionText(Class<?> type, String value, boolean format) {
         try {
             String key = type + "." + value + ".text";
             return RESOURCE_BUNDLE.getString(key);
@@ -77,7 +78,10 @@ public final class ApplicationMsg {
                 if (value.length() <= 3) {
                     return value.toUpperCase(Locale.US);
                 }
-                return titleCase(value.toLowerCase(Locale.US).replace('_', ' '));
+                if (format) {
+                    return titleCase(value.toLowerCase(Locale.US).replace('_', ' '));
+                }
+                return value;
             }
         }
     }

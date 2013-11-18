@@ -16,6 +16,7 @@
 package org.joda.beans.ui.swing.type;
 
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import org.jdesktop.swingx.JXComboBox;
@@ -27,30 +28,31 @@ import org.joda.beans.ui.swing.ApplicationMsg;
 import org.joda.beans.ui.swing.SwingUIComponent;
 
 /**
- * An instantiated Swing component for an enum.
+ * An instantiated Swing component for a {@code TimeZone}.
  */
 @SuppressWarnings({"rawtypes", "unchecked" })
-public class EnumSwingUIComponent extends SwingUIComponent<JXComboBox> {
+public class TimeZoneSwingUIComponent extends SwingUIComponent<JXComboBox> {
 
     /**
      * The model.
      */
-    private final MapComboBoxModel<String, Enum> model;
+    private final MapComboBoxModel<String, TimeZone> model;
 
     /**
      * Creates an instance.
      * 
      * @param metaComponent  the meta-component, not null
      */
-    public EnumSwingUIComponent(MetaUIComponent metaComponent) {
+    public TimeZoneSwingUIComponent(MetaUIComponent metaComponent) {
         super(metaComponent);
-        Class<Enum> type = (Class<Enum>) metaComponent.getPropertyType();
-        if (type.isEnum() == false) {
+        Class<?> type = metaComponent.getPropertyType();
+        if (type != TimeZone.class) {
             throw new IllegalArgumentException("Unknown type: " + type);
         }
-        Map<String, Enum> map = new TreeMap<>();
-        for (Enum en : type.getEnumConstants()) {
-            map.put(ApplicationMsg.lookupSelectionText(type, en.name(), true), en);
+        Map<String, TimeZone> map = new TreeMap<>();
+        for (String zoneId : TimeZone.getAvailableIDs()) {
+            String text = ApplicationMsg.lookupSelectionText(TimeZone.class, zoneId, false);
+            map.put(text, TimeZone.getTimeZone(zoneId));
         }
         this.model = new MapComboBoxModel(map);
         JXComboBox component = new JXComboBox(model);
