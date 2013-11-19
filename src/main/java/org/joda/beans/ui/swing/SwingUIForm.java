@@ -21,10 +21,10 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.joda.beans.ui.UIName;
 import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.form.MetaUIForm;
 import org.joda.beans.ui.form.UIForm;
-import org.joda.beans.ui.form.UIName;
 import org.joda.beans.ui.swing.component.SwingFormPanelBuilder;
 
 /**

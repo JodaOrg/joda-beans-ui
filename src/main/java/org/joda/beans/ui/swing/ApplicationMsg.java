@@ -20,8 +20,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.joda.beans.MetaProperty;
+import org.joda.beans.ui.UIName;
 import org.joda.beans.ui.form.UIComponent;
-import org.joda.beans.ui.form.UIName;
 
 /**
  * Access localized text at the application level.
