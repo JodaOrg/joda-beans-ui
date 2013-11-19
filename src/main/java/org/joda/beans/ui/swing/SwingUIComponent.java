@@ -47,6 +47,7 @@ public abstract class SwingUIComponent<T extends JComponent> extends UIComponent
      */
     protected SwingUIComponent(MetaUIComponent metaComponent) {
         super(metaComponent);
+        displayedAsMandatory = getMetaComponent().isMandatory();
     }
 
     //-------------------------------------------------------------------------
