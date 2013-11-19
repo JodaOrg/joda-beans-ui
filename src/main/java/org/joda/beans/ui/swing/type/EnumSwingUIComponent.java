@@ -23,7 +23,7 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdesktop.swingx.combobox.MapComboBoxModel;
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
-import org.joda.beans.ui.swing.ApplicationMsg;
+import org.joda.beans.ui.swing.SwingUIUtils;
 import org.joda.beans.ui.swing.SwingUIComponent;
 
 /**
@@ -50,7 +50,7 @@ public class EnumSwingUIComponent extends SwingUIComponent<JXComboBox> {
         }
         Map<String, Enum> map = new TreeMap<>();
         for (Enum en : type.getEnumConstants()) {
-            map.put(ApplicationMsg.lookupSelectionText(type, en.name(), true), en);
+            map.put(SwingUIUtils.lookupSelectionText(type, en.name(), true), en);
         }
         this.model = new MapComboBoxModel(map);
         JXComboBox component = new JXComboBox(model);

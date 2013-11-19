@@ -24,7 +24,7 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdesktop.swingx.combobox.MapComboBoxModel;
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
-import org.joda.beans.ui.swing.ApplicationMsg;
+import org.joda.beans.ui.swing.SwingUIUtils;
 import org.joda.beans.ui.swing.SwingUIComponent;
 
 /**
@@ -51,7 +51,7 @@ public class TimeZoneSwingUIComponent extends SwingUIComponent<JXComboBox> {
         }
         Map<String, TimeZone> map = new TreeMap<>();
         for (String zoneId : TimeZone.getAvailableIDs()) {
-            String text = ApplicationMsg.lookupSelectionText(TimeZone.class, zoneId, false);
+            String text = SwingUIUtils.lookupSelectionText(TimeZone.class, zoneId, false);
             map.put(text, TimeZone.getTimeZone(zoneId));
         }
         this.model = new MapComboBoxModel(map);

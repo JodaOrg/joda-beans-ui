@@ -27,6 +27,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
+import org.joda.beans.ui.swing.SwingUISettings;
+
 /**
  * A text field that can validate itself.
  * <p>
@@ -213,12 +215,24 @@ public class JValidatedTextField extends JTextField {
     protected void updateErrorStatus(ErrorStatus status, boolean repaint) {
         if (status.equals(getErrorStatus()) == false) {
             setErrorStatus(status);
-            String errorText = (status.isError() ? status.getErrorText() : null);
+            String errorText = (status.isError() ? getErrorText(status) : null);
             setToolTipText(errorText);
             if (repaint) {
                 repaint();
             }
         }
+    }
+
+    /**
+     * Gets the error text.
+     * 
+     * @return the error text, empty if valid, not null
+     */
+    private String getErrorText(ErrorStatus status) {
+        if (status.isError()) {
+            return SwingUISettings.INSTANCE.lookupResource(status.getErrorKey(), status.getErrorInfo());
+        }
+        return "";
     }
 
     /**

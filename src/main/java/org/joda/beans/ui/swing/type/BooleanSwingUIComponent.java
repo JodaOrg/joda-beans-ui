@@ -22,7 +22,7 @@ import java.util.Map;
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.swing.SwingUIComponent;
-import org.joda.beans.ui.swing.SwingUIMsg;
+import org.joda.beans.ui.swing.SwingUISettings;
 import org.joda.beans.ui.swing.component.JRadioButtonPanel;
 
 /**
@@ -40,13 +40,13 @@ public class BooleanSwingUIComponent extends SwingUIComponent<JRadioButtonPanel<
     private static final Map<Boolean, String> TRUE_FALSE_NULL;
     static {
         Map<Boolean, String> map1 = new LinkedHashMap<>();
-        map1.put(Boolean.TRUE, SwingUIMsg.lookup("Boolean.true"));
-        map1.put(Boolean.FALSE, SwingUIMsg.lookup("Boolean.false"));
+        map1.put(Boolean.TRUE, SwingUISettings.INSTANCE.lookupResource("Boolean.true"));
+        map1.put(Boolean.FALSE, SwingUISettings.INSTANCE.lookupResource("Boolean.false"));
         TRUE_FALSE = Collections.unmodifiableMap(map1);
         Map<Boolean, String> map2 = new LinkedHashMap<>();
-        map2.put(Boolean.TRUE, SwingUIMsg.lookup("Boolean.true"));
-        map2.put(Boolean.FALSE, SwingUIMsg.lookup("Boolean.false"));
-        map2.put(null, SwingUIMsg.lookup("Boolean.null"));
+        map2.put(Boolean.TRUE, SwingUISettings.INSTANCE.lookupResource("Boolean.true"));
+        map2.put(Boolean.FALSE, SwingUISettings.INSTANCE.lookupResource("Boolean.false"));
+        map2.put(null, SwingUISettings.INSTANCE.lookupResource("Boolean.null"));
         TRUE_FALSE_NULL = Collections.unmodifiableMap(map2);
     }
 

@@ -121,27 +121,6 @@ public final class ErrorStatus {
         return errorInfo;
     }
 
-    /**
-     * Gets the error text.
-     * 
-     * @return the error text, empty if valid, not null
-     */
-    public String getErrorText() {
-        String result = "";
-        if (isError()) {
-            result = ComponentMsg.lookup(errorKey);
-            if (getErrorInfo().length() > 0) {
-                if (result.contains("{}")) {
-                    result = result.replace("{}", getErrorInfo());
-                } else {
-                    result += " " + getErrorInfo();
-                }
-            }
-            return result;
-        }
-        return result;
-    }
-
     //-------------------------------------------------------------------------
     @Override
     public boolean equals(Object obj) {

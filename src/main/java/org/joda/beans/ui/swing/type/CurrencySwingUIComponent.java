@@ -24,7 +24,7 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdesktop.swingx.combobox.MapComboBoxModel;
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
-import org.joda.beans.ui.swing.ApplicationMsg;
+import org.joda.beans.ui.swing.SwingUIUtils;
 import org.joda.beans.ui.swing.SwingUIComponent;
 
 /**
@@ -51,7 +51,7 @@ public class CurrencySwingUIComponent extends SwingUIComponent<JXComboBox> {
         }
         Map<String, Currency> map = new TreeMap<>();
         for (Currency currency : Currency.getAvailableCurrencies()) {
-            map.put(ApplicationMsg.lookupSelectionText(Currency.class, currency.getCurrencyCode(), false), currency);
+            map.put(SwingUIUtils.lookupSelectionText(Currency.class, currency.getCurrencyCode(), false), currency);
         }
         this.model = new MapComboBoxModel(map);
         JXComboBox component = new JXComboBox(model);

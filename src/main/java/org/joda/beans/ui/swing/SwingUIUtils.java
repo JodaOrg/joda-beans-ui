@@ -17,45 +17,20 @@ package org.joda.beans.ui.swing;
 
 import java.util.Locale;
 import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import org.joda.beans.MetaProperty;
 import org.joda.beans.ui.UIName;
 import org.joda.beans.ui.form.UIComponent;
 
 /**
- * Access localized text at the application level.
+ * Utilities for the Swing UI.
  */
-public final class ApplicationMsg {
-
-    /**
-     * The bundle file.
-     */
-    private static final String BUNDLE_NAME = "org.joda.beans.ui.swing.ApplicationMsg";
-    /**
-     * The loaded bundle.
-     */
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+public final class SwingUIUtils {
 
     /**
      * Restricted constructor.
      */
-    private ApplicationMsg() {
-    }
-
-    //-------------------------------------------------------------------------
-    /**
-     * Gets the localized text for the key.
-     * 
-     * @param key  the key, not null
-     * @return the text, not null
-     */
-    public static String lookup(String key) {
-        try {
-            return RESOURCE_BUNDLE.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
-        }
+    private SwingUIUtils() {
     }
 
     //-------------------------------------------------------------------------
@@ -70,11 +45,11 @@ public final class ApplicationMsg {
     public static String lookupSelectionText(Class<?> type, String value, boolean format) {
         try {
             String key = type + "." + value + ".text";
-            return RESOURCE_BUNDLE.getString(key);
+            return SwingUISettings.INSTANCE.lookupResourceRaw(key);
         } catch (MissingResourceException ex) {
             try {
                 String key = type.getSimpleName() + "." + value + ".text";
-                return RESOURCE_BUNDLE.getString(key);
+                return SwingUISettings.INSTANCE.lookupResourceRaw(key);
             } catch (MissingResourceException ex2) {
                 if (value.length() <= 3) {
                     return value.toUpperCase(Locale.US);
@@ -112,12 +87,12 @@ public final class ApplicationMsg {
         UIName name = UIName.of(metaProperty);
         try {
             String key = name.getFullName() + ".label";
-            String prompt = RESOURCE_BUNDLE.getString(key);
+            String prompt = SwingUISettings.INSTANCE.lookupResourceRaw(key);
             return (prompt.endsWith(":") ? prompt : prompt + ":");
         } catch (MissingResourceException ex) {
             try {
                 String key = name.getName() + ".label";
-                String prompt = RESOURCE_BUNDLE.getString(key);
+                String prompt = SwingUISettings.INSTANCE.lookupResourceRaw(key);
                 return (prompt.endsWith(":") ? prompt : prompt + ":");
             } catch (MissingResourceException ex2) {
                 return generateFieldPrompt(metaProperty) + ":";

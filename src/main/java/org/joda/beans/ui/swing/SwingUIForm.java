@@ -52,7 +52,7 @@ public class SwingUIForm extends UIForm<JPanel> {
         for (MetaUIComponent metaComp : metaForm.getComponents()) {
             if (metaComp.getComponentFactory() != null) {
                 SwingUIComponent<?> comp = (SwingUIComponent<?>) metaComp.getComponentFactory().createComponent(metaComp);
-                JLabel label = new JLabel(ApplicationMsg.lookupFieldLabel(comp));
+                JLabel label = new JLabel(SwingUIUtils.lookupFieldLabel(comp));
                 UIName name = UIName.of(metaComp.getMetaProperty());
                 label.setName(name.getName() + ".label");
                 comp.getComponent().setName(name.getName() + ".component");
