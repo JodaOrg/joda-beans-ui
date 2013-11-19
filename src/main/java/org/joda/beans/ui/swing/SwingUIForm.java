@@ -18,11 +18,13 @@ package org.joda.beans.ui.swing;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.form.MetaUIForm;
 import org.joda.beans.ui.form.UIForm;
+import org.joda.beans.ui.form.UIName;
 import org.joda.beans.ui.swing.component.SwingFormPanelBuilder;
 
 /**
@@ -50,8 +52,11 @@ public class SwingUIForm extends UIForm<JPanel> {
         for (MetaUIComponent metaComp : metaForm.getComponents()) {
             if (metaComp.getComponentFactory() != null) {
                 SwingUIComponent<?> comp = (SwingUIComponent<?>) metaComp.getComponentFactory().createComponent(metaComp);
-                String name = ApplicationMsg.lookupFieldPrompt(comp);
-                builder.append(name, comp.getComponent());
+                JLabel label = new JLabel(ApplicationMsg.lookupFieldLabel(comp));
+                UIName name = UIName.of(metaComp.getMetaProperty());
+                label.setName(name.getName() + ".label");
+                comp.getComponent().setName(name.getName() + ".component");
+                builder.append(label, comp.getComponent());
                 getComponents().add(comp);
             }
         }

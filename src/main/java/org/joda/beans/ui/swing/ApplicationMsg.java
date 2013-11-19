@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 
 import org.joda.beans.MetaProperty;
 import org.joda.beans.ui.form.UIComponent;
+import org.joda.beans.ui.form.UIName;
 
 /**
  * Access localized text at the application level.
@@ -88,13 +89,13 @@ public final class ApplicationMsg {
 
     //-------------------------------------------------------------------------
     /**
-     * Gets the localized text for the UI component.
+     * Gets the localized text for the label associated with the component.
      * 
      * @param component  the UI component, not null
      * @return the text, not null
      */
-    public static String lookupFieldPrompt(UIComponent<?> component) {
-        String prompt = lookupFieldPrompt(component.getMetaProperty());
+    public static String lookupFieldLabel(UIComponent<?> component) {
+        String prompt = lookupFieldLabel(component.getMetaProperty());
         if (component.isDisplayedAsMandatory()) {
             prompt += "*";
         }
@@ -102,19 +103,20 @@ public final class ApplicationMsg {
     }
 
     /**
-     * Gets the localized text for the meta-property.
+     * Gets the localized text for the label associated with the property.
      * 
      * @param metaProperty  the metaProperty, not null
      * @return the text, not null
      */
-    public static String lookupFieldPrompt(MetaProperty<?> metaProperty) {
+    public static String lookupFieldLabel(MetaProperty<?> metaProperty) {
+        UIName name = UIName.of(metaProperty);
         try {
-            String key = metaProperty.declaringType() + "." + metaProperty.name() + ".prompt";
+            String key = name.getFullName() + ".label";
             String prompt = RESOURCE_BUNDLE.getString(key);
             return (prompt.endsWith(":") ? prompt : prompt + ":");
         } catch (MissingResourceException ex) {
             try {
-                String key = metaProperty.declaringType().getSimpleName() + "." + metaProperty.name() + ".prompt";
+                String key = name.getName() + ".label";
                 String prompt = RESOURCE_BUNDLE.getString(key);
                 return (prompt.endsWith(":") ? prompt : prompt + ":");
             } catch (MissingResourceException ex2) {
