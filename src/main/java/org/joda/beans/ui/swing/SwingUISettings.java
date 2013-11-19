@@ -26,6 +26,7 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -50,6 +51,7 @@ import org.joda.beans.ui.swing.type.CurrencySwingUIComponent;
 import org.joda.beans.ui.swing.type.DateSwingUIComponent;
 import org.joda.beans.ui.swing.type.FloatingSwingUIComponent;
 import org.joda.beans.ui.swing.type.IntegralSwingUIComponent;
+import org.joda.beans.ui.swing.type.StringListSwingUIComponent;
 import org.joda.beans.ui.swing.type.StringSwingUIComponent;
 import org.joda.beans.ui.swing.type.TimeZoneSwingUIComponent;
 
@@ -116,6 +118,7 @@ public class SwingUISettings extends UISettings {
         factories.put(UUID.class, DefaultUIComponentFactory.of(StringSwingUIComponent.class));
         factories.put(Currency.class, DefaultUIComponentFactory.of(CurrencySwingUIComponent.class));
         factories.put(TimeZone.class, DefaultUIComponentFactory.of(TimeZoneSwingUIComponent.class));
+        factories.put(List.class, DefaultUIComponentFactory.of(StringListSwingUIComponent.class));
         ResourceResolver res = BundleResourceResolver.of(
                 SWING_APP_BUNDLE_NAME, SWING_DEFAULT_BUNDLE_NAME,
                 BundleResourceResolver.APP_BUNDLE_NAME, BundleResourceResolver.DEFAULT_BUNDLE_NAME);

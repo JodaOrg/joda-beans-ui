@@ -38,6 +38,15 @@ public class SwingUIExample {
             person.setAddress(new Address());
             person.getAddress().setStreet("186 Park Street");
             person.getAddress().setCity("London");
+            person.getTags().add("healthy");
+            person.getTags().add("fun");
+            person.getTags().add("employed");
+            person.getTags().add("londoner");
+            person.getTags().add("java developer");
+            person.getTags().add("blogger");
+            person.getTags().add("speaker");
+            person.getTags().add("troublemaker");
+            person.getTags().add("traveller");
             
             JPanel panel = new JodaBeanSwingUI().createForm(person);
             
