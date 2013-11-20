@@ -44,21 +44,17 @@ public final class SwingUIUtils {
      */
     public static String lookupSelectionText(Class<?> type, String value, boolean format) {
         try {
-            String key = type + "." + value + ".text";
-            return SwingUISettings.INSTANCE.lookupResourceRaw(key);
+            String key1 = type + "." + value + ".text";
+            String key2 = type.getSimpleName() + "." + value + ".text";
+            return SwingUISettings.INSTANCE.lookupResource(key1, key2);
         } catch (MissingResourceException ex) {
-            try {
-                String key = type.getSimpleName() + "." + value + ".text";
-                return SwingUISettings.INSTANCE.lookupResourceRaw(key);
-            } catch (MissingResourceException ex2) {
-                if (value.length() <= 3) {
-                    return value.toUpperCase(Locale.US);
-                }
-                if (format) {
-                    return titleCase(value.toLowerCase(Locale.US).replace('_', ' '));
-                }
-                return value;
+            if (value.length() <= 3) {
+                return value.toUpperCase(Locale.US);
             }
+            if (format) {
+                return titleCase(value.toLowerCase(Locale.US).replace('_', ' '));
+            }
+            return value;
         }
     }
 
@@ -86,17 +82,12 @@ public final class SwingUIUtils {
     public static String lookupFieldLabel(MetaProperty<?> metaProperty) {
         UIName name = UIName.of(metaProperty);
         try {
-            String key = name.getFullName() + ".label";
-            String prompt = SwingUISettings.INSTANCE.lookupResourceRaw(key);
+            String key1 = name.getFullName() + ".label";
+            String key2 = name.getName() + ".label";
+            String prompt = SwingUISettings.INSTANCE.lookupResource(key1, key2);
             return (prompt.endsWith(":") ? prompt : prompt + ":");
-        } catch (MissingResourceException ex) {
-            try {
-                String key = name.getName() + ".label";
-                String prompt = SwingUISettings.INSTANCE.lookupResourceRaw(key);
-                return (prompt.endsWith(":") ? prompt : prompt + ":");
-            } catch (MissingResourceException ex2) {
-                return generateFieldPrompt(metaProperty) + ":";
-            }
+        } catch (MissingResourceException ex2) {
+            return generateFieldPrompt(metaProperty) + ":";
         }
     }
 
@@ -115,6 +106,18 @@ public final class SwingUIUtils {
             return text;
         }
         return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase(Locale.US);
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Lookup a resource value and add ellipsis three dots).
+     * 
+     * @param key  the resource key, not null
+     * @return the value with ellipsis, not null
+     */
+    public static String lookupWithEllipsis(String key) {
+        String base = SwingUISettings.INSTANCE.lookupResource(key);
+        return SwingUISettings.INSTANCE.lookupResourceUI("Ellipsis.pattern", base);
     }
 
 }

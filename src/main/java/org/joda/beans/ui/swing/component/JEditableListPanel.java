@@ -30,13 +30,15 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.joda.beans.ui.swing.SwingUISettings;
-
 /**
  * A panel that contains a list that can be edited.
  * <p>
  * This {@code JPanel} is an easy way to produce a list with a linked text field for editing.
  * Buttons will be present to allow for addition and removal of entries.
+ * <p>
+ * Methods are provided to access the main elements of the panel.
+ * The buttons have text hard coded in English but the buttons can be obtained
+ * allowing application code to localize them.
  * 
  * @param <T>  the type of the data being displayed
  */
@@ -86,19 +88,19 @@ public class JEditableListPanel<T> extends JPanel {
         list.setVisibleRowCount(7);
         scrollPane = new JScrollPane(list);
         buttonPanel = new JPanel(new BorderLayout());
-        addButton = new JButton(SwingUISettings.INSTANCE.lookupResource("Add.button") + "...");
+        addButton = new JButton("Add...");
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ev) {
             }
         });
-        editButton = new JButton(SwingUISettings.INSTANCE.lookupResource("Edit.button") + "...");
+        editButton = new JButton("Edit...");
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ev) {
             }
         });
-        removeButton = new JButton(SwingUISettings.INSTANCE.lookupResource("Remove.button"));
+        removeButton = new JButton("Remove");
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ev) {
@@ -147,7 +149,7 @@ public class JEditableListPanel<T> extends JPanel {
      * 
      * @return the scroll pane, not null
      */
-    public JScrollPane getScrollPane() {
+    public JScrollPane getListScrollPane() {
         return scrollPane;
     }
 
@@ -158,6 +160,42 @@ public class JEditableListPanel<T> extends JPanel {
      */
     public JList<T> getList() {
         return list;
+    }
+
+    /**
+     * Gets the button panel.
+     * 
+     * @return the button panel, not null
+     */
+    public JPanel getButtonPanel() {
+        return buttonPanel;
+    }
+
+    /**
+     * Gets the add button.
+     * 
+     * @return the button, not null
+     */
+    public JButton getAddButton() {
+        return addButton;
+    }
+
+    /**
+     * Gets the edit button.
+     * 
+     * @return the button, not null
+     */
+    public JButton getEditButton() {
+        return editButton;
+    }
+
+    /**
+     * Gets the remove button.
+     * 
+     * @return the button, not null
+     */
+    public JButton getRemoveButton() {
+        return removeButton;
     }
 
     /**
@@ -175,7 +213,7 @@ public class JEditableListPanel<T> extends JPanel {
     // delegate baseline through to scrolpane
     @Override
     public int getBaseline(int width, int height) {
-        return getScrollPane().getBaseline(width, height);
+        return getListScrollPane().getBaseline(width, height);
     }
 
     @Override

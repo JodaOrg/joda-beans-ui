@@ -16,6 +16,7 @@
 package org.joda.beans.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -93,27 +94,40 @@ public final class BundleResourceResolver implements ResourceResolver {
 
     //-------------------------------------------------------------------------
     @Override
-    public String lookup(String key, Locale locale) {
-        for (String bundleName : bundleNames) {
-            try {
-                return ResourceBundle.getBundle(bundleName, locale).getString(key);
-            } catch (MissingResourceException ex) {
-                continue;
-            }
+    public String lookup(Locale locale, String... keys) {
+        String result = doLookup(locale, keys);
+        if (result == null) {
+            throw new MissingResourceException(
+                    "Unable to find resource for key: " + keys[keys.length - 1],
+                    bundleNames.toString(), Arrays.toString(keys));
         }
-        return '!' + key + '!';
+        return result;
     }
 
     @Override
-    public String lookupRaw(String key, Locale locale) {
-        for (String bundleName : bundleNames) {
-            try {
-                return ResourceBundle.getBundle(bundleName, locale).getString(key);
-            } catch (MissingResourceException ex) {
-                continue;
+    public String lookupUI(Locale locale, String... keys) {
+        String result = doLookup(locale, keys);
+        if (result == null) {
+            return '!' + keys[keys.length - 1] + '!';
+        }
+        return result;
+    }
+
+    private String doLookup(Locale locale, String... keys) {
+        Objects.requireNonNull(keys, "keys");
+        if (keys.length == 0) {
+            throw new IllegalArgumentException("No keys specified");
+        }
+        for (String key : keys) {
+            for (String bundleName : bundleNames) {
+                try {
+                    return ResourceBundle.getBundle(bundleName, locale).getString(key);
+                } catch (MissingResourceException ex) {
+                    continue;
+                }
             }
         }
-        throw new MissingResourceException("Unable to find resource for key: " + key, bundleNames.toString(), key);
+        return null;
     }
 
     //-------------------------------------------------------------------------

@@ -20,6 +20,8 @@ import java.util.List;
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.swing.SwingUIComponent;
+import org.joda.beans.ui.swing.SwingUISettings;
+import org.joda.beans.ui.swing.SwingUIUtils;
 import org.joda.beans.ui.swing.component.JEditableListPanel;
 
 /**
@@ -35,6 +37,9 @@ public class StringListSwingUIComponent extends SwingUIComponent<JEditableListPa
     public StringListSwingUIComponent(MetaUIComponent metaComponent) {
         super(metaComponent);
         JEditableListPanel<String> component = new JEditableListPanel<>();
+        component.getAddButton().setText(SwingUIUtils.lookupWithEllipsis("Add.button"));
+        component.getEditButton().setText(SwingUIUtils.lookupWithEllipsis("Edit.button"));
+        component.getRemoveButton().setText(SwingUISettings.INSTANCE.lookupResource("Remove.button"));
         setComponent(component);
     }
 

@@ -40,13 +40,13 @@ public class BooleanSwingUIComponent extends SwingUIComponent<JRadioButtonPanel<
     private static final Map<Boolean, String> TRUE_FALSE_NULL;
     static {
         Map<Boolean, String> map1 = new LinkedHashMap<>();
-        map1.put(Boolean.TRUE, SwingUISettings.INSTANCE.lookupResource("Boolean.true"));
-        map1.put(Boolean.FALSE, SwingUISettings.INSTANCE.lookupResource("Boolean.false"));
+        map1.put(Boolean.TRUE, SwingUISettings.INSTANCE.lookupResourceUI("Boolean.true"));
+        map1.put(Boolean.FALSE, SwingUISettings.INSTANCE.lookupResourceUI("Boolean.false"));
         TRUE_FALSE = Collections.unmodifiableMap(map1);
         Map<Boolean, String> map2 = new LinkedHashMap<>();
-        map2.put(Boolean.TRUE, SwingUISettings.INSTANCE.lookupResource("Boolean.true"));
-        map2.put(Boolean.FALSE, SwingUISettings.INSTANCE.lookupResource("Boolean.false"));
-        map2.put(null, SwingUISettings.INSTANCE.lookupResource("Boolean.null"));
+        map2.put(Boolean.TRUE, SwingUISettings.INSTANCE.lookupResourceUI("Boolean.true"));
+        map2.put(Boolean.FALSE, SwingUISettings.INSTANCE.lookupResourceUI("Boolean.false"));
+        map2.put(null, SwingUISettings.INSTANCE.lookupResourceUI("Boolean.null"));
         TRUE_FALSE_NULL = Collections.unmodifiableMap(map2);
     }
 

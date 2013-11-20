@@ -24,22 +24,26 @@ import java.util.MissingResourceException;
 public interface ResourceResolver {
 
     /**
-     * Lookup a text message by key and locale.
+     * Lookup a text message using a set of keys and locale throwing an exception if not found.
+     * <p>
+     * This throws an exception if the key is not found.
      * 
-     * @param key  the key to lookup, not null
      * @param locale  the locale, not null
-     * @return the text, not null
-     */
-    String lookup(String key, Locale locale);
-
-    /**
-     * Lookup a text message by key and locale, throwing an exception if not found.
-     * 
-     * @param key  the key to lookup, not null
-     * @param locale  the locale, not null
-     * @return the text, not null
+     * @param keys  the keys to lookup, not null
+     * @return the resource value, not null
      * @throws MissingResourceException if the resource is not found
      */
-    String lookupRaw(String key, Locale locale);
+    String lookup(Locale locale, String... keys);
+
+    /**
+     * Lookup a text message using a set of keys and locale for a UI.
+     * <p>
+     * This returns a default value if the key is not found.
+     * 
+     * @param locale  the locale, not null
+     * @param keys  the keys to lookup, not null
+     * @return the resource value, not null
+     */
+    String lookupUI(Locale locale, String... keys);
 
 }

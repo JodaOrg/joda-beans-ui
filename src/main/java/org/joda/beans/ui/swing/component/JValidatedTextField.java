@@ -230,7 +230,7 @@ public class JValidatedTextField extends JTextField {
      */
     private String getErrorText(ErrorStatus status) {
         if (status.isError()) {
-            return SwingUISettings.INSTANCE.lookupResource(status.getErrorKey(), status.getErrorInfo());
+            return SwingUISettings.INSTANCE.lookupResourceUI(status.getErrorKey(), status.getErrorInfo());
         }
         return "";
     }
