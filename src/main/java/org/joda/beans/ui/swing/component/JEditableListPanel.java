@@ -92,12 +92,42 @@ public class JEditableListPanel<T> extends JPanel {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ev) {
+                int index = getList().getSelectionModel().getAnchorSelectionIndex();
+                if (getList().getSelectionModel().isSelectionEmpty() || index < 0) {
+                    index = getData().size();
+                }
+                SwingUtils.setWindowEnabled(JEditableListPanel.this, false);
+                JTextFieldDialog editDialog = new JTextFieldDialog(JEditableListPanel.this, "Add item");
+                editDialog.setVisible(true);
+                SwingUtils.setWindowEnabled(JEditableListPanel.this, true);
+                if (editDialog.isResultOk()) {
+                    @SuppressWarnings("unchecked")  // unsafe
+                    T result = (T) editDialog.getResult();
+                    getData().add(index, result);
+                    getList().ensureIndexIsVisible(index);
+                }
+                editDialog.dispose();
             }
         });
         editButton = new JButton("Edit...");
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ev) {
+                int index = getList().getSelectionModel().getAnchorSelectionIndex();
+                if (index >= 0 && index < getData().size()) {
+                    SwingUtils.setWindowEnabled(JEditableListPanel.this, false);
+                    JTextFieldDialog editDialog = new JTextFieldDialog(JEditableListPanel.this, "Edit item");
+                    String current = getData().get(index).toString();
+                    editDialog.getTextField().setText(current);
+                    editDialog.setVisible(true);
+                    SwingUtils.setWindowEnabled(JEditableListPanel.this, true);
+                    if (editDialog.isResultOk()) {
+                        @SuppressWarnings("unchecked")  // unsafe
+                        T result = (T) editDialog.getResult();
+                        getData().set(index, result);
+                    }
+                    editDialog.dispose();
+                }
             }
         });
         removeButton = new JButton("Remove");
