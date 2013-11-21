@@ -17,6 +17,7 @@ package org.joda.beans.ui.metawidget;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.joda.beans.Bean;
 import org.joda.beans.JodaBeanUtils;
@@ -55,41 +56,45 @@ public class MWJodaBeanPropertyStyle extends BasePropertyStyle {
     }
 
     private static class MWJodaBeanProperty extends BaseProperty {
-        private final MetaProperty<?> metaPropery;
+        private final MetaProperty<?> metaProperty;
 
         public MWJodaBeanProperty(MetaProperty<?> metaPropery) {
             super(metaPropery.name(), metaPropery.propertyType().getName());
-            this.metaPropery = metaPropery;
+            this.metaProperty = metaPropery;
         }
 
         @Override
         public boolean isReadable() {
-            return metaPropery.style().isReadable();
+            return metaProperty.style().isReadable();
         }
 
         @Override
         public Object read(Object obj) {
-            return metaPropery.get((Bean) obj);
+            return metaProperty.get((Bean) obj);
         }
 
         @Override
         public boolean isWritable() {
-            return metaPropery.style().isWritable();
+            return metaProperty.style().isWritable();
         }
 
         @Override
         public void write(Object obj, Object value) {
-            metaPropery.set((Bean) obj, value);
+            metaProperty.set((Bean) obj, value);
         }
 
         @Override
         public String getGenericType() {
-            return ClassUtils.getGenericTypeAsString(metaPropery.propertyGenericType());
+            return ClassUtils.getGenericTypeAsString(metaProperty.propertyGenericType());
         }
 
         @Override
         public <T extends Annotation> T getAnnotation(Class<T> annotation) {
-            return metaPropery.annotation(annotation);
+            try {
+                return metaProperty.annotation(annotation);
+            } catch (NoSuchElementException ex) {
+                return null;
+            }
         }
     }
 

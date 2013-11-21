@@ -15,13 +15,17 @@
  */
 package org.joda.beans.ui.metawidget;
 
-import java.awt.BorderLayout;
-
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
-import org.joda.beans.ui.metawidget.MWJodaBeanPropertyStyle;
 import org.joda.beans.ui.swing.Address;
 import org.joda.beans.ui.swing.Person;
+import org.metawidget.inspector.beanvalidation.BeanValidationInspector;
+import org.metawidget.inspector.composite.CompositeInspector;
+import org.metawidget.inspector.composite.CompositeInspectorConfig;
 import org.metawidget.inspector.impl.BaseObjectInspectorConfig;
 import org.metawidget.inspector.propertytype.PropertyTypeInspector;
 import org.metawidget.swing.SwingMetawidget;
@@ -33,32 +37,60 @@ public class MetaSwingUIExample {
 
     public static void main(String[] args) {
         try {
-            Person person = new Person();
-            person.setForename("Stephen");
-            person.setSurname("Colebourne");
-            person.setAge(30);
-            person.setAddress(new Address());
-            person.getAddress().setStreet("186 Park Street");
-            person.getAddress().setCity("London");
-            
-            SwingMetawidget panel = new SwingMetawidget();
-            PropertyTypeInspector inspector = new PropertyTypeInspector(
-                    new BaseObjectInspectorConfig().setPropertyStyle(new MWJodaBeanPropertyStyle()));
-            panel.setInspector(inspector);
-            panel.setToInspect(person);
-            
-//            JPanel panel = new JodaBeanSwingUI().createReadOnly(person);
-            
-            JFrame frame = new JFrame("Swing bean example");
-            frame.getContentPane().setLayout(new BorderLayout());
-            frame.getContentPane().add(panel, BorderLayout.CENTER);
-            frame.setSize(400, 300);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setVisible(true);
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    createUI();
+                }
+            });
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(1);
         }
+    }
+
+    private static void createUI() {
+        Person person = createPerson();
+        SwingMetawidget panel = new SwingMetawidget();
+        BaseObjectInspectorConfig propConfig = new BaseObjectInspectorConfig().setPropertyStyle(new MWJodaBeanPropertyStyle());
+        PropertyTypeInspector propInspector = new PropertyTypeInspector(propConfig);
+        CompositeInspector inspector = new CompositeInspector(new CompositeInspectorConfig().setInspectors(
+                propInspector,
+                new BeanValidationInspector(propConfig)
+                ));
+        panel.setInspector(inspector);
+        panel.setToInspect(person);
+        JFrame frame = new JFrame("Metawidget bean example");
+        JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        frame.getContentPane().add(scrollPane);
+        frame.setSize(600, 500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationByPlatform(true);
+        frame.setVisible(true);
+    }
+
+    private static Person createPerson() {
+        Person person = new Person();
+        person.setForename("Stephen");
+        person.setSurname("Colebourne");
+        person.setAge((short) 30);
+        person.setTripCount(6);
+        person.setChild(true);
+        person.setAddress(new Address());
+        person.getAddress().setStreet("186 Park Street");
+        person.getAddress().setCity("London");
+        person.getTags().add("healthy");
+        person.getTags().add("fun");
+        person.getTags().add("employed");
+        person.getTags().add("londoner");
+        person.getTags().add("java developer");
+        person.getTags().add("blogger");
+        person.getTags().add("speaker");
+        person.getTags().add("troublemaker");
+        person.getTags().add("traveller");
+        return person;
     }
 
 }
