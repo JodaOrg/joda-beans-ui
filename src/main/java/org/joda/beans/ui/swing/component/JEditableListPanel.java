@@ -248,7 +248,7 @@ public class JEditableListPanel<T> extends JPanel {
 
     @Override
     public BaselineResizeBehavior getBaselineResizeBehavior() {
-        return BaselineResizeBehavior.CONSTANT_ASCENT;
+        return getListScrollPane().getBaselineResizeBehavior();
     }
 
 }

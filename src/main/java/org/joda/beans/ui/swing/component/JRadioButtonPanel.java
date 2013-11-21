@@ -262,17 +262,18 @@ public class JRadioButtonPanel<T> extends JPanel {
     // delegate baseline through to first radio button
     @Override
     public int getBaseline(int width, int height) {
-        synchronized (getTreeLock()) {
-            if (getComponentCount() > 0) {
-                return getComponent(0).getBaseline(width, height);
-            }
+        if (getComponentCount() > 0) {
+            return getComponent(0).getBaseline(width, height);
         }
         return super.getBaseline(width, height);
     }
 
     @Override
     public BaselineResizeBehavior getBaselineResizeBehavior() {
-        return BaselineResizeBehavior.CONSTANT_ASCENT;
+        if (getComponentCount() > 0) {
+            return getComponent(0).getBaselineResizeBehavior();
+        }
+        return super.getBaselineResizeBehavior();
     }
 
     //-------------------------------------------------------------------------
