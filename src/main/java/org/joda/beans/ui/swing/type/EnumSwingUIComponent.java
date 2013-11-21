@@ -20,23 +20,17 @@ import java.util.TreeMap;
 
 import javax.swing.JComboBox;
 
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-import org.jdesktop.swingx.combobox.MapComboBoxModel;
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.swing.SwingUIComponent;
 import org.joda.beans.ui.swing.SwingUIUtils;
+import org.joda.beans.ui.swing.component.JValidatedFields;
 
 /**
  * An instantiated Swing component for an enum.
  */
-@SuppressWarnings({"rawtypes", "unchecked" })
-public class EnumSwingUIComponent extends SwingUIComponent<JComboBox> {
-
-    /**
-     * The model.
-     */
-    private final MapComboBoxModel<String, Enum> model;
+@SuppressWarnings({"unchecked" })
+public class EnumSwingUIComponent extends SwingUIComponent<JComboBox<Enum<?>>> {
 
     /**
      * Creates an instance.
@@ -45,27 +39,23 @@ public class EnumSwingUIComponent extends SwingUIComponent<JComboBox> {
      */
     public EnumSwingUIComponent(MetaUIComponent metaComponent) {
         super(metaComponent);
-        Class<Enum> type = (Class<Enum>) metaComponent.getPropertyType();
+        Class<Enum<?>> type = (Class<Enum<?>>) metaComponent.getPropertyType();
         if (type.isEnum() == false) {
             throw new IllegalArgumentException("Unknown type: " + type);
         }
-        Map<String, Enum> map = new TreeMap<>();
-        for (Enum en : type.getEnumConstants()) {
+        Map<String, Enum<?>> map = new TreeMap<>();
+        for (Enum<?> en : type.getEnumConstants()) {
             map.put(SwingUIUtils.lookupSelectionText(type, en.name(), true), en);
         }
-        this.model = new MapComboBoxModel(map);
-        JComboBox component = new JComboBox(model);
-        component.setEditable(metaComponent.isMandatory() == false);
-        component.setSelectedIndex(-1);
-        AutoCompleteDecorator.decorate(component);
+        JComboBox<Enum<?>> component = JValidatedFields.createCombobox(map, metaComponent.isMandatory(), true);
         setComponent(component);
     }
 
     //-------------------------------------------------------------------------
     @Override
     public void updateUI(Bean bean) {
-        Enum value = (Enum) getMetaProperty().get(bean);
-        model.setSelectedItem(value);
+        Enum<?> value = (Enum<?>) getMetaProperty().get(bean);
+        getComponent().getModel().setSelectedItem(value);
     }
 
 }

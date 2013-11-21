@@ -15,7 +15,6 @@
  */
 package org.joda.beans.ui.swing.component;
 
-import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.util.Objects;
@@ -42,15 +41,7 @@ public class JValidatedTextField extends JTextField {
 
     /** Serialization version. */
     private static final long serialVersionUID = 1L;
-    /**
-     * The error background color.
-     */
-    private static final Color ERROR_BACKGROUND = new Color(255, 219, 219);
 
-    /**
-     * Current error status.
-     */
-    private ErrorStatus errorStatus = ErrorStatus.VALID;
     /**
      * The validator to use, may be null.
      */
@@ -103,6 +94,7 @@ public class JValidatedTextField extends JTextField {
         this.filter = new ValidationDocumentFilter(this);
         AbstractDocument doc = (AbstractDocument) getDocument();
         doc.setDocumentFilter(filter);
+        setUI(new ErrorBackgroundTextUI(getUI()));
     }
 
     //-------------------------------------------------------------------------
@@ -129,7 +121,7 @@ public class JValidatedTextField extends JTextField {
      * @return the error status, not null
      */
     public ErrorStatus getErrorStatus() {
-        return (errorStatus != null ? errorStatus : ErrorStatus.VALID);
+        return SwingUtils.getErrorStatus(this);
     }
 
     /**
@@ -138,7 +130,7 @@ public class JValidatedTextField extends JTextField {
      * @param errorStatus  the error status, not null
      */
     public void setErrorStatus(ErrorStatus errorStatus) {
-        this.errorStatus = Objects.requireNonNull(errorStatus);
+        SwingUtils.setErrorStatus(this, errorStatus);
     }
 
     //-------------------------------------------------------------------------
@@ -261,16 +253,6 @@ public class JValidatedTextField extends JTextField {
             updateErrorStatus(status, true);
         }
         return resultText;
-    }
-
-    //-------------------------------------------------------------------------
-    // override background color to show error
-    @Override
-    public Color getBackground() {
-        if (getErrorStatus().isError()) {
-            return ERROR_BACKGROUND;
-        }
-        return super.getBackground();
     }
 
     //-------------------------------------------------------------------------

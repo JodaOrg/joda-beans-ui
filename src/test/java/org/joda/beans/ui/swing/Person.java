@@ -27,6 +27,7 @@ import java.util.TimeZone;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.joda.beans.Bean;
@@ -89,6 +90,7 @@ public class Person implements Bean {
     private Currency currency;
 
     @PropertyDefinition
+    @NotNull
     private TimeZone timeZone;
 
     @PropertyDefinition

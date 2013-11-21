@@ -21,23 +21,16 @@ import java.util.TreeMap;
 
 import javax.swing.JComboBox;
 
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-import org.jdesktop.swingx.combobox.MapComboBoxModel;
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.swing.SwingUIComponent;
 import org.joda.beans.ui.swing.SwingUIUtils;
+import org.joda.beans.ui.swing.component.JValidatedFields;
 
 /**
  * An instantiated Swing component for a {@code Currency}.
  */
-@SuppressWarnings({"rawtypes", "unchecked" })
-public class CurrencySwingUIComponent extends SwingUIComponent<JComboBox> {
-
-    /**
-     * The model.
-     */
-    private final MapComboBoxModel<String, Currency> model;
+public class CurrencySwingUIComponent extends SwingUIComponent<JComboBox<Currency>> {
 
     /**
      * Creates an instance.
@@ -54,19 +47,15 @@ public class CurrencySwingUIComponent extends SwingUIComponent<JComboBox> {
         for (Currency currency : Currency.getAvailableCurrencies()) {
             map.put(SwingUIUtils.lookupSelectionText(Currency.class, currency.getCurrencyCode(), false), currency);
         }
-        this.model = new MapComboBoxModel(map);
-        JComboBox component = new JComboBox(model);
-        component.setEditable(metaComponent.isMandatory() == false);
-        component.setSelectedIndex(-1);
-        AutoCompleteDecorator.decorate(component);
+        JComboBox<Currency> component = JValidatedFields.createCombobox(map, metaComponent.isMandatory(), true);
         setComponent(component);
     }
 
     //-------------------------------------------------------------------------
     @Override
     public void updateUI(Bean bean) {
-        Enum value = (Enum) getMetaProperty().get(bean);
-        model.setSelectedItem(value);
+        Currency value = (Currency) getMetaProperty().get(bean);
+        getComponent().getModel().setSelectedItem(value);
     }
 
 }

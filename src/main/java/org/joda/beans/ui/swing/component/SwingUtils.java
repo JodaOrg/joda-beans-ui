@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Objects;
 
 import javax.swing.JComponent;
 import javax.swing.JLayer;
@@ -32,9 +33,39 @@ import javax.swing.plaf.LayerUI;
 public final class SwingUtils {
 
     /**
+     * The error status key.
+     */
+    private static final String ERROR_STATUS_KEY = "JodaBeans.errorStatus";
+
+    /**
      * Restricted constructor.
      */
     private SwingUtils() {
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Gets the error status of a component.
+     * 
+     * @param component  the component to set the status of, not null
+     * @return the status, not null
+     */
+    public static ErrorStatus getErrorStatus(final JComponent component) {
+        Objects.requireNonNull(component, "component");
+        Object status = component.getClientProperty(ERROR_STATUS_KEY);
+        return (status instanceof ErrorStatus ? (ErrorStatus) status : ErrorStatus.VALID);
+    }
+
+    /**
+     * Sets the error status of a component.
+     * 
+     * @param component  the component to set the status of, not null
+     * @param status  the status, not null
+     */
+    public static void setErrorStatus(final JComponent component, ErrorStatus status) {
+        Objects.requireNonNull(component, "component");
+        Objects.requireNonNull(status, "status");
+        component.putClientProperty(ERROR_STATUS_KEY, status);
     }
 
     //-------------------------------------------------------------------------
@@ -49,6 +80,7 @@ public final class SwingUtils {
      * @param enabled  true if enabled, false if disabled
      */
     public static void setWindowEnabled(final JComponent componentInWindow, boolean enabled) {
+        Objects.requireNonNull(componentInWindow, "componentInWindow");
         JRootPane root = componentInWindow.getRootPane();
         if (root != null) {
             Container content = root.getContentPane();
