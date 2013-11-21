@@ -70,6 +70,9 @@ public class SwingFormPanelBuilder {
      * @return {@code this}, for chaining
      */
     public SwingFormPanelBuilder append(JComponent label, JComponent field) {
+        if (label instanceof JLabel) {
+            ((JLabel) label).setLabelFor(field);
+        }
         hGroupLabels.addComponent(label);
         hGroupFields.addComponent(field);
         vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).addComponent(label).addComponent(field));
