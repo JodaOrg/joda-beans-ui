@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 import org.joda.beans.Bean;
+import org.joda.beans.MetaBean;
 import org.joda.beans.ui.form.DefaultUIComponentFactory;
 import org.joda.beans.ui.form.MetaUIComponent;
 import org.joda.beans.ui.form.MetaUIFactory;
@@ -42,18 +43,31 @@ public class JodaBeanSwingUI {
      * @return the created form panel, not null
      */
     public JPanel createForm(final Bean bean) {
-        MetaUIForm metaForm = createMetaForm(bean);
-        selectSwingComponents(bean, metaForm);
-        UIForm<JPanel> form = createSwingForm(bean, metaForm);
+        UIForm<JPanel> form = createForm(bean.metaBean());
         form.updateUI(bean);
         return form.getForm();
     }
 
-    protected MetaUIForm createMetaForm(Bean bean) {
-        return new MetaUIFactory().createForm(bean.metaBean());
+    /**
+     * Creates a form for the specified meta-bean.
+     * <p>
+     * The bean is examined for meta-data and a form created.
+     * 
+     * @param metaBean  the meta-bean to examine, not null
+     * @return the created form panel, not null
+     */
+    public UIForm<JPanel> createForm(final MetaBean metaBean) {
+        MetaUIForm metaForm = createMetaForm(metaBean);
+        selectSwingComponents(metaForm);
+        UIForm<JPanel> form = createSwingForm(metaForm);
+        return form;
     }
 
-    protected void selectSwingComponents(Bean bean, MetaUIForm form) {
+    protected MetaUIForm createMetaForm(MetaBean metaBean) {
+        return new MetaUIFactory().createForm(metaBean);
+    }
+
+    protected void selectSwingComponents(MetaUIForm form) {
         Map<Class<?>, UIComponentFactory> factories = SwingUISettings.INSTANCE.getFactories();
         for (MetaUIComponent comp : form.getComponents()) {
             UIComponentFactory factory = factories.get(comp.getMetaProperty().propertyType());
@@ -66,7 +80,7 @@ public class JodaBeanSwingUI {
         }
     }
 
-    protected SwingUIForm createSwingForm(Bean bean, MetaUIForm form) {
+    protected SwingUIForm createSwingForm(MetaUIForm form) {
         return new SwingUIForm(form);
     }
 
