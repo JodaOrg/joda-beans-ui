@@ -137,7 +137,7 @@ public final class ErrorStatus {
     }
 
     public String toString() {
-        return errorKey;
+        return (errorKey.isEmpty() ? "VALID" : errorKey);
     }
 
 }
