@@ -68,9 +68,10 @@ public final class SwingUIUtils {
     public static String lookupFieldLabel(UIComponent<?> component) {
         String prompt = lookupFieldLabel(component.getMetaProperty());
         if (component.isDisplayedAsMandatory()) {
-            prompt += "*";
+            return SwingUISettings.INSTANCE.lookupResourceUI("Prompt.mandatory.pattern", prompt);
+        } else {
+            return SwingUISettings.INSTANCE.lookupResourceUI("Prompt.optional.pattern", prompt);
         }
-        return prompt;
     }
 
     /**
@@ -81,14 +82,15 @@ public final class SwingUIUtils {
      */
     public static String lookupFieldLabel(MetaProperty<?> metaProperty) {
         UIName name = UIName.of(metaProperty);
+        String prompt;
         try {
             String key1 = name.getFullName() + ".label";
             String key2 = name.getName() + ".label";
-            String prompt = SwingUISettings.INSTANCE.lookupResource(key1, key2);
-            return (prompt.endsWith(":") ? prompt : prompt + ":");
+            prompt = SwingUISettings.INSTANCE.lookupResource(key1, key2);
         } catch (MissingResourceException ex2) {
-            return generateFieldPrompt(metaProperty) + ":";
+            prompt = generateFieldPrompt(metaProperty);
         }
+        return SwingUISettings.INSTANCE.lookupResourceUI("Prompt.pattern", prompt);
     }
 
     private static String generateFieldPrompt(MetaProperty<?> metaProperty) {
