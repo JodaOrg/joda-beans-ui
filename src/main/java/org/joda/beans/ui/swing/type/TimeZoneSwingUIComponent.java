@@ -19,19 +19,20 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
-import org.jdesktop.swingx.JXComboBox;
+import javax.swing.JComboBox;
+
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdesktop.swingx.combobox.MapComboBoxModel;
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
-import org.joda.beans.ui.swing.SwingUIUtils;
 import org.joda.beans.ui.swing.SwingUIComponent;
+import org.joda.beans.ui.swing.SwingUIUtils;
 
 /**
  * An instantiated Swing component for a {@code TimeZone}.
  */
 @SuppressWarnings({"rawtypes", "unchecked" })
-public class TimeZoneSwingUIComponent extends SwingUIComponent<JXComboBox> {
+public class TimeZoneSwingUIComponent extends SwingUIComponent<JComboBox> {
 
     /**
      * The model.
@@ -55,7 +56,7 @@ public class TimeZoneSwingUIComponent extends SwingUIComponent<JXComboBox> {
             map.put(text, TimeZone.getTimeZone(zoneId));
         }
         this.model = new MapComboBoxModel(map);
-        JXComboBox component = new JXComboBox(model);
+        JComboBox component = new JComboBox(model);
         component.setEditable(metaComponent.isMandatory() == false);
         component.setSelectedIndex(-1);
         AutoCompleteDecorator.decorate(component);

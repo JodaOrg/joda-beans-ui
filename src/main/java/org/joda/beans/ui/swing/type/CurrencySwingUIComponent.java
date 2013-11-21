@@ -19,19 +19,20 @@ import java.util.Currency;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.jdesktop.swingx.JXComboBox;
+import javax.swing.JComboBox;
+
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdesktop.swingx.combobox.MapComboBoxModel;
 import org.joda.beans.Bean;
 import org.joda.beans.ui.form.MetaUIComponent;
-import org.joda.beans.ui.swing.SwingUIUtils;
 import org.joda.beans.ui.swing.SwingUIComponent;
+import org.joda.beans.ui.swing.SwingUIUtils;
 
 /**
  * An instantiated Swing component for a {@code Currency}.
  */
 @SuppressWarnings({"rawtypes", "unchecked" })
-public class CurrencySwingUIComponent extends SwingUIComponent<JXComboBox> {
+public class CurrencySwingUIComponent extends SwingUIComponent<JComboBox> {
 
     /**
      * The model.
@@ -54,7 +55,7 @@ public class CurrencySwingUIComponent extends SwingUIComponent<JXComboBox> {
             map.put(SwingUIUtils.lookupSelectionText(Currency.class, currency.getCurrencyCode(), false), currency);
         }
         this.model = new MapComboBoxModel(map);
-        JXComboBox component = new JXComboBox(model);
+        JComboBox component = new JComboBox(model);
         component.setEditable(metaComponent.isMandatory() == false);
         component.setSelectedIndex(-1);
         AutoCompleteDecorator.decorate(component);
