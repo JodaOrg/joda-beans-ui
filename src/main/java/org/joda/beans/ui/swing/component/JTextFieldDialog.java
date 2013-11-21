@@ -130,6 +130,7 @@ public class JTextFieldDialog extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setComponentOrientation(parent.getComponentOrientation());
         setLocationRelativeTo(parent);
+        getRootPane().setDefaultButton(okButton);
         addEscapeTrapper(this);
         pack();
     }
