@@ -13,23 +13,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.joda.beans.ui.swing.binder;
-
-import org.joda.beans.Bean;
-import org.joda.beans.MetaProperty;
+package org.joda.beans.ui.form;
 
 /**
- * Factory to create a binding to the UI.
+ * A factory allowing the real UI component to be created.
+ * For example, this might return a Swing-based factory.
  */
-public interface PropertyBinderFactory {
+public abstract class UIComponentFactory {
 
     /**
-     * Creates a field for the specified property.
-     * 
-     * @param bean  the bean to create the field for, not null
-     * @param metaProperty  the meta-property, not null
-     * @return the binder, not null
+     * Creates an instance.
      */
-    PropertyBinder createBinder(Bean bean, MetaProperty<?> metaProperty);
+    protected UIComponentFactory() {
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Creates the UI component.
+     * 
+     * @param <T>  the UI component type
+     * @param metaComponent  the meta-component, not null
+     * @return the UI component, not null
+     */
+    public abstract <T> UIComponent<T> createComponent(MetaUIComponent metaComponent);
 
 }

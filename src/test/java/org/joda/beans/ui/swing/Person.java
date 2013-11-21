@@ -15,10 +15,19 @@
  */
 package org.joda.beans.ui.swing;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 import org.joda.beans.Bean;
 import org.joda.beans.BeanBuilder;
@@ -38,20 +47,56 @@ import org.joda.beans.impl.direct.DirectMetaPropertyMap;
 @BeanDefinition
 public class Person implements Bean {
 
-    @PropertyDefinition
+    @Size(max = 40)
+    @PropertyDefinition(validate = "notNull")
     private String forename;
-    @PropertyDefinition
+
+    @Size(max = 40)
+    @PropertyDefinition(validate = "notNull")
     private String surname;
+
+    @Max(value = 150)
+    @Min(value = 0)
     @PropertyDefinition
-    private int age;
+    private short age;
+
+    @Min(value = 0)
+    @PropertyDefinition
+    private int tripCount;
+
+    @PropertyDefinition
+    private double successRatio;
+
     @PropertyDefinition
     private boolean child;
+
     @PropertyDefinition
     private Boolean married;
+
     @PropertyDefinition
-    private Colour favouriteColour;
+    private WorldRegion region;
+
+    @PropertyDefinition
+    private GregorianCalendar birthDate;
+
+    @PropertyDefinition
+    private BigInteger wealth;
+
+    @PropertyDefinition
+    private BigDecimal cash;
+
+    @PropertyDefinition
+    private Currency currency;
+
+    @PropertyDefinition
+    private TimeZone timeZone;
+
     @PropertyDefinition
     private Address address;
+
+    @PropertyDefinition
+    private List<String> tags = new ArrayList<String>();
+
     @PropertyDefinition
     private List<Person> friends = new ArrayList<Person>();
 
@@ -87,7 +132,7 @@ public class Person implements Bean {
     //-----------------------------------------------------------------------
     /**
      * Gets the forename.
-     * @return the value of the property
+     * @return the value of the property, not null
      */
     public String getForename() {
         return forename;
@@ -95,9 +140,10 @@ public class Person implements Bean {
 
     /**
      * Sets the forename.
-     * @param forename  the new value of the property
+     * @param forename  the new value of the property, not null
      */
     public void setForename(String forename) {
+        JodaBeanUtils.notNull(forename, "forename");
         this.forename = forename;
     }
 
@@ -112,7 +158,7 @@ public class Person implements Bean {
     //-----------------------------------------------------------------------
     /**
      * Gets the surname.
-     * @return the value of the property
+     * @return the value of the property, not null
      */
     public String getSurname() {
         return surname;
@@ -120,9 +166,10 @@ public class Person implements Bean {
 
     /**
      * Sets the surname.
-     * @param surname  the new value of the property
+     * @param surname  the new value of the property, not null
      */
     public void setSurname(String surname) {
+        JodaBeanUtils.notNull(surname, "surname");
         this.surname = surname;
     }
 
@@ -139,7 +186,7 @@ public class Person implements Bean {
      * Gets the age.
      * @return the value of the property
      */
-    public int getAge() {
+    public short getAge() {
         return age;
     }
 
@@ -147,7 +194,7 @@ public class Person implements Bean {
      * Sets the age.
      * @param age  the new value of the property
      */
-    public void setAge(int age) {
+    public void setAge(short age) {
         this.age = age;
     }
 
@@ -155,8 +202,58 @@ public class Person implements Bean {
      * Gets the the {@code age} property.
      * @return the property, not null
      */
-    public final Property<Integer> age() {
+    public final Property<Short> age() {
         return metaBean().age().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the tripCount.
+     * @return the value of the property
+     */
+    public int getTripCount() {
+        return tripCount;
+    }
+
+    /**
+     * Sets the tripCount.
+     * @param tripCount  the new value of the property
+     */
+    public void setTripCount(int tripCount) {
+        this.tripCount = tripCount;
+    }
+
+    /**
+     * Gets the the {@code tripCount} property.
+     * @return the property, not null
+     */
+    public final Property<Integer> tripCount() {
+        return metaBean().tripCount().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the successRatio.
+     * @return the value of the property
+     */
+    public double getSuccessRatio() {
+        return successRatio;
+    }
+
+    /**
+     * Sets the successRatio.
+     * @param successRatio  the new value of the property
+     */
+    public void setSuccessRatio(double successRatio) {
+        this.successRatio = successRatio;
+    }
+
+    /**
+     * Gets the the {@code successRatio} property.
+     * @return the property, not null
+     */
+    public final Property<Double> successRatio() {
+        return metaBean().successRatio().createProperty(this);
     }
 
     //-----------------------------------------------------------------------
@@ -211,27 +308,152 @@ public class Person implements Bean {
 
     //-----------------------------------------------------------------------
     /**
-     * Gets the favouriteColour.
+     * Gets the region.
      * @return the value of the property
      */
-    public Colour getFavouriteColour() {
-        return favouriteColour;
+    public WorldRegion getRegion() {
+        return region;
     }
 
     /**
-     * Sets the favouriteColour.
-     * @param favouriteColour  the new value of the property
+     * Sets the region.
+     * @param region  the new value of the property
      */
-    public void setFavouriteColour(Colour favouriteColour) {
-        this.favouriteColour = favouriteColour;
+    public void setRegion(WorldRegion region) {
+        this.region = region;
     }
 
     /**
-     * Gets the the {@code favouriteColour} property.
+     * Gets the the {@code region} property.
      * @return the property, not null
      */
-    public final Property<Colour> favouriteColour() {
-        return metaBean().favouriteColour().createProperty(this);
+    public final Property<WorldRegion> region() {
+        return metaBean().region().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the birthDate.
+     * @return the value of the property
+     */
+    public GregorianCalendar getBirthDate() {
+        return birthDate;
+    }
+
+    /**
+     * Sets the birthDate.
+     * @param birthDate  the new value of the property
+     */
+    public void setBirthDate(GregorianCalendar birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    /**
+     * Gets the the {@code birthDate} property.
+     * @return the property, not null
+     */
+    public final Property<GregorianCalendar> birthDate() {
+        return metaBean().birthDate().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the wealth.
+     * @return the value of the property
+     */
+    public BigInteger getWealth() {
+        return wealth;
+    }
+
+    /**
+     * Sets the wealth.
+     * @param wealth  the new value of the property
+     */
+    public void setWealth(BigInteger wealth) {
+        this.wealth = wealth;
+    }
+
+    /**
+     * Gets the the {@code wealth} property.
+     * @return the property, not null
+     */
+    public final Property<BigInteger> wealth() {
+        return metaBean().wealth().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the cash.
+     * @return the value of the property
+     */
+    public BigDecimal getCash() {
+        return cash;
+    }
+
+    /**
+     * Sets the cash.
+     * @param cash  the new value of the property
+     */
+    public void setCash(BigDecimal cash) {
+        this.cash = cash;
+    }
+
+    /**
+     * Gets the the {@code cash} property.
+     * @return the property, not null
+     */
+    public final Property<BigDecimal> cash() {
+        return metaBean().cash().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the currency.
+     * @return the value of the property
+     */
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    /**
+     * Sets the currency.
+     * @param currency  the new value of the property
+     */
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
+    /**
+     * Gets the the {@code currency} property.
+     * @return the property, not null
+     */
+    public final Property<Currency> currency() {
+        return metaBean().currency().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the timeZone.
+     * @return the value of the property
+     */
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    /**
+     * Sets the timeZone.
+     * @param timeZone  the new value of the property
+     */
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    /**
+     * Gets the the {@code timeZone} property.
+     * @return the property, not null
+     */
+    public final Property<TimeZone> timeZone() {
+        return metaBean().timeZone().createProperty(this);
     }
 
     //-----------------------------------------------------------------------
@@ -257,6 +479,31 @@ public class Person implements Bean {
      */
     public final Property<Address> address() {
         return metaBean().address().createProperty(this);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the tags.
+     * @return the value of the property
+     */
+    public List<String> getTags() {
+        return tags;
+    }
+
+    /**
+     * Sets the tags.
+     * @param tags  the new value of the property
+     */
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    /**
+     * Gets the the {@code tags} property.
+     * @return the property, not null
+     */
+    public final Property<List<String>> tags() {
+        return metaBean().tags().createProperty(this);
     }
 
     //-----------------------------------------------------------------------
@@ -310,10 +557,18 @@ public class Person implements Bean {
             return JodaBeanUtils.equal(getForename(), other.getForename()) &&
                     JodaBeanUtils.equal(getSurname(), other.getSurname()) &&
                     (getAge() == other.getAge()) &&
+                    (getTripCount() == other.getTripCount()) &&
+                    JodaBeanUtils.equal(getSuccessRatio(), other.getSuccessRatio()) &&
                     (isChild() == other.isChild()) &&
                     JodaBeanUtils.equal(getMarried(), other.getMarried()) &&
-                    JodaBeanUtils.equal(getFavouriteColour(), other.getFavouriteColour()) &&
+                    JodaBeanUtils.equal(getRegion(), other.getRegion()) &&
+                    JodaBeanUtils.equal(getBirthDate(), other.getBirthDate()) &&
+                    JodaBeanUtils.equal(getWealth(), other.getWealth()) &&
+                    JodaBeanUtils.equal(getCash(), other.getCash()) &&
+                    JodaBeanUtils.equal(getCurrency(), other.getCurrency()) &&
+                    JodaBeanUtils.equal(getTimeZone(), other.getTimeZone()) &&
                     JodaBeanUtils.equal(getAddress(), other.getAddress()) &&
+                    JodaBeanUtils.equal(getTags(), other.getTags()) &&
                     JodaBeanUtils.equal(getFriends(), other.getFriends());
         }
         return false;
@@ -325,17 +580,25 @@ public class Person implements Bean {
         hash += hash * 31 + JodaBeanUtils.hashCode(getForename());
         hash += hash * 31 + JodaBeanUtils.hashCode(getSurname());
         hash += hash * 31 + JodaBeanUtils.hashCode(getAge());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getTripCount());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getSuccessRatio());
         hash += hash * 31 + JodaBeanUtils.hashCode(isChild());
         hash += hash * 31 + JodaBeanUtils.hashCode(getMarried());
-        hash += hash * 31 + JodaBeanUtils.hashCode(getFavouriteColour());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getRegion());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getBirthDate());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getWealth());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getCash());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getCurrency());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getTimeZone());
         hash += hash * 31 + JodaBeanUtils.hashCode(getAddress());
+        hash += hash * 31 + JodaBeanUtils.hashCode(getTags());
         hash += hash * 31 + JodaBeanUtils.hashCode(getFriends());
         return hash;
     }
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(288);
+        StringBuilder buf = new StringBuilder(544);
         buf.append("Person{");
         int len = buf.length();
         toString(buf);
@@ -350,10 +613,18 @@ public class Person implements Bean {
         buf.append("forename").append('=').append(JodaBeanUtils.toString(getForename())).append(',').append(' ');
         buf.append("surname").append('=').append(JodaBeanUtils.toString(getSurname())).append(',').append(' ');
         buf.append("age").append('=').append(JodaBeanUtils.toString(getAge())).append(',').append(' ');
+        buf.append("tripCount").append('=').append(JodaBeanUtils.toString(getTripCount())).append(',').append(' ');
+        buf.append("successRatio").append('=').append(JodaBeanUtils.toString(getSuccessRatio())).append(',').append(' ');
         buf.append("child").append('=').append(JodaBeanUtils.toString(isChild())).append(',').append(' ');
         buf.append("married").append('=').append(JodaBeanUtils.toString(getMarried())).append(',').append(' ');
-        buf.append("favouriteColour").append('=').append(JodaBeanUtils.toString(getFavouriteColour())).append(',').append(' ');
+        buf.append("region").append('=').append(JodaBeanUtils.toString(getRegion())).append(',').append(' ');
+        buf.append("birthDate").append('=').append(JodaBeanUtils.toString(getBirthDate())).append(',').append(' ');
+        buf.append("wealth").append('=').append(JodaBeanUtils.toString(getWealth())).append(',').append(' ');
+        buf.append("cash").append('=').append(JodaBeanUtils.toString(getCash())).append(',').append(' ');
+        buf.append("currency").append('=').append(JodaBeanUtils.toString(getCurrency())).append(',').append(' ');
+        buf.append("timeZone").append('=').append(JodaBeanUtils.toString(getTimeZone())).append(',').append(' ');
         buf.append("address").append('=').append(JodaBeanUtils.toString(getAddress())).append(',').append(' ');
+        buf.append("tags").append('=').append(JodaBeanUtils.toString(getTags())).append(',').append(' ');
         buf.append("friends").append('=').append(JodaBeanUtils.toString(getFriends())).append(',').append(' ');
     }
 
@@ -380,8 +651,18 @@ public class Person implements Bean {
         /**
          * The meta-property for the {@code age} property.
          */
-        private final MetaProperty<Integer> age = DirectMetaProperty.ofReadWrite(
-                this, "age", Person.class, Integer.TYPE);
+        private final MetaProperty<Short> age = DirectMetaProperty.ofReadWrite(
+                this, "age", Person.class, Short.TYPE);
+        /**
+         * The meta-property for the {@code tripCount} property.
+         */
+        private final MetaProperty<Integer> tripCount = DirectMetaProperty.ofReadWrite(
+                this, "tripCount", Person.class, Integer.TYPE);
+        /**
+         * The meta-property for the {@code successRatio} property.
+         */
+        private final MetaProperty<Double> successRatio = DirectMetaProperty.ofReadWrite(
+                this, "successRatio", Person.class, Double.TYPE);
         /**
          * The meta-property for the {@code child} property.
          */
@@ -393,15 +674,46 @@ public class Person implements Bean {
         private final MetaProperty<Boolean> married = DirectMetaProperty.ofReadWrite(
                 this, "married", Person.class, Boolean.class);
         /**
-         * The meta-property for the {@code favouriteColour} property.
+         * The meta-property for the {@code region} property.
          */
-        private final MetaProperty<Colour> favouriteColour = DirectMetaProperty.ofReadWrite(
-                this, "favouriteColour", Person.class, Colour.class);
+        private final MetaProperty<WorldRegion> region = DirectMetaProperty.ofReadWrite(
+                this, "region", Person.class, WorldRegion.class);
+        /**
+         * The meta-property for the {@code birthDate} property.
+         */
+        private final MetaProperty<GregorianCalendar> birthDate = DirectMetaProperty.ofReadWrite(
+                this, "birthDate", Person.class, GregorianCalendar.class);
+        /**
+         * The meta-property for the {@code wealth} property.
+         */
+        private final MetaProperty<BigInteger> wealth = DirectMetaProperty.ofReadWrite(
+                this, "wealth", Person.class, BigInteger.class);
+        /**
+         * The meta-property for the {@code cash} property.
+         */
+        private final MetaProperty<BigDecimal> cash = DirectMetaProperty.ofReadWrite(
+                this, "cash", Person.class, BigDecimal.class);
+        /**
+         * The meta-property for the {@code currency} property.
+         */
+        private final MetaProperty<Currency> currency = DirectMetaProperty.ofReadWrite(
+                this, "currency", Person.class, Currency.class);
+        /**
+         * The meta-property for the {@code timeZone} property.
+         */
+        private final MetaProperty<TimeZone> timeZone = DirectMetaProperty.ofReadWrite(
+                this, "timeZone", Person.class, TimeZone.class);
         /**
          * The meta-property for the {@code address} property.
          */
         private final MetaProperty<Address> address = DirectMetaProperty.ofReadWrite(
                 this, "address", Person.class, Address.class);
+        /**
+         * The meta-property for the {@code tags} property.
+         */
+        @SuppressWarnings({"unchecked", "rawtypes" })
+        private final MetaProperty<List<String>> tags = DirectMetaProperty.ofReadWrite(
+                this, "tags", Person.class, (Class) List.class);
         /**
          * The meta-property for the {@code friends} property.
          */
@@ -416,10 +728,18 @@ public class Person implements Bean {
                 "forename",
                 "surname",
                 "age",
+                "tripCount",
+                "successRatio",
                 "child",
                 "married",
-                "favouriteColour",
+                "region",
+                "birthDate",
+                "wealth",
+                "cash",
+                "currency",
+                "timeZone",
                 "address",
+                "tags",
                 "friends");
 
         /**
@@ -437,14 +757,30 @@ public class Person implements Bean {
                     return surname;
                 case 96511:  // age
                     return age;
+                case -424035350:  // tripCount
+                    return tripCount;
+                case -664622648:  // successRatio
+                    return successRatio;
                 case 94631196:  // child
                     return child;
                 case 839462772:  // married
                     return married;
-                case -1213306923:  // favouriteColour
-                    return favouriteColour;
+                case -934795532:  // region
+                    return region;
+                case -1210031859:  // birthDate
+                    return birthDate;
+                case -791825491:  // wealth
+                    return wealth;
+                case 3046195:  // cash
+                    return cash;
+                case 575402001:  // currency
+                    return currency;
+                case -2077180903:  // timeZone
+                    return timeZone;
                 case -1147692044:  // address
                     return address;
+                case 3552281:  // tags
+                    return tags;
                 case -600094315:  // friends
                     return friends;
             }
@@ -487,8 +823,24 @@ public class Person implements Bean {
          * The meta-property for the {@code age} property.
          * @return the meta-property, not null
          */
-        public final MetaProperty<Integer> age() {
+        public final MetaProperty<Short> age() {
             return age;
+        }
+
+        /**
+         * The meta-property for the {@code tripCount} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<Integer> tripCount() {
+            return tripCount;
+        }
+
+        /**
+         * The meta-property for the {@code successRatio} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<Double> successRatio() {
+            return successRatio;
         }
 
         /**
@@ -508,11 +860,51 @@ public class Person implements Bean {
         }
 
         /**
-         * The meta-property for the {@code favouriteColour} property.
+         * The meta-property for the {@code region} property.
          * @return the meta-property, not null
          */
-        public final MetaProperty<Colour> favouriteColour() {
-            return favouriteColour;
+        public final MetaProperty<WorldRegion> region() {
+            return region;
+        }
+
+        /**
+         * The meta-property for the {@code birthDate} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<GregorianCalendar> birthDate() {
+            return birthDate;
+        }
+
+        /**
+         * The meta-property for the {@code wealth} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<BigInteger> wealth() {
+            return wealth;
+        }
+
+        /**
+         * The meta-property for the {@code cash} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<BigDecimal> cash() {
+            return cash;
+        }
+
+        /**
+         * The meta-property for the {@code currency} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<Currency> currency() {
+            return currency;
+        }
+
+        /**
+         * The meta-property for the {@code timeZone} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<TimeZone> timeZone() {
+            return timeZone;
         }
 
         /**
@@ -521,6 +913,14 @@ public class Person implements Bean {
          */
         public final MetaProperty<Address> address() {
             return address;
+        }
+
+        /**
+         * The meta-property for the {@code tags} property.
+         * @return the meta-property, not null
+         */
+        public final MetaProperty<List<String>> tags() {
+            return tags;
         }
 
         /**
@@ -541,14 +941,30 @@ public class Person implements Bean {
                     return ((Person) bean).getSurname();
                 case 96511:  // age
                     return ((Person) bean).getAge();
+                case -424035350:  // tripCount
+                    return ((Person) bean).getTripCount();
+                case -664622648:  // successRatio
+                    return ((Person) bean).getSuccessRatio();
                 case 94631196:  // child
                     return ((Person) bean).isChild();
                 case 839462772:  // married
                     return ((Person) bean).getMarried();
-                case -1213306923:  // favouriteColour
-                    return ((Person) bean).getFavouriteColour();
+                case -934795532:  // region
+                    return ((Person) bean).getRegion();
+                case -1210031859:  // birthDate
+                    return ((Person) bean).getBirthDate();
+                case -791825491:  // wealth
+                    return ((Person) bean).getWealth();
+                case 3046195:  // cash
+                    return ((Person) bean).getCash();
+                case 575402001:  // currency
+                    return ((Person) bean).getCurrency();
+                case -2077180903:  // timeZone
+                    return ((Person) bean).getTimeZone();
                 case -1147692044:  // address
                     return ((Person) bean).getAddress();
+                case 3552281:  // tags
+                    return ((Person) bean).getTags();
                 case -600094315:  // friends
                     return ((Person) bean).getFriends();
             }
@@ -566,7 +982,13 @@ public class Person implements Bean {
                     ((Person) bean).setSurname((String) newValue);
                     return;
                 case 96511:  // age
-                    ((Person) bean).setAge((Integer) newValue);
+                    ((Person) bean).setAge((Short) newValue);
+                    return;
+                case -424035350:  // tripCount
+                    ((Person) bean).setTripCount((Integer) newValue);
+                    return;
+                case -664622648:  // successRatio
+                    ((Person) bean).setSuccessRatio((Double) newValue);
                     return;
                 case 94631196:  // child
                     ((Person) bean).setChild((Boolean) newValue);
@@ -574,17 +996,41 @@ public class Person implements Bean {
                 case 839462772:  // married
                     ((Person) bean).setMarried((Boolean) newValue);
                     return;
-                case -1213306923:  // favouriteColour
-                    ((Person) bean).setFavouriteColour((Colour) newValue);
+                case -934795532:  // region
+                    ((Person) bean).setRegion((WorldRegion) newValue);
+                    return;
+                case -1210031859:  // birthDate
+                    ((Person) bean).setBirthDate((GregorianCalendar) newValue);
+                    return;
+                case -791825491:  // wealth
+                    ((Person) bean).setWealth((BigInteger) newValue);
+                    return;
+                case 3046195:  // cash
+                    ((Person) bean).setCash((BigDecimal) newValue);
+                    return;
+                case 575402001:  // currency
+                    ((Person) bean).setCurrency((Currency) newValue);
+                    return;
+                case -2077180903:  // timeZone
+                    ((Person) bean).setTimeZone((TimeZone) newValue);
                     return;
                 case -1147692044:  // address
                     ((Person) bean).setAddress((Address) newValue);
+                    return;
+                case 3552281:  // tags
+                    ((Person) bean).setTags((List<String>) newValue);
                     return;
                 case -600094315:  // friends
                     ((Person) bean).setFriends((List<Person>) newValue);
                     return;
             }
             super.propertySet(bean, propertyName, newValue, quiet);
+        }
+
+        @Override
+        protected void validate(Bean bean) {
+            JodaBeanUtils.notNull(((Person) bean).forename, "forename");
+            JodaBeanUtils.notNull(((Person) bean).surname, "surname");
         }
 
     }

@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.joda.beans.ui.swing;
+package org.joda.beans.ui.swing.component;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -38,7 +38,7 @@ public class SwingFormPanelBuilder {
     /**
      * Creates an instance.
      */
-    SwingFormPanelBuilder() {
+    public SwingFormPanelBuilder() {
         panel = new JPanel();
         layout = new GroupLayout(panel);
         panel.setLayout(layout);
@@ -70,6 +70,9 @@ public class SwingFormPanelBuilder {
      * @return {@code this}, for chaining
      */
     public SwingFormPanelBuilder append(JComponent label, JComponent field) {
+        if (label instanceof JLabel) {
+            ((JLabel) label).setLabelFor(field);
+        }
         hGroupLabels.addComponent(label);
         hGroupFields.addComponent(field);
         vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).addComponent(label).addComponent(field));

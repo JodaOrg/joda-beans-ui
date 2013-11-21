@@ -15,47 +15,73 @@
  */
 package org.joda.beans.ui.swing;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+import java.util.Map;
+
 import javax.swing.JPanel;
 
 import org.joda.beans.Bean;
-import org.joda.beans.MetaProperty;
-import org.joda.beans.ui.swing.binder.PropertyBinder;
-import org.joda.beans.ui.swing.binder.PropertyBinderFactory;
+import org.joda.beans.MetaBean;
+import org.joda.beans.ui.form.DefaultUIComponentFactory;
+import org.joda.beans.ui.form.MetaUIComponent;
+import org.joda.beans.ui.form.MetaUIFactory;
+import org.joda.beans.ui.form.MetaUIForm;
+import org.joda.beans.ui.form.UIComponentFactory;
+import org.joda.beans.ui.form.UIForm;
+import org.joda.beans.ui.swing.type.EnumSwingUIComponent;
 
 /**
  * Entry point factory class capable of creating a Swing UI for a bean.
  */
 public class JodaBeanSwingUI {
 
-    public JPanel createReadOnly(final Bean bean) {
-        SwingFormPanelBuilder builder = new SwingFormPanelBuilder();
-        for (MetaProperty<?> mp : bean.metaBean().metaPropertyIterable()) {
-            JComponent field = createField(mp, bean);
-            if (field != null) {
-                String name = DisplayMsg.lookupFieldPrompt(mp);
-                builder.append(name, field);
-            }
-        }
-        return builder.build();
+    /**
+     * Creates a form for the specified bean.
+     * <p>
+     * The bean is examined for meta-data and a form created.
+     * 
+     * @param bean  the bean to examine, not null
+     * @return the created form panel, not null
+     */
+    public JPanel createForm(final Bean bean) {
+        UIForm<JPanel> form = createForm(bean.metaBean());
+        form.updateUI(bean);
+        return form.getForm();
     }
 
-    private JComponent createField(MetaProperty<?> mp, final Bean bean) {
-        Object value = mp.get(bean);
-        for (PropertyBinderFactory factory : SwingUISettings.INSTANCE.getFactories()) {
-            PropertyBinder binder = factory.createBinder(bean, mp);
-            if (binder != null) {
-                binder.updateUI();
-                return binder.getComponentList().get(0);
+    /**
+     * Creates a form for the specified meta-bean.
+     * <p>
+     * The bean is examined for meta-data and a form created.
+     * 
+     * @param metaBean  the meta-bean to examine, not null
+     * @return the created form panel, not null
+     */
+    public UIForm<JPanel> createForm(final MetaBean metaBean) {
+        MetaUIForm metaForm = createMetaForm(metaBean);
+        selectSwingComponents(metaForm);
+        UIForm<JPanel> form = createSwingForm(metaForm);
+        return form;
+    }
+
+    protected MetaUIForm createMetaForm(MetaBean metaBean) {
+        return new MetaUIFactory().createForm(metaBean);
+    }
+
+    protected void selectSwingComponents(MetaUIForm form) {
+        Map<Class<?>, UIComponentFactory> factories = SwingUISettings.INSTANCE.getFactories();
+        for (MetaUIComponent comp : form.getComponents()) {
+            UIComponentFactory factory = factories.get(comp.getMetaProperty().propertyType());
+            if (factory == null) {
+                if (Enum.class.isAssignableFrom(comp.getMetaProperty().propertyType())) {
+                    factory = DefaultUIComponentFactory.of(EnumSwingUIComponent.class);
+                }
             }
+            comp.setComponentFactory(factory);
         }
-        if (Bean.class.isAssignableFrom(mp.propertyType())) {
-            return new JLabel(value.toString());
-        } else {
-            return null;
-            //throw new IllegalArgumentException("Unable to create UI as declared type is neither a bean nor a simple type: " + mp.propertyType().getName());
-        }
+    }
+
+    protected SwingUIForm createSwingForm(MetaUIForm form) {
+        return new SwingUIForm(form);
     }
 
 }
