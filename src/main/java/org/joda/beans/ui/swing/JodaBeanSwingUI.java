@@ -28,6 +28,7 @@ import org.joda.beans.ui.form.MetaUIForm;
 import org.joda.beans.ui.form.UIComponentFactory;
 import org.joda.beans.ui.form.UIForm;
 import org.joda.beans.ui.swing.type.EnumSwingUIComponent;
+import org.joda.beans.ui.swing.type.StringSwingUIComponent;
 
 /**
  * Entry point factory class capable of creating a Swing UI for a bean.
@@ -74,6 +75,8 @@ public class JodaBeanSwingUI {
             if (factory == null) {
                 if (Enum.class.isAssignableFrom(comp.getMetaProperty().propertyType())) {
                     factory = DefaultUIComponentFactory.of(EnumSwingUIComponent.class);
+                } else if (SwingUISettings.INSTANCE.getStringConvert().isConvertible(comp.getMetaProperty().propertyType())) {
+                    factory = DefaultUIComponentFactory.of(StringSwingUIComponent.class);
                 }
             }
             comp.setComponentFactory(factory);
