@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import javax.swing.AbstractListModel;
@@ -38,12 +39,13 @@ public class SimpleListModel<T> extends AbstractListModel<T> implements List<T> 
     /**
      * The list.
      */
-    private final List<T> listData = new ArrayList<>();
+    private final List<T> listData;
 
     /**
      * Creates an instance.
      */
     public SimpleListModel() {
+        listData = new ArrayList<>();
     }
 
     /**
@@ -52,17 +54,17 @@ public class SimpleListModel<T> extends AbstractListModel<T> implements List<T> 
      * @param listData  the list data, not null
      */
     public SimpleListModel(List<T> listData) {
-        this.listData.addAll(Objects.requireNonNull(listData, "listData"));
+        this.listData = new ArrayList<>(Objects.requireNonNull(listData, "listData"));
     }
 
     //-------------------------------------------------------------------------
     /**
-     * Gets a copy of the list data.
+     * Gets the raw list data.
      * 
-     * @return the list data, not null
+     * @return the raw list data, not null
      */
-    public List<T> getListData() {
-        return new ArrayList<>(listData);
+    protected List<T> getListData() {
+        return listData;
     }
 
     //-------------------------------------------------------------------------
@@ -130,17 +132,80 @@ public class SimpleListModel<T> extends AbstractListModel<T> implements List<T> 
     //-------------------------------------------------------------------------
     @Override
     public Iterator<T> iterator() {
-        return listData.iterator();  // should have remove monitored
+        return listIterator();
     }
 
     @Override
     public ListIterator<T> listIterator() {
-        return listData.listIterator();  // should have remove/add/set monitored
+        return listIterator(0);
     }
 
     @Override
-    public ListIterator<T> listIterator(int index) {
-        return listData.listIterator(index);  // should have remove/add/set monitored
+    public ListIterator<T> listIterator(final int index) {
+        return new ListIterator<T>() {
+            private int pos = index;
+            private int last = -1;
+            @Override
+            public boolean hasNext() {
+                return pos < listData.size();
+            }
+            @Override
+            public boolean hasPrevious() {
+                return pos > 0;
+            }
+            @Override
+            public T next() {
+                if (hasNext() == false) {
+                    throw new NoSuchElementException();
+                }
+                T next = listData.get(pos);
+                last = index;
+                pos++;
+                return next;
+            }
+            @Override
+            public T previous() {
+                if (hasPrevious() == false) {
+                    throw new NoSuchElementException();
+                }
+                pos--;
+                T next = listData.get(pos);
+                last = index;
+                return next;
+            }
+            @Override
+            public int nextIndex() {
+                return pos;
+            }
+            @Override
+            public int previousIndex() {
+                return pos - 1;
+            }
+            @Override
+            public void remove() {
+                if (last < 0) {
+                    throw new IllegalStateException("Unable to remove");
+                }
+                SimpleListModel.this.remove(last);
+                if (last < pos) {
+                    pos--;
+                }
+                last = -1;
+            }
+            @Override
+            public void set(T item) {
+                if (last < 0) {
+                    throw new IllegalStateException("Unable to set");
+                }
+                SimpleListModel.this.set(last, item);
+            }
+            @Override
+            public void add(T item) {
+                SimpleListModel.this.add(pos, item);
+                last = -1;
+                pos++;
+            }
+        };
     }
 
     //-------------------------------------------------------------------------
@@ -197,22 +262,20 @@ public class SimpleListModel<T> extends AbstractListModel<T> implements List<T> 
 
     @Override
     public boolean removeAll(Collection<?> coll) {
-        boolean changed = false;
-        for (Object item : coll) {
-            changed |= remove(item);
+        boolean changed = listData.removeAll(coll);
+        if (changed) {
+            fireContentsChanged(this, 0, getSize() - 1);
         }
         return changed;
     }
 
     @Override
     public boolean retainAll(Collection<?> coll) {
-        List<Object> toRemove = new ArrayList<>();
-        for (Object item : this) {
-            if (coll.contains(item) == false) {
-                toRemove.add(item);
-            }
+        boolean changed = listData.retainAll(coll);
+        if (changed) {
+            fireContentsChanged(this, 0, getSize() - 1);
         }
-        return removeAll(toRemove);
+        return changed;
     }
 
     @Override
@@ -222,6 +285,22 @@ public class SimpleListModel<T> extends AbstractListModel<T> implements List<T> 
             listData.clear();
             fireIntervalRemoved(this, 0, oldSize - 1);
         }
+    }
+
+    //-------------------------------------------------------------------------
+    @Override
+    public boolean equals(Object obj) {
+        return listData.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return listData.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleListModel" + listData;
     }
 
 }
