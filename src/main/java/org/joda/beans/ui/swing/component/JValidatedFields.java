@@ -50,10 +50,12 @@ public final class JValidatedFields {
      * @return the combobox, not null
      */
     public static <T> JComboBox<T> createCombobox(final Map<String, T> comboData, boolean mandatory, boolean limitedValues) {
+        // allow drop down pick of a blank row
+        comboData.put("", null);
         @SuppressWarnings("unchecked")
         ComboBoxModel<T> model = new MapComboBoxModel<String, T>(comboData);
         final JComboBox<T> component = new JComboBox<T>(model);
-        component.setEditable((mandatory && limitedValues) == false);
+        component.setEditable(limitedValues == false);
         component.setSelectedIndex(-1);
         AutoCompleteDecorator.decorate(component);
         if (mandatory) {
