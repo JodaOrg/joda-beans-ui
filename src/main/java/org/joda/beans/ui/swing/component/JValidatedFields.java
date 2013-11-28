@@ -20,12 +20,14 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import org.jdesktop.swingx.autocomplete.ObjectToStringConverter;
 import org.jdesktop.swingx.combobox.MapComboBoxModel;
 
 /**
@@ -57,7 +59,20 @@ public final class JValidatedFields {
         final JComboBox<T> component = new JComboBox<T>(model);
         component.setEditable(limitedValues == false);
         component.setSelectedIndex(-1);
-        AutoCompleteDecorator.decorate(component);
+        AutoCompleteDecorator.decorate(component, new ObjectToStringConverter() {
+            @Override
+            public String getPreferredStringForItem(Object item) {
+                if (item == null) {
+                    return null;
+                }
+                for (Entry<String, T> entry : comboData.entrySet()) {
+                    if (item.equals(entry.getValue())) {
+                        return entry.getKey();
+                    }
+                }
+                return item.toString();
+            }
+        });
         if (mandatory) {
             JValidatedFields.validateMandatory(component);
         }
