@@ -31,6 +31,7 @@ import javax.validation.constraints.Size;
 import org.joda.beans.MetaBean;
 import org.joda.beans.MetaProperty;
 import org.joda.beans.PropertyDefinition;
+import org.joda.beans.PropertyStyle;
 
 /**
  * Factory used to create {@code MetaUIForm} instances.
@@ -79,6 +80,7 @@ public class MetaUIFactory {
      */
     protected void buildComponent(MetaUIForm form, MetaProperty<?> mp) {
         MetaUIComponent comp = createEmptyMetaComponent(mp);
+        buildReadOnly(comp);
         buildMandatory(comp);
         buildMinMax(comp);
         buildSize(comp);
@@ -94,6 +96,18 @@ public class MetaUIFactory {
      */
     protected MetaUIComponent createEmptyMetaComponent(MetaProperty<?> metaProperty) {
         return new MetaUIComponent(metaProperty);
+    }
+
+    /**
+     * Builds the mandatory flag for the component.
+     * 
+     * @param comp  the component, not null
+     */
+    protected void buildReadOnly(MetaUIComponent comp) {
+        PropertyStyle style = comp.getMetaProperty().style();
+        if (style == PropertyStyle.DERIVED || style == PropertyStyle.READ_ONLY) {
+            comp.setReadOnly(true);
+        }
     }
 
     /**

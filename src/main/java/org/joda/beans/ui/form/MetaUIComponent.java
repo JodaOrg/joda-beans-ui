@@ -45,6 +45,12 @@ public class MetaUIComponent implements Bean {
     @PropertyDefinition(validate = "notNull", set = "private")
     private MetaProperty<?> metaProperty;
     /**
+     * Whether the component is read only.
+     * Default false.
+     */
+    @PropertyDefinition
+    private boolean readOnly;
+    /**
      * Whether the component is mandatory.
      * Default false.
      */
@@ -193,6 +199,25 @@ public class MetaUIComponent implements Bean {
     private void setMetaProperty(MetaProperty<?> metaProperty) {
         JodaBeanUtils.notNull(metaProperty, "metaProperty");
         this.metaProperty = metaProperty;
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets whether the component is read only.
+     * Default false.
+     * @return the value of the property
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * Sets whether the component is read only.
+     * Default false.
+     * @param readOnly  the new value of the property
+     */
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     //-----------------------------------------------------------------------
@@ -391,6 +416,7 @@ public class MetaUIComponent implements Bean {
         if (obj != null && obj.getClass() == this.getClass()) {
             MetaUIComponent other = (MetaUIComponent) obj;
             return JodaBeanUtils.equal(getMetaProperty(), other.getMetaProperty()) &&
+                    (isReadOnly() == other.isReadOnly()) &&
                     (isMandatory() == other.isMandatory()) &&
                     JodaBeanUtils.equal(getMinValue(), other.getMinValue()) &&
                     JodaBeanUtils.equal(getMaxValue(), other.getMaxValue()) &&
@@ -408,6 +434,7 @@ public class MetaUIComponent implements Bean {
     public int hashCode() {
         int hash = getClass().hashCode();
         hash += hash * 31 + JodaBeanUtils.hashCode(getMetaProperty());
+        hash += hash * 31 + JodaBeanUtils.hashCode(isReadOnly());
         hash += hash * 31 + JodaBeanUtils.hashCode(isMandatory());
         hash += hash * 31 + JodaBeanUtils.hashCode(getMinValue());
         hash += hash * 31 + JodaBeanUtils.hashCode(getMaxValue());
@@ -422,7 +449,7 @@ public class MetaUIComponent implements Bean {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(352);
+        StringBuilder buf = new StringBuilder(384);
         buf.append("MetaUIComponent{");
         int len = buf.length();
         toString(buf);
@@ -435,6 +462,7 @@ public class MetaUIComponent implements Bean {
 
     protected void toString(StringBuilder buf) {
         buf.append("metaProperty").append('=').append(JodaBeanUtils.toString(getMetaProperty())).append(',').append(' ');
+        buf.append("readOnly").append('=').append(JodaBeanUtils.toString(isReadOnly())).append(',').append(' ');
         buf.append("mandatory").append('=').append(JodaBeanUtils.toString(isMandatory())).append(',').append(' ');
         buf.append("minValue").append('=').append(JodaBeanUtils.toString(getMinValue())).append(',').append(' ');
         buf.append("maxValue").append('=').append(JodaBeanUtils.toString(getMaxValue())).append(',').append(' ');
@@ -462,6 +490,11 @@ public class MetaUIComponent implements Bean {
         @SuppressWarnings({"unchecked", "rawtypes" })
         private final MetaProperty<MetaProperty<?>> metaProperty = DirectMetaProperty.ofReadWrite(
                 this, "metaProperty", MetaUIComponent.class, (Class) MetaProperty.class);
+        /**
+         * The meta-property for the {@code readOnly} property.
+         */
+        private final MetaProperty<Boolean> readOnly = DirectMetaProperty.ofReadWrite(
+                this, "readOnly", MetaUIComponent.class, Boolean.TYPE);
         /**
          * The meta-property for the {@code mandatory} property.
          */
@@ -516,6 +549,7 @@ public class MetaUIComponent implements Bean {
         private final Map<String, MetaProperty<?>> metaPropertyMap$ = new DirectMetaPropertyMap(
                 this, null,
                 "metaProperty",
+                "readOnly",
                 "mandatory",
                 "minValue",
                 "maxValue",
@@ -537,6 +571,8 @@ public class MetaUIComponent implements Bean {
             switch (propertyName.hashCode()) {
                 case -1396997382:  // metaProperty
                     return metaProperty;
+                case -867683742:  // readOnly
+                    return readOnly;
                 case -392910375:  // mandatory
                     return mandatory;
                 case -1376969153:  // minValue
@@ -580,6 +616,8 @@ public class MetaUIComponent implements Bean {
             switch (propertyName.hashCode()) {
                 case -1396997382:  // metaProperty
                     return ((MetaUIComponent) bean).getMetaProperty();
+                case -867683742:  // readOnly
+                    return ((MetaUIComponent) bean).isReadOnly();
                 case -392910375:  // mandatory
                     return ((MetaUIComponent) bean).isMandatory();
                 case -1376969153:  // minValue
@@ -608,6 +646,9 @@ public class MetaUIComponent implements Bean {
             switch (propertyName.hashCode()) {
                 case -1396997382:  // metaProperty
                     ((MetaUIComponent) bean).setMetaProperty((MetaProperty<?>) newValue);
+                    return;
+                case -867683742:  // readOnly
+                    ((MetaUIComponent) bean).setReadOnly((Boolean) newValue);
                     return;
                 case -392910375:  // mandatory
                     ((MetaUIComponent) bean).setMandatory((Boolean) newValue);
