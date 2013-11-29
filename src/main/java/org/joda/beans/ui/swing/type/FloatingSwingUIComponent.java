@@ -63,6 +63,9 @@ public class FloatingSwingUIComponent extends SwingUIComponent<JValidatedTextFie
     @Override
     public void updateUI(Bean bean) {
         String text = getMetaProperty().getString(bean, SwingUISettings.INSTANCE.getStringConvert());
+        if (text.endsWith(".0")) {
+            text = text.substring(0, text.length() - 2);
+        }
         getComponent().setText(text);
     }
 
