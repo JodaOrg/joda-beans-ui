@@ -65,6 +65,7 @@ public class SwingUIExample {
         person.setAddress(new Address());
         person.getAddress().setStreet("186 Park Street");
         person.getAddress().setCity("London");
+        person.setRegion(WorldRegion.BENELUX);
         person.getTags().add("healthy");
         person.getTags().add("fun");
         person.getTags().add("employed");
