@@ -56,6 +56,7 @@ public abstract class SwingUIComponent<T extends JComponent> extends UIComponent
      * 
      * @return the UI component, null if not yet created
      */
+    @Override
     public T getComponent() {
         return component;
     }
@@ -81,6 +82,7 @@ public abstract class SwingUIComponent<T extends JComponent> extends UIComponent
      * 
      * @return true if visibly mandatory
      */
+    @Override
     public boolean isDisplayedAsMandatory() {
         return displayedAsMandatory;
     }

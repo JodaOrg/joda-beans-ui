@@ -70,6 +70,7 @@ public class SwingUIForm extends UIForm<JPanel> {
      * 
      * @return the UI form, null if not yet created
      */
+    @Override
     public JPanel getForm() {
         return form;
     }
@@ -79,6 +80,7 @@ public class SwingUIForm extends UIForm<JPanel> {
      * 
      * @return the UI components, editable, not null
      */
+    @Override
     public List<SwingUIComponent<?>> getComponents() {
         return components;
     }

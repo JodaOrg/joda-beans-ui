@@ -174,42 +174,52 @@ public class ErrorBackgroundTextUI extends TextUI {
         return ui.getAccessibleChild(c, i);
     }
 
+    @Override
     public Rectangle modelToView(JTextComponent t, int pos) throws BadLocationException {
         return ui.modelToView(t, pos);
     }
 
+    @Override
     public Rectangle modelToView(JTextComponent t, int pos, Bias bias) throws BadLocationException {
         return ui.modelToView(t, pos, bias);
     }
 
+    @Override
     public int viewToModel(JTextComponent t, Point pt) {
         return ui.viewToModel(t, pt);
     }
 
+    @Override
     public int viewToModel(JTextComponent t, Point pt, Bias[] biasReturn) {
         return ui.viewToModel(t, pt, biasReturn);
     }
 
+    @Override
     public int getNextVisualPositionFrom(JTextComponent t, int pos, Bias b, int direction, Bias[] biasRet) throws BadLocationException {
         return ui.getNextVisualPositionFrom(t, pos, b, direction, biasRet);
     }
 
+    @Override
     public void damageRange(JTextComponent t, int p0, int p1) {
         ui.damageRange(t, p0, p1);
     }
 
+    @Override
     public void damageRange(JTextComponent t, int p0, int p1, Bias firstBias, Bias secondBias) {
         ui.damageRange(t, p0, p1, firstBias, secondBias);
     }
 
+    @Override
     public EditorKit getEditorKit(JTextComponent t) {
         return ui.getEditorKit(t);
     }
 
+    @Override
     public View getRootView(JTextComponent t) {
         return ui.getRootView(t);
     }
 
+    @Override
     public String getToolTipText(JTextComponent t, Point pt) {
         return ui.getToolTipText(t, pt);
     }
